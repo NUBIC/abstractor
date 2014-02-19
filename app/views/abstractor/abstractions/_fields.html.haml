@@ -1,0 +1,18 @@
+- unless abstraction.blank?
+  %td
+    = abstraction.abstractable_to_column.humanize
+  %td
+    = abstraction.value
+  %td
+    - if abstraction.reason
+      = abstraction.reason
+    - else
+      = abstraction.match_value
+  %td
+    - if abstraction.abstractable_from_column
+      %span{ :class => 'tooltip_img label', :rel => "#abstraction_text_#{abstraction.id}", :title => 'Text'}
+        = image_tag('page.png', :id => "abstraction_text_link_#{abstraction.id}")
+      %div{ :id => "abstraction_text_#{abstraction.id}", :class => 'tooltip'}
+        - abstractable_from_column = abstraction.abstractable_from.reload.send(abstraction.abstractable_from_column)
+        = highlight(simple_format(abstractable_from_column.clone), abstraction.match_value.strip) unless abstractable_from_column.nil?
+

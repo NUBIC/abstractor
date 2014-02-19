@@ -1,0 +1,7 @@
+= Abstractor
+
+This project rocks and uses MIT-LICENSE.
+Setup:
+
+rails generate abstractor:install
+rake abstractor:setup:dictionaries FILE=lib/setup/dictionaries.yml

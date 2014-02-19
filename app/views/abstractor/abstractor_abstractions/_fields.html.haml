@@ -1,0 +1,62 @@
+- abstractor_abstraction ||= @abstractor_abstraction
+- unless abstractor_abstraction.blank?
+  - abstraction_schema        = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
+  - abstraction_suggestions   = abstractor_abstraction.abstractor_suggestions.order(:id)
+  - rejected_suggestions  = abstraction_suggestions.joins(:abstractor_suggestion_status).where(:abstractor_suggestion_statuses => {:name => 'Rejected'})
+  - subject = abstractor_abstraction.subject
+
+  .abstractor_abstraction_display
+    .column-3
+      .abstraction_schema_name
+        = abstraction_schema.display_name
+    .column-5
+      .abstractor_abstraction_value
+        - if rejected_suggestions.length == abstraction_suggestions.length
+          %span.editable_abstraction
+            = abstractor_abstraction.display_value
+          = link_to 'edit', edit_abstractor_abstraction_path(abstractor_abstraction), :class=>'icon_link edit_link'
+        - else
+          = abstractor_abstraction.display_value
+        - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
+        - if versions.any?
+          %br
+          %b History:
+          - versions.each do |version|
+            %br
+            %i
+              = "#{version.reify.display_value} - #{version.created_at.to_date.to_s(:date)} (#{version.originator})"
+    - if abstraction_suggestions.any?
+      .column-9
+        - abstraction_suggestions.each do |abstraction_suggestion|
+          = form_for [abstractor_abstraction, abstraction_suggestion], :remote => true do |f|
+            = render 'shared/error_messages', :object => f.object
+            .column-5
+              = abstraction_suggestion.display_value
+              - if abstraction_suggestion.abstractor_suggestion_sources.any?
+                - abstraction_suggestion.abstractor_suggestion_sources.each do |abstractor_suggestion_source|
+                  - from_method = abstractor_suggestion_source.abstractor_abstraction_source.from_method
+                  - if subject.respond_to?(from_method)
+                    %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstractor_suggestion_source.id}", :title => "#{subject.class.to_s} #{from_method}"}
+                      = image_tag('page.png', :id => "abstraction_text_link_#{abstractor_suggestion_source.id}")
+                    %div{ :id => "abstraction_text_#{abstractor_suggestion_source.id}", :class => 'abstractor_abstraction_source_tooltip'}
+                      - abstractable_from_column = subject.send(from_method)
+                      - unless abstractable_from_column.nil?
+                        - if abstractor_suggestion_source.match_value
+                          = highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.match_value.strip)
+                        - else
+                          = simple_format(abstractable_from_column.clone)
+            .column-3
+              = f.select :abstractor_suggestion_status_id, AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id]}
+    - else
+      .column-9
+        - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+          - from_method = abstractor_abstraction_source.from_method
+          - if subject.respond_to?(from_method)
+            %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstractor_abstraction_source.id}", :title => "#{subject.class.to_s} #{from_method}"}
+              = image_tag('page.png', :id => "abstraction_text_link_#{abstractor_abstraction_source.id}")
+            %div{ :id => "abstraction_text_#{abstractor_abstraction_source.id}", :class => 'abstractor_abstraction_source_tooltip'}
+              - abstractable_from_column = subject.send(from_method)
+              - unless abstractable_from_column.nil?
+                = simple_format(abstractable_from_column.clone)
+
+    .clear

@@ -1,0 +1,597 @@
+---
+- name:  adamantinomatous craniopharyngioma
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: anaplastic astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic choroid plexus papilloma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic fibroblastic histiocytoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: anaplastic ganglioglioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic hemangiopericytoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: anaplastic medulloblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: anaplastic oligoastrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic oligodendroglioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: anaplastic perineurioma
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: anaplastic perineurioma
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: anaplastic perineurioma
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: anaplastic teratoma
+  categories:
+    -
+      name: germ cell tumors
+- name: angiocentric glioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: angiolipoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: angiomatous meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: astroblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: atypical choroid plexus papilloma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: atypical meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: atypical teratoid/rhabdoid tumor
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: benign teratoma
+  categories:
+    -
+      name: germ cell tumors
+- name: brainstem glioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: cellular ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: central neurocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: cerebellar liponeurocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: chondroma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: chondrosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: chordoid glioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: chordoid meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: chordoma
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: choriocarcinoma
+  categories:
+    -
+      name: germ cell tumors
+- name: choroid plexus papilloma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: clear cell ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: clear cell meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: colloid cyst
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: craniopharyngioma
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: desmoplastic infantile astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: desmoplastic neuroectodermal tumor
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: desmoplastic/nodular medulloblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: diffuse melanocytosis
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: dysembryoplastic neuroepithelial tumor
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: dysplastic gangliocytoma of cerebellum (lhermitte-duclos)
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: embryonal carcinoma
+  categories:
+    -
+      name: germ cell tumors
+- name: ependymoblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: epidermoid
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: epithelioid hemangioendothelioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: epithelioid malignant peripheral nerve sheath tumour
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: extraventricular neurocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: fibrillary astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: fibrosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: fibrous meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: gangliocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: ganglioglioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: ganglioneuroblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: gemistocytic astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: germinoma
+  categories:
+    -
+      name: germ cell tumors
+- name: giant cell glioblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: glioblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: glioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: gliomatosis cerebri
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: gliosarcoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: gliosis
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: gliosis-epilepsy
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: granular cell tumor of the sellar region
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: hemangioblastoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: hemangioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: hemangiopericytoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: hemangiosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: hibernoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: kaposi sarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: large cell medulloblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: leiomyoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: leiomyosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: lipoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: liposarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: lymphoplasmacyte-rich meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: malignant lymphoma
+  categories:
+    -
+      name: Tumors of the Haematopoietic System
+- name: malignant melanoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: malignant peripheral nerve sheath tumour
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: malignant peripheral nerve sheath tumour with glandular differentiation
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: malignant peripheral nerve sheath tumour with mesenchymal differentiation
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: medulloblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: medulloblastoma with extensive nodularity
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: medulloepithelioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: melanotic malignant peripheral nerve sheath tumour
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: melanotic schwannoma (neurilemmoma, neurinoma)
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: meningeal melanocytoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: meningeal melanomatosis
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: meningothelial meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: metaplastic meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: microcystic meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: mixed germ cell tumor
+  categories:
+    -
+      name: germ cell tumors
+- name: myeloid sarcoma
+  categories:
+    -
+      name: Tumors of the Haematopoietic System
+- name: myxopapillary ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: nerve sheath tumor
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: neuroblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: neurofibroma
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: neurofibroma plexiform
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: oligoastrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: oligodendroglioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: optic nerve glioma
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: osteochondroma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: osteoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: osteosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: papillary craniopharyngioma
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: papillary ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: papillary glioneuronal tumour
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: papillary meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: papillary tumour of the pineal region
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: paraganglioma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: perineurioma
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: peripheral neuroectodermal tumor
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: pilocytic astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pilomyxoid astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pineal parenchymal tumor of intermediate differentiation
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pineal tumor of intermediate differentiation
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pineoblastoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pineocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: pituicytoma
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: pituitary adenoma, nos
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: plasmacytoma
+  categories:
+    -
+      name: Tumors of the Haematopoietic System
+- name: pleomorphic xanthoastrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: primary intraocular lymphoma
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: primitive neuroectodermal tumor
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: protoplasmic astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: psammomatous meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: retinoblastoma
+  categories:
+    -
+      name: Other Primary CNS Conditions
+- name: rhabdoid meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: rhabdomyoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: rhabdomyosarcoma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: rosette-forming glioneuronal tumour of the fourth ventricle
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: schwannoma (neurilemmoma, neurinoma)
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: schwannoma cellular (neurilemmoma, neurinoma)
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: schwannoma plexiform (neurilemmoma, neurinoma)
+  categories:
+    -
+      name: Tumors of the Cranial and Paraspinal Nerves
+- name: secretory meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: solitary fibrous tumor
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: spindle cell oncocytoma of the adenohypophysis
+  categories:
+    -
+      name: Tumors of the Sellar Region
+- name: subependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: supependymal giant cell astrocytoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: tanycytic ependymoma
+  categories:
+    -
+      name: Tumors of Neuroepithelial Tissue
+- name: teratoma
+  categories:
+    -
+      name: germ cell tumors
+- name: teratoma with malignant transformation
+  categories:
+    -
+      name: germ cell tumors
+- name: transitional meningioma
+  categories:
+    -
+      name: Tumors of the Meninges
+- name: yolk sac tumor
+  categories:
+    -
+      name: germ cell tumors

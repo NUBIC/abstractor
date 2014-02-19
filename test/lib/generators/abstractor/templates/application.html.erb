@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dummy</title>
+  <%= stylesheet_link_tag    "abstractor/application", :media => "all" %>
+  <%= javascript_include_tag "abstractor/application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+   <% flash.each do |message_type, message| %>
+      <div class="message" id="<%= message_type %>">
+         <%= message %>
+      </div>
+   <% end %>
+   <%= yield %>
+</body>
+</html>

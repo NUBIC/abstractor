@@ -1,0 +1,112 @@
+.abstractor_abstractions {
+  @include column(20);
+  @include prepend-top();
+  @include append-bottom();
+
+  label, input {
+    display:inline-block;
+    @include append-bottom(0.6em);
+    font-weight: normal !important;
+  }
+  input[type="submit"]{
+    margin-bottom: 0;
+  }
+  .highlighted {
+    //border: 1px dashed red;
+    background: #e6e6e6;
+    padding: 0.25em;
+  }
+  fieldset {
+    border: 1px solid $GRAY;
+    margin: 0.75em 0;
+    padding: 0.75em 0.5em 0.4em 0.5em;
+    .delete_link {
+      float: right;
+    }
+    input.combobox {
+      vertical-align: bottom;
+      width: 20em !important;
+    }
+    .ui-button-icon-only {
+      @include append-bottom(0.6em);
+      .ui-icon {
+        margin-left: -8px !important;
+        margin-top: -8px !important;
+      }
+      span.ui-button-text {
+        padding: 0;
+        margin: 0.1em 0 0.25em !important;
+      }
+    }
+    .column-1-5 {
+      @include column(1.5);
+    }
+    .column-1 {
+      @include column(1);
+    }
+    .column-2 {
+      @include column(2);
+    }
+    .column-3 {
+      @include column(3);
+    }
+    .column-4 {
+      @include column(4);
+    }
+    .column-5 {
+      @include column(5);
+    }
+    .column-6 {
+      @include column(6);
+    }
+    .column-7 {
+      @include column(7);
+    }
+    .column-8 {
+      @include column(8);
+    }
+    .column-9 {
+      @include column(9);
+    }
+    .column-10 {
+      @include column(10);
+    }
+    .column-11 {
+      @include column(11);
+    }
+    .column-12 {
+      @include column(12);
+    }
+    .clear {
+      clear: both;
+    }
+    .abstraction_schema_name {
+      font-weight: bold;
+      @include append-bottom(0.3em);
+    }
+    .abstractor_abstraction_value {
+      @include append-bottom(0.5em);
+    }
+    .editable_abstraction {
+      border-bottom: 1px $GRAY dashed;
+    }
+    .abstractor_abstraction_source_tooltip_img img{
+      vertical-align: text-bottom;
+    }
+    .hidden {
+      display: none;
+    }
+    .abstractor_abstraction_edit div{
+      padding: 2px 0;
+    }
+    a.button {
+      vertical-align: bottom;
+    }
+  }
+  .abstractor_abstraction_source_tooltip {
+    display: none;
+  }
+}
+ul.ui-autocomplete, .ui-dialog{
+  z-index: 1000 !important;
+}
