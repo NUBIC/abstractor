@@ -46,27 +46,6 @@ module Abstractor
                        :after => "ActionController::Base\n")
     end
 
-#     def add_abstractor_view_helpers
-#       puts "Defining abstractor view helpers inside ApplicationHelper..."
-#
-#       abstractoe_helper_methods = %Q{
-#   def export_abstractor_results?
-#     true
-#   end
-#
-#   def show_abstractor_results?
-#     true
-#   end
-#
-#   def enable_combined_searches?
-#     true
-#   end
-# }
-#       inject_into_file("#{Rails.root}/app/helpers/application_helper.rb",
-#                        abstractor_helper_methods,
-#                        :after => "ApplicationHelper\n")
-#     end
-
     def run_migrations
       unless options["no-migrate"]
         puts "Running rake db:migrate"

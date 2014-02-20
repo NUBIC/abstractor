@@ -11,7 +11,7 @@ module Abstractor
           base.send :has_many, :abstraction_schemas, :through => :abstraction_schema_object_values
 
           #Validations
-          # base.send :attr_accessible :value
+          base.send :attr_accessible, :value
         end
 
         # Instance Methods

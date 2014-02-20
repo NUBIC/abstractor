@@ -38,7 +38,7 @@ module Abstractor
       template "environments/test.rb", "#{dummy_path}/config/environments/test.rb", :force => true
       template "setup.rb", "#{dummy_path}/lib/setup.rb", :force => true
       directory 'stanford-core-nlp-full', "#{dummy_path}/lib/stanford-core-nlp-full"
-      copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
+      # copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
     end
 
     def test_dummy_models

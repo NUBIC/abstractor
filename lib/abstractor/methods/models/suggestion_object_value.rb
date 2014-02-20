@@ -9,7 +9,7 @@ module Abstractor
           base.send :belongs_to, :suggestion
           base.send :belongs_to, :object_value
 
-          # base.send :attr_accessible :abstractor_suggestion, :abstractor_suggestion_id, :abstractor_object_value, :abstractor_object_value_id, :deleted_at
+          base.send :attr_accessible, :suggestion, :abstractor_suggestion_id, :object_value, :abstractor_object_value_id, :deleted_at
         end
       end
     end

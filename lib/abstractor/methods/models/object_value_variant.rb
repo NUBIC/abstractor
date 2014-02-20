@@ -8,7 +8,7 @@ module Abstractor
           # Associations
           base.send :belongs_to, :object_value
 
-          # base.send :attr_accessible :object_value, :abstractor_object_value_id, :deleted_at, :value
+          base.send :attr_accessible, :object_value, :abstractor_object_value_id, :deleted_at, :value
         end
       end
     end

@@ -9,7 +9,7 @@ module Abstractor
           base.send :belongs_to, :subject_group
           base.send :belongs_to, :abstractor_subject, class_name: 'Abstractor::Subject', foreign_key: :abstractor_subject_id
 
-          # base.send :attr_accessible :subject_group, :abstractor_subject_group_id, :subject, :abstractor_subject_id, :display_order, :deleted_at
+          base.send :attr_accessible, :subject_group, :abstractor_subject_group_id, :subject, :abstractor_subject_id, :display_order, :deleted_at, :abstractor_subject
         end
       end
     end

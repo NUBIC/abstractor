@@ -14,7 +14,7 @@ module Abstractor
 
           base.send :has_many, :suggestion_sources
 
-          # base.send :attr_accessible :abstractor_abstraction, :abstractor_abstraction_id, :abstractor_suggestion_source, :abstractor_suggestion_source_id, :abstractor_suggestion_status, :abstractor_suggestion_status_id, :suggested_value, :deleted_at, :unknown, :not_applicable
+          base.send :attr_accessible, :abstraction, :abstractor_abstraction_id, :suggestion_sources, :abstractor_suggestion_source_id, :suggestion_status, :abstractor_suggestion_status_id, :suggested_value, :deleted_at, :unknown, :not_applicable
 
           # Hooks
           base.send :after_save, :update_abstraction_value, :if => lambda {|suggestion| suggestion.suggestion_status_id_changed?}

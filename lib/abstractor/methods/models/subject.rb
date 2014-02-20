@@ -20,7 +20,7 @@ module Abstractor
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::SubjectRelation", :foreign_key => "subject_id"
 
 
-          # base.send :attr_accessible :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :abstractor_rule_type, :abstractor_rule_type_id, :subject_type
+          base.send :attr_accessible, :abstraction_schema, :abstractor_abstraction_schema_id, :rule_type, :abstractor_rule_type_id, :subject_type
         end
 
         # Instance Methods

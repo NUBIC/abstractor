@@ -8,7 +8,7 @@ module Abstractor
           # Associations
           base.send :has_many, :suggestions
 
-          # base.send :attr_accessible :deleted_at, :name
+          base.send :attr_accessible, :deleted_at, :name
         end
 
         # Instance Methods

@@ -1,4 +1,5 @@
 class Site < ActiveRecord::Base
+  attr_accessible :icdo3_code, :level, :name, :synonym
   CENTRAL_NERVOUS_SYSTEM = 'central nervous system'
   has_and_belongs_to_many :site_categories
 

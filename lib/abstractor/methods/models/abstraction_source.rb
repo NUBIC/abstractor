@@ -10,7 +10,7 @@ module Abstractor
           base.send :has_many, :suggestion_sources
           base.send :has_many, :abstractions, :through => :suggestion_sources
 
-          # base.send :attr_accessible :subject, :subject_id, :deleted_at, :from_method
+          base.send :attr_accessible, :abstractor_subject, :subject_id, :deleted_at, :from_method
         end
       end
     end

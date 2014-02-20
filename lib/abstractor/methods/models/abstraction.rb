@@ -20,7 +20,7 @@ module Abstractor
 
           base.send :belongs_to, :subject, polymorphic: true
 
-          # base.send :attr_accessible :subject, :abstractor_subject_id, :value, :subject_id, :unknown, :not_applicable, :deleted_at
+          base.send :attr_accessible, :subject, :abstractor_subject, :abstractor_subject_id, :value, :subject_id, :unknown, :not_applicable, :deleted_at
 
           # Hooks
           base.send :after_save, :review_matching_suggestions#, :if => lambda {|abstractor_abstraction| abstractor_abstraction.value_changed?}
