@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'jquery-ui-rails'
   s.add_dependency 'haml'
   s.add_dependency 'sass-rails'
+  s.add_dependency 'paper_trail'
+  s.add_dependency 'stanford-core-nlp'
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'shoulda'

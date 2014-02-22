@@ -4,7 +4,7 @@ module Abstractor
       module Abstraction
         def self.included(base)
           base.send :include, SoftDelete
-          # base.send :has_paper_trail
+          base.send :has_paper_trail
 
           # Associations
           base.send :belongs_to, :abstractor_subject, class_name: 'Abstractor::Subject', foreign_key: :abstractor_subject_id

@@ -5,8 +5,10 @@ PATH
       haml
       jquery-rails
       jquery-ui-rails
+      paper_trail
       rails (~> 3.2)
       sass-rails
+      stanford-core-nlp
 
 GEM
   remote: http://rubygems.org/
@@ -93,6 +95,9 @@ GEM
     multi_test (0.0.3)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
+    paper_trail (3.0.0)
+      activerecord (>= 3.0, < 5.0)
+      activesupport (>= 3.0, < 5.0)
     polyglot (0.3.4)
     rack (1.4.5)
     rack-cache (1.2)
@@ -179,6 +184,7 @@ DEPENDENCIES
   factory_girl_rails
   jquery-rails
   jquery-ui-rails
+  paper_trail
   rspec-rails
   selenium-webdriver
   shoulda
