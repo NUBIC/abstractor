@@ -38,7 +38,6 @@ module Abstractor
       template "environments/test.rb", "#{dummy_path}/config/environments/test.rb", :force => true
       template "setup.rb", "#{dummy_path}/lib/setup.rb", :force => true
       directory 'stanford-core-nlp-full', "#{dummy_path}/lib/stanford-core-nlp-full"
-      copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
     end
 
     def test_dummy_models
@@ -50,6 +49,7 @@ module Abstractor
       copy_file "create_sites.rb", "#{dummy_path}/db/migrate/#{9.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_sites.rb", :force => true
       copy_file "site_category.rb", "#{dummy_path}/app/models/site_category.rb", :force => true
       copy_file "create_site_categories.rb", "#{dummy_path}/db/migrate/#{8.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_site_categories.rb", :force => true
+      copy_file "create_versions.rb", "#{dummy_path}/db/migrate/#{7.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_versions.rb", :force => true
     end
 
     def test_dummy_clean
