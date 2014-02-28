@@ -32,12 +32,20 @@ module Abstractor
     end
 
     def test_dummy_config
+      copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
       template "boot.rb", "#{dummy_path}/config/boot.rb", :force => true
       template "application.rb", "#{dummy_path}/config/application.rb", :force => true
       template "environments/development.rb", "#{dummy_path}/config/environments/development.rb", :force => true
       template "environments/test.rb", "#{dummy_path}/config/environments/test.rb", :force => true
-      template "setup.rb", "#{dummy_path}/lib/setup.rb", :force => true
       directory 'stanford-core-nlp-full', "#{dummy_path}/lib/stanford-core-nlp-full"
+      directory 'setup', "#{dummy_path}/lib/setup"
+      copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :encounter_notes, :only => :edit\n}
+      end
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :radiation_therapy_prescriptions, :only => :edit\n}
+      end
     end
 
     def test_dummy_models
@@ -50,6 +58,16 @@ module Abstractor
       copy_file "site_category.rb", "#{dummy_path}/app/models/site_category.rb", :force => true
       copy_file "create_site_categories.rb", "#{dummy_path}/db/migrate/#{8.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_site_categories.rb", :force => true
       copy_file "create_versions.rb", "#{dummy_path}/db/migrate/#{7.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_versions.rb", :force => true
+    end
+
+    def test_dummy_controllers
+      template "encounter_notes_controller.rb", "#{dummy_path}/app/controllers/encounter_notes_controller.rb", :force => true
+      template "radiation_therapy_prescriptions_controller.rb", "#{dummy_path}/app/controllers/radiation_therapy_prescriptions_controller.rb", :force => true
+    end
+
+    def test_dummy_views
+      template "views/encounter_notes/edit.html.haml", "#{dummy_path}/app/views/encounter_notes/edit.html.haml", :force => true
+      template "views/radiation_therapy_prescriptions/edit.html.haml", "#{dummy_path}/app/views/radiation_therapy_prescriptions/edit.html.haml", :force => true
     end
 
     def test_dummy_clean

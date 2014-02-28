@@ -1,7 +1,4 @@
 FactoryGirl.define do
-  factory :abstractor_subject, :class => Abstractor::Subject do
-  end
-
   factory :encounter_note do
     note_text ''
   end
@@ -10,27 +7,30 @@ FactoryGirl.define do
     site_name 'left lung'
   end
 
-  factory :abstraction_schema, class: Abstractor::AbstractionSchema do
+  factory :abstractor_subject, :class => Abstractor::AbstractorSubject do
   end
 
-  factory :abstraction_schema_predicate_variant, class: Abstractor::AbstractionSchemaPredicateVariant do
+  factory :abstractor_abstraction_schema, class: Abstractor::AbstractorAbstractionSchema do
   end
 
-  factory :abstraction_source, class: Abstractor::AbstractionSource do
+  factory :abstractor_abstraction_schema_predicate_variant, class: Abstractor::AbstractorAbstractionSchemaPredicateVariant do
   end
 
-  factory :object_value, class: Abstractor::ObjectValue do
+  factory :abstractor_abstraction_source, class: Abstractor::AbstractorAbstractionSource do
   end
 
-  factory :object_value_variant, class: Abstractor::ObjectValueVariant do
+  factory :abstractor_object_value, class: Abstractor::AbstractorObjectValue do
   end
 
-  factory :abstraction, class: Abstractor::Abstraction do
+  factory :abstractor_object_value_variant, class: Abstractor::AbstractorObjectValueVariant do
   end
 
-  factory :suggestion, class: Abstractor::Suggestion do
+  factory :abstractor_abstraction, class: Abstractor::AbstractorAbstraction do
   end
 
-  factory :suggestion_source, class: Abstractor::SuggestionSource do
+  factory :abstractor_suggestion, class: Abstractor::AbstractorSuggestion do
+  end
+
+  factory :abstractor_suggestion_source, class: Abstractor::AbstractorSuggestionSource do
   end
 end

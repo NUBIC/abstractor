@@ -1,0 +1,312 @@
+/* line 1, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 958.33333px;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions {
+  overflow-x: hidden;
+}
+/* line 6, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions label, .abstractor_abstractions input {
+  display: inline-block;
+  margin-bottom: 0.6em;
+  font-weight: normal !important;
+}
+/* line 11, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions input[type="submit"] {
+  margin-bottom: 0;
+}
+/* line 14, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions .highlighted {
+  background: #e6e6e6;
+  padding: 0.25em;
+}
+/* line 19, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset {
+  border: 1px solid #969696;
+  margin: 0.75em 0;
+  padding: 0.75em 0.5em 0.4em 0.5em;
+}
+/* line 23, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .delete_link {
+  float: right;
+}
+/* line 26, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset input.combobox {
+  vertical-align: bottom;
+  width: 12em !important;
+}
+/* line 30, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .ui-button-icon-only {
+  margin-bottom: 0.6em;
+}
+/* line 32, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .ui-button-icon-only .ui-icon {
+  margin-left: -8px !important;
+  margin-top: -8px !important;
+}
+/* line 36, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .ui-button-icon-only span.ui-button-text {
+  padding: 0;
+  margin: 0.1em 0 0.25em !important;
+}
+/* line 41, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-1-5 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 62.625px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-1-5 {
+  overflow-x: hidden;
+}
+/* line 44, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-1 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 38.41667px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-1 {
+  overflow-x: hidden;
+}
+/* line 47, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-2 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 86.83333px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-2 {
+  overflow-x: hidden;
+}
+/* line 50, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-3 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 135.25px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-3 {
+  overflow-x: hidden;
+}
+/* line 53, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-4 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 183.66667px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-4 {
+  overflow-x: hidden;
+}
+/* line 56, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-5 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 232.08333px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-5 {
+  overflow-x: hidden;
+}
+/* line 59, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-6 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 280.5px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-6 {
+  overflow-x: hidden;
+}
+/* line 62, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-7 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 328.91667px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-7 {
+  overflow-x: hidden;
+}
+/* line 65, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-8 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 377.33333px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-8 {
+  overflow-x: hidden;
+}
+/* line 68, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-9 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 425.75px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-9 {
+  overflow-x: hidden;
+}
+/* line 71, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-10 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 474.16667px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-10 {
+  overflow-x: hidden;
+}
+/* line 74, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-11 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 522.58333px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-11 {
+  overflow-x: hidden;
+}
+/* line 77, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .column-12 {
+  display: inline;
+  float: left;
+  margin-right: 10px;
+  width: 571px;
+}
+/* line 147, ../../../../.rvm/gems/ruby-1.9.3-p448/gems/compass-0.12.2/frameworks/blueprint/stylesheets/blueprint/_grid.scss */
+* html .abstractor_abstractions fieldset .column-12 {
+  overflow-x: hidden;
+}
+/* line 80, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .clear {
+  clear: both;
+}
+/* line 83, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .abstraction_schema_name {
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+/* line 87, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .abstractor_abstraction_value {
+  margin-bottom: 0.5em;
+}
+/* line 90, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .editable_abstraction {
+  border-bottom: 1px #969696 dashed;
+}
+/* line 93, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img img {
+  vertical-align: text-bottom;
+}
+/* line 96, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .hidden {
+  display: none;
+}
+/* line 99, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset .abstractor_abstraction_edit div {
+  padding: 2px 0;
+}
+/* line 102, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions fieldset a.button {
+  vertical-align: bottom;
+}
+/* line 106, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+.abstractor_abstractions .abstractor_abstraction_source_tooltip {
+  display: none;
+}
+
+/* line 110, ../../app/assets/stylesheets/partials/_abstractor_abstractions.css.scss */
+ul.ui-autocomplete, .ui-dialog {
+  z-index: 1000 !important;
+}
+.abstractor_abstractions hr {
+  background: #dddddd;
+  color: #dddddd;
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 0.1em;
+  margin: 0 0 1.45em;
+  border: none;
+}
+
+/* Tooltips */
+div.tooltip {
+  background-color: #e2ecf6;
+  border-bottom-color: #324686;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-left-color-ltr-source: physical;
+  border-left-color-rtl-source: physical;
+  border-left-color-value: #324686;
+  border-left-style-ltr-source: physical;
+  border-left-style-rtl-source: physical;
+  border-left-style-value: solid;
+  border-left-width-ltr-source: physical;
+  border-left-width-rtl-source: physical;
+  border-left-width-value: 1px;
+  border-right-color-ltr-source: physical;
+  border-right-color-rtl-source: physical;
+  border-right-color-value: #324686;
+  border-right-style-ltr-source: physical;
+  border-right-style-rtl-source: physical;
+  border-right-style-value: solid;
+  border-right-width-ltr-source: physical;
+  border-right-width-rtl-source: physical;
+  border-right-width-value: 1px;
+  border-top-color: #324686;
+  border-top-style: solid;
+  border-top-width: 1px;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  max-width: 400px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+}
+
+.tooltip {
+  display: none;
+}
+
+#dialog_tooltip {
+  font-size: 13px;
+  line-height: 1.5em;
+  max-height: 400px;
+}
+
+span.tooltip_img {
+  padding-top: 0.25em;
+  width: 1.25em;
+  display: inline-block;
+}
+
+.watermark {
+  font-style:italic
+}

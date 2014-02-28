@@ -63,7 +63,7 @@ Abstractor.AbstractionUI = function(){
     autoOpen: false,
     width: 600,
     zIndex: 40000,
-    dialogClass: 'ui-dialog_encounter_note'
+    dialogClass: "ui-dialog_abstractor"
   });
 };
 

@@ -16,8 +16,6 @@
 //= require jquery.ui.autocomplete
 //= require jquery.ui.datepicker
 //= require jquery.ui.button
+//= require jquery.ui.dialog
 
-//= require combobox
-//= require abstractor
-//= require nested_attributes
 //= require_tree .

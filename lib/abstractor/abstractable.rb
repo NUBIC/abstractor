@@ -2,37 +2,37 @@ module Abstractor
   module Abstractable
     def self.included(base)
       base.class_eval do
-        has_many :abstractions, class_name: Abstractor::Abstraction, as: :subject
+        has_many :abstractor_abstractions, class_name: Abstractor::AbstractorAbstraction, as: :about
 
-        has_many :abstraction_groups, class_name: Abstractor::AbstractionGroup, as: :subject
+        has_many :abstractor_abstraction_groups, class_name: Abstractor::AbstractorAbstractionGroup, as: :about
 
-        accepts_nested_attributes_for :abstractions, allow_destroy: false
+        accepts_nested_attributes_for :abstractor_abstractions, allow_destroy: false
 
-        def self.by_suggestion_status(suggestion_status)
-          suggestion_status_needs_review = Abstractor::SuggestionStatus.where(:name => 'Needs review').first
-          suggestion_status_accepted= Abstractor::SuggestionStatus.where(:name => 'Accepted').first
-          suggestion_status_rejected = Abstractor::SuggestionStatus.where(:name => 'Rejected').first
+        def self.by_abstractor_suggestion_status(abstractor_suggestion_status)
+          abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
+          abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
+          abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
 
-          case suggestion_status
+          case abstractor_suggestion_status
           when 'needs_review'
-            where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstraction_id AND aas.suggestion_status_id = ? WHERE #{self.table_name}.id = aa.subject_id)", suggestion_status_needs_review])
+            where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id AND aas.abstractor_suggestion_status_id = ? WHERE #{self.table_name}.id = aa.about_id)", abstractor_suggestion_status_needs_review])
           when 'reviewed'
-            where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstraction_id WHERE #{self.table_name}.id = aa.subject_id) AND NOT EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstraction_id  AND aas.suggestion_status_id = ? WHERE #{self.table_name}.id = aa.subject_id)", suggestion_status_needs_review])
+            where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id WHERE #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id  AND aas.abstractor_suggestion_status_id = ? WHERE #{self.table_name}.id = aa.about_id)", abstractor_suggestion_status_needs_review])
           else
             where(nil)
           end
         end
 
-        def self.subjects
-          Abstractor::Subject.where(subject_type: self.to_s)
+        def self.abstractor_subjects
+          Abstractor::AbstractorSubject.where(subject_type: self.to_s)
         end
 
-        def self.abstraction_schemas
-          subjects.map(&:abstraction_schema)
+        def self.abstractor_abstraction_schemas
+          abstractor_subjects.map(&:abstractor_abstraction_schema)
         end
 
-        def self.subject_groups
-          subjects.map(&:subject_group).uniq
+        def self.abstractor_subject_groups
+          abstractor_subjects.map(&:abstractor_subject_group).uniq
         end
 
         def self.prepare_pivot_select
@@ -100,51 +100,51 @@ module Abstractor
     end
 
     def abstract
-      self.class.subjects.each do |subject|
-        subject.abstract(self)
+      self.class.abstractor_subjects.each do |abstractor_subject|
+        abstractor_subject.abstract(self)
       end
     end
 
-    def detect_abstraction(abstraction_schema)
-      abstractions(true).detect { |abstraction| abstraction.abstractor_subject.abstraction_schema == abstraction_schema }
+    def detect_abstractor_abstraction(abstractor_abstraction_schema)
+      abstractor_abstractions(true).detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema == abstractor_abstraction_schema }
     end
 
-    def find_or_create_abstraction(abstraction_schema, abstractor_subject)
-      if abstraction = detect_abstraction(abstraction_schema)
+    def find_or_create_abstractor_abstraction(abstractor_abstraction_schema, abstractor_subject)
+      if abstractor_abstraction = detect_abstractor_abstraction(abstractor_abstraction_schema)
       else
-        abstraction = Abstractor::Abstraction.create!(abstractor_subject: abstractor_subject, subject: self)
+        abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_subject, about: self)
         if abstractor_subject.groupable?
-          abstraction_group = find_or_create_abstraction_group(abstractor_subject.subject_group)
-          abstraction_group.abstractions << abstraction
+          abstractor_abstraction_group = find_or_create_abstractor_abstraction_group(abstractor_subject.abstractor_subject_group)
+          abstractor_abstraction_group.abstractor_abstractions << abstractor_abstraction
         end
       end
-      abstraction
+      abstractor_abstraction
     end
 
-    def detect_abstraction_group(subject_group)
-      abstraction_groups(true).detect { |abstraction_group| abstraction_group.subject_group ==  subject_group }
+    def detect_abstractor_abstraction_group(abstractor_subject_group)
+      abstractor_abstraction_groups(true).detect { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group ==  abstractor_subject_group }
     end
 
-    def find_or_create_abstraction_group(subject_group)
-      if abstraction_group = detect_abstraction_group(subject_group)
+    def find_or_create_abstractor_abstraction_group(abstractor_subject_group)
+      if abstractor_abstraction_group = detect_abstractor_abstraction_group(abstractor_subject_group)
       else
-        abstraction_group = Abstractor::AbstractionGroup.create(subject_group: subject_group, subject: self)
+        abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group: abstractor_subject_group, about: self)
       end
-      abstraction_group
+      abstractor_abstraction_group
     end
 
-    def abstractions_by_suggestion_status(suggestion_statuses)
-      abstractions.map(&:suggestions).flatten.select { |as| Array.new(suggestion_statuses).any? { |suggestion_status| as.suggestion_status == suggestion_status } }
+    def abstractor_abstractions_by_abstractor_suggestion_status(abstractor_suggestion_statuses)
+      abstractor_abstractions.map(&:abstractor_suggestions).flatten.select { |as| Array.new(abstractor_suggestion_statuses).any? { |abstractor_suggestion_status| as.abstractor_suggestion_status == abstractor_suggestion_status } }
     end
 
     def remove_abstractions
-      abstractions.each do |abstraction|
-        abstraction.suggestions.each do |suggestion|
-          suggestion.suggestion_sources.destroy_all
-          suggestion.suggestion_object_value.destroy
-          suggestion.destroy
+      abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+          abstractor_suggestion.abstractor_suggestion_sources.destroy_all
+          abstractor_suggestion.abstractor_suggestion_object_value.destroy
+          abstractor_suggestion.destroy
         end
-        abstraction.destroy
+        abstractor_abstraction.destroy
       end
     end
   end

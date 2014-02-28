@@ -1,8 +1,8 @@
 class CreateAbstractorSuggestionSources < ActiveRecord::Migration
   def change
     create_table :abstractor_suggestion_sources do |t|
-      t.integer :abstraction_source_id
-      t.integer :suggestion_id
+      t.integer :abstractor_abstraction_source_id
+      t.integer :abstractor_suggestion_id
       t.text :match_value
       t.integer :source_id
       t.string :source_method

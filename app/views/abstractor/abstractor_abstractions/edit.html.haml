@@ -31,11 +31,11 @@
       - abstraction_sources.each do |abstraction_source|
         - from_method = abstraction_source.from_method
         -#%b= from_method.titleize
-        %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstraction_source.id}", :title => "#{abstractor_abstraction.subject.class.to_s} #{from_method}"}
-          = image_tag('page.png', :id => "abstraction_text_link_#{abstraction_source.id}")
+        %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstraction_source.id}", :title => "#{abstractor_abstraction.about.class.to_s} #{from_method}"}
+          = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstraction_source.id}")
           %br
         %div{ :id => "abstraction_text_#{abstraction_source.id}", :class => 'tooltip'}
-          = simple_format(abstractor_abstraction.subject.send(from_method))
+          = abstractor_abstraction.about.send(from_method)
     .column-4
       = f.submit 'Save', :class => 'button positive'
       = link_to 'Cancel', abstractor_abstraction, :class => 'button negative', :remote => true
