@@ -26,14 +26,6 @@ module Abstractor
           base.send :after_save, :review_matching_suggestions#, :if => lambda {|abstractor_abstraction| abstractor_abstraction.value_changed?}
         end
 
-        # Instance Methods
-        # def subject
-        #   subject_model = subject.subject_type.safe_constantize
-        #   if subject_model
-        #     subject_model.find(subject_id)
-        #   end
-        # end
-
         def review_matching_suggestions
           accepted_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
           matching_abstractor_suggestions.each do |abstractor_suggestion|

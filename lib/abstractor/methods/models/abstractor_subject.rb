@@ -35,9 +35,9 @@ module Abstractor
           end
         end
 
-        def abstract_unknown(subject, abstractor_abstraction)
+        def abstract_unknown(about, abstractor_abstraction)
           abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-            create_unknown_abstractor_suggestion(subject, abstractor_abstraction, abstractor_abstraction_source)
+            create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
           end
         end
 

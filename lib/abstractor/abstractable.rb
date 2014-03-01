@@ -105,12 +105,12 @@ module Abstractor
       end
     end
 
-    def detect_abstractor_abstraction(abstractor_abstraction_schema)
-      abstractor_abstractions(true).detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema == abstractor_abstraction_schema }
+    def detect_abstractor_abstraction(abstractor_subject)
+      abstractor_abstractions(true).not_deleted.detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject == abstractor_subject }
     end
 
     def find_or_create_abstractor_abstraction(abstractor_abstraction_schema, abstractor_subject)
-      if abstractor_abstraction = detect_abstractor_abstraction(abstractor_abstraction_schema)
+      if abstractor_abstraction = detect_abstractor_abstraction(abstractor_subject)
       else
         abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_subject, about: self)
         if abstractor_subject.groupable?
