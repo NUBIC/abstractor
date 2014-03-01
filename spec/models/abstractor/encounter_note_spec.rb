@@ -5,6 +5,11 @@ describe EncounterNote do
     Abstractor::Setup.system
     Setup.encounter_note
     @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first
+
+    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+    @always_unknown_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @always_unknown_abstraction_schema, :abstractor_rule_type => unknown_rule)
   end
 
   describe "abstracting" do
@@ -14,10 +19,24 @@ describe EncounterNote do
     end
 
     it "can report its abstractor abstraction schemas" do
-      Set.new(EncounterNote.abstractor_abstraction_schemas).should == Set.new([@abstractor_abstraction_schema_kps])
+      Set.new(EncounterNote.abstractor_abstraction_schemas).should == Set.new([@abstractor_abstraction_schema_kps, @always_unknown_abstraction_schema])
     end
 
     #abstractions
+    it "creates a 'has_always_unknown' abstraction for a rule type of 'unknown'" do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+
+      @encounter_note.reload.detect_abstractor_abstraction(@always_unknown_abstraction_schema).should_not be_nil
+    end
+
+    it "creates an abstraction with an suggestion of 'unknown' for a rule type of 'unknown'" do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@always_unknown_abstraction_schema).abstractor_suggestions.size.should == 0
+      # @encounter_note.reload.detect_abstractor_abstraction(@always_unknown_abstraction_schema).abstractor_suggestions.first.unknown.should_not be_
+    end
+
     it "creates a 'has_karnofsky_performance_status' abstraction'" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract

@@ -30,6 +30,14 @@ module Abstractor
             abstract_name_value(about, abstractor_abstraction)
           when 'value'
             abstract_value(about, abstractor_abstraction)
+          when 'unknown'
+            abstract_unknown(about, abstractor_abstraction)
+          end
+        end
+
+        def abstract_unknown(subject, abstractor_abstraction)
+          abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+            create_unknown_abstractor_suggestion(subject, abstractor_abstraction, abstractor_abstraction_source)
           end
         end
 
