@@ -64,6 +64,8 @@ module Setup
 
   def self.radiation_therapy_prescription
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
+
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
 
     anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
@@ -81,7 +83,7 @@ module Setup
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 1)
 
-    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => list_object_type, preferred_name: 'Laterality')
+    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => radio_button_list_object_type, preferred_name: 'Laterality')
     left_ov       = Abstractor::AbstractorObjectValue.create(:value => 'left')
     right_ov      = Abstractor::AbstractorObjectValue.create(:value => 'right')
     bilateral_ov = Abstractor::AbstractorObjectValue.create(:value => 'bilateral')

@@ -4,6 +4,8 @@ module Abstractor
       Abstractor::AbstractorObjectType.create(:value => 'list')
       Abstractor::AbstractorObjectType.create(:value => 'number')
       Abstractor::AbstractorObjectType.create(:value => 'boolean')
+      Abstractor::AbstractorObjectType.create(:value => 'string')
+      Abstractor::AbstractorObjectType.create(:value => 'radio button list')
 
       Abstractor::AbstractorRuleType.create(:name => 'name/value', :description => 'search for value associated with name')
       Abstractor::AbstractorRuleType.create(:name =>'name', :description => 'search for name match')

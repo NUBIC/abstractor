@@ -18,10 +18,11 @@
 # * http://elabs.se/blog/15-you-re-cuking-it-wrong
 #
 
+
 require 'uri'
 require 'cgi'
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
-#require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
 
 module WithinHelpers
   def with_scope(locator)
@@ -30,10 +31,10 @@ module WithinHelpers
 end
 World(WithinHelpers)
 
-# Single-line step scoper
-#When /^(.*) within (.*[^:])$/ do |step, parent|
-#  with_scope(parent) { When step }
-#end
+# # Single-line step scoper
+# When /^(.*) within (.*[^:])$/ do |step, parent|
+#   with_scope(parent) { When step }
+# end
 
 # Multi-line step scoper
 When /^(.*) within (.*[^:]):$/ do |step, parent, table_or_string|
@@ -56,10 +57,6 @@ When /^(?:|I )follow "([^"]*)"$/ do |link|
   click_link(link)
 end
 
-When /^(?:|I )follow element "([^"]*)"$/ do |path|
-  page.find(:xpath, path).click
-end
-
 When /^(?:|I )fill in "([^"]*)" with "([^"]*)"$/ do |field, value|
   fill_in(field, :with => value)
 end
@@ -76,7 +73,7 @@ end
 #     | Note           | Nice guy   |
 #     | Wants Email?   |            |
 #
-# TODO: Add support for checkbox, select og option
+# TODO: Add support for checkbox, select or option
 # based on naming conventions.
 #
 When /^(?:|I )fill in the following:$/ do |fields|
@@ -88,16 +85,6 @@ end
 When /^(?:|I )select "([^"]*)" from "([^"]*)"$/ do |value, field|
   select(value, :from => field)
 end
-
-#When /^(?:|I )press the (Enter|Return) key in "([^"]*)"$/ do |key, field|
-#  find(field).native.send_keys :enter
-#end
-
-When /^(?:|I )press the (?:Enter|Return) key in "([^"]*)"$/ do |field|
-  keypress_script = "var e = $.Event('keydown', { keyCode: 13 }); $('##{field}').trigger(e);"
-  page.driver.browser.execute_script(keypress_script)
-end
-
 
 When /^(?:|I )check "([^"]*)"$/ do |field|
   check(field)
@@ -113,18 +100,6 @@ end
 
 When /^(?:|I )attach the file "([^"]*)" to "([^"]*)"$/ do |path, field|
   attach_file(field, File.expand_path(path))
-end
-
-When /^(?:|I )click within "([^"]*)"$/ do |selector|
-  find(selector).click
-end
-
-When /^(?:|I )click within first "([^"]*)"$/ do |selector|
-  first(selector).click
-end
-
-When /^(?:|I )click within "([^"]*)" \(XPath\)$/ do |selector|
-  find(:xpath, selector).click
 end
 
 Then /^(?:|I )should see "([^"]*)"$/ do |text|
@@ -166,21 +141,7 @@ end
 Then /^the "([^"]*)" field(?: within (.*))? should contain "([^"]*)"$/ do |field, parent, value|
   with_scope(parent) do
     field = find_field(field)
-    field.should_not be_blank
-    field_value = (field.tag_name == 'textarea' && field.value.blank?) ? field.text : field.value
-    if field_value.respond_to? :should
-      field_value.should =~ /#{value}/
-    else
-      assert_match(/#{value}/, field_value)
-    end
-  end
-end
-# new capybara ignores disabled fields
-Then /^the "([^"]*)" disabled field(?: within (.*))? should contain "([^"]*)"$/ do |field, parent, value|
-  with_scope(parent) do
-    field = page.all("#{field}", :visible => true).first
-    field.should_not be_blank
-    field_value = (field.tag_name == 'textarea' && field.value.blank?) ? field.text : field.value
+    field_value = (field.tag_name == 'textarea') ? field.text : field.value
     if field_value.respond_to? :should
       field_value.should =~ /#{value}/
     else
@@ -201,32 +162,50 @@ Then /^the "([^"]*)" field(?: within (.*))? should not contain "([^"]*)"$/ do |f
   end
 end
 
-# new capybara ignores disabled fields
-Then /^the "([^"]*)" disabled field(?: within (.*))? should not contain "([^"]*)"$/ do |field, parent, value|
-  with_scope(parent) do
-    field = page.all("#{field}", :visible => true).first
-    field.should_not be_blank
-    field_value = (field.tag_name == 'textarea') ? field.text : field.value
-    if field_value.respond_to? :should_not
-      field_value.should_not =~ /#{value}/
+Then /^the "([^"]*)" field should have the error "([^"]*)"$/ do |field, error_message|
+  element = find_field(field)
+  classes = element.find(:xpath, '..')[:class].split(' ')
+
+  form_for_input = element.find(:xpath, 'ancestor::form[1]')
+  using_formtastic = form_for_input[:class].include?('formtastic')
+  error_class = using_formtastic ? 'error' : 'field_with_errors'
+
+  if classes.respond_to? :should
+    classes.should include(error_class)
+  else
+    assert classes.include?(error_class)
+  end
+
+  if page.respond_to?(:should)
+    if using_formtastic
+      error_paragraph = element.find(:xpath, '../*[@class="inline-errors"][1]')
+      error_paragraph.should have_content(error_message)
     else
-      assert_no_match(/#{value}/, field_value)
+      page.should have_content("#{field.titlecase} #{error_message}")
     end
+  else
+    if using_formtastic
+      error_paragraph = element.find(:xpath, '../*[@class="inline-errors"][1]')
+      assert error_paragraph.has_content?(error_message)
+    else
+      assert page.has_content?("#{field.titlecase} #{error_message}")
+    end
+  end
+end
+
+Then /^the "([^"]*)" field should have no error$/ do |field|
+  element = find_field(field)
+  classes = element.find(:xpath, '..')[:class].split(' ')
+  if classes.respond_to? :should
+    classes.should_not include('field_with_errors')
+    classes.should_not include('error')
+  else
+    assert !classes.include?('field_with_errors')
+    assert !classes.include?('error')
   end
 end
 
 Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_true
-    else
-      assert field_checked
-    end
-  end
-end
-
-Then /^the "([^"]*)" radio button(?: within (.*))? should be checked$/ do |label, parent|
   with_scope(parent) do
     field_checked = find_field(label)['checked']
     if field_checked.respond_to? :should
@@ -248,23 +227,10 @@ Then /^the "([^"]*)" checkbox(?: within (.*))? should not be checked$/ do |label
   end
 end
 
-Then /^the "([^"]*)" radio button(?: within (.*))? should not be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_false
-    else
-      assert !field_checked
-    end
-  end
-end
-
 Then /^(?:|I )should be on (.+)$/ do |page_name|
-  uri = URI.parse(current_url)
-  current_path = uri.path
-  current_path += "?#{uri.query}" unless uri.query.blank?
+  current_path = URI.parse(current_url).path
   if current_path.respond_to? :should
-    current_path.gsub(/\?.*$/, '').should == path_to(page_name).gsub(/\?.*$/, '')
+    current_path.should == path_to(page_name)
   else
     assert_equal path_to(page_name), current_path
   end
@@ -285,213 +251,4 @@ end
 
 Then /^show me the page$/ do
   save_and_open_page
-end
-
-When /^I wait (\d+) seconds$/ do |wait_seconds|
-  sleep(wait_seconds.to_i)
-end
-
-Then /the element "([^\"]*)" should be hidden$/ do |selector|
-  page.evaluate_script("$('#{selector}').is(':hidden');").should be_true
-end
-
-Then /the element "([^\"]*)" should not be hidden$/ do |selector|
-  page.evaluate_script("$('#{selector}').is(':not(:hidden)');").should be_true
-end
-
-Then /^"([^"]*)" should be selected for "([^"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
-  with_scope(selector) do
-    field_labeled(field).find(:xpath, ".//option[@selected = 'selected'][text() = '#{value}']").should be_present
-  end
-end
-
-When /^I confirm "([^"]*)"$/ do |selector|
-  page.evaluate_script('window.confirm = function() { return true; }')
-  steps %Q{
-    When I press "#{selector}"
-  }
-end
-
-When /^I confirm link "([^"]*)"(?: in the(?: (first|last)?) "([^\"]*)")?$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    page.evaluate_script('window.confirm = function() { return true; }')
-    steps %Q{
-      When I follow "#{selector}"
-    }
-  }
-end
-
-Then /^I should see an? "([^"]*)" element$/ do |selector|
-  find(selector).should be_present
-end
-
-Then /^I should not see an? "([^"]*)" element$/ do |selector|
-  page.evaluate_script("$('#{selector}');").should be_empty
-end
-
-Then /^the element "([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be visible$/ do |selector, position, scope_selector, negation|
-  within_scope(get_scope(position, scope_selector)) {
-    if negation.blank?
-      all(selector).should_not be_empty
-      find(selector).should be_visible
-    else
-      all(selector, :visible => true).length.should == 0
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? contain "([^\"]*)"$/ do |selector, position, scope_selector, negation, value|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    if negation.blank?
-      all(selector, :visible => true).each{ |e| e.value.should == value}
-    else
-      all(selector, :visible => true).each{ |e| e.value.should_not == value}
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? contain selector "([^\"]*)"$/ do |selector, position, scope_selector, negation, inner_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    if negation.blank?
-      all("#{selector} #{inner_selector}").should_not be_empty
-    else
-      all("#{selector} #{inner_selector}").should be_empty
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? have "([^\"]*)" selected$/ do |selector, position, scope_selector, negation, value|
-  within_scope(get_scope(position, scope_selector)) {
-    selector = "#{selector} option[selected='selected']"
-    all(selector).should_not be_empty
-    if negation.blank?
-      all(selector, :visible => true).each{ |e| e.text.should == value }
-    else
-      all(selector, :visible => true).each{ |e| e.text.should_not == value }
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? be checked$/ do |selector, position, scope_selector, negation|
-  within_scope(get_scope(position, scope_selector)) {
-    selector = "#{selector}[checked='checked']"
-    if negation.blank?
-      all(selector, :visible => true).should_not be_empty
-    else
-      all(selector, :visible => true).should be_empty
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the (first|last) "([^\"]*)")? should(?: (not))? have options "([^\"]*)"$/ do |selector, position, scope_selector, negation, options|
-  within_scope(get_scope(position, scope_selector)) {
-    elements = all(selector)
-    elements.should_not be_empty
-    options.split(', ').each do |o|
-      if negation.blank?
-        all(selector).each{ |e| e.find(:xpath, ".//option[text()[contains(.,'#{o}')]]").should be_present }
-      else
-        elements.each{ |e| expect{e.find(:xpath, ".//option[text()[contains(.,'#{o}')]]")}.to raise_error }
-      end
-    end
-  }
-end
-
-Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? contain text "([^\"]*)"$/ do |selector, position, scope_selector, negation, value|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    if negation.blank?
-      all(selector, :visible => true).each{ |e| e.should have_content(value) }
-    else
-      all(selector, :visible => true).each{ |e| e.should_not have_content(value) }
-    end
-  }
-end
-
-
-When /^I select "([^\"]*)" from "([^\"]*)" in(?: the (first|last))? "([^\"]*)"$/ do |value, selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    find(selector, :visible => true).should_not be_blank
-    find(selector, :visible => true).select(value)
-  }
-end
-
-When /^I fill in "([^\"]*)" autocompleter within(?: the (first|last))? "([^\"]*)" with "([^\"]*)"$/ do |selector, position, scope_selector, value|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector).each{|e| e.set(value)}
-    menuitem = '.ui-menu-item a:contains(\"' + value + '\")'
-    page.execute_script " $('#{menuitem}').trigger(\"mouseenter\").click();"
-  }
-end
-
-When /^I follow "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    steps %Q{
-      When I follow "#{selector}"
-    }
-  }
-end
-
-When /^I focus|click on "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.click }
-  }
-  steps %Q{
-    When I wait 2 seconds
-  }
-end
-
-When /^I check "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.click }
-  }
-end
-
-When /^I uncheck "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.click }
-  }
-end
-
-When /^I enter "([^\"]*)" into "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |value, selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    all(selector).should_not be_empty
-    all(selector, :visible => true).each{ |e| e.set(value) }
-  }
-end
-
-When /^I press "([^\"]*)" within(?: the (first|last))? "([^\"]*)"$/ do |selector, position, scope_selector|
-  within_scope(get_scope(position, scope_selector)) {
-    click_button(selector)
-  }
-end
-
-When /^I wait for the ajax request to finish$/ do
-  start_time = Time.now
-  page.evaluate_script('jQuery.isReady&&jQuery.active==0').class.should_not eql(String) until page.evaluate_script('jQuery.isReady&&jQuery.active==0') or (start_time + 5.seconds) < Time.now do
-    sleep 1
-  end
-end
-
-def within_scope(locator)
-  locator ? within(locator) { yield } : yield
-end
-
-def get_scope(position, scope_selector)
-  return unless scope_selector
-  items = page.all("#{scope_selector}")
-  case position
-  when 'first'
-    item = items.first
-  when 'last'
-    item = items.last
-  else
-    item = items.last
-  end
-  item
 end

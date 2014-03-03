@@ -8,6 +8,17 @@
         = abstraction_schema.display_name
     .column-7
       - case abstraction_schema.abstractor_object_type.value
+      - when 'string'
+        = f.text_field :value
+      - when 'number'
+        = f.number_field :value
+      - when 'radio button list'
+        - values = abstraction_schema.abstractor_object_values.sort_by(&:value)
+        -  values.each do |value|
+          = f.radio_button :value, value.value
+          = f.label :value, value.value, value: value.value
+        = f.radio_button :value, '', {:style => 'display:none;' }
+        &nbsp;
       - when 'list'
         - values = abstraction_schema.abstractor_object_values.sort_by(&:value)
         = f.select :value, values.map{|s| [s.value, s.value]}, {:include_blank => true}, :class => "combobox"

@@ -14,7 +14,7 @@ Feature: Editing encounter note
     And I should not see an ".edit_link" element
 
   @javascript
-  Scenario: Viewing rejected suggestions
+  Scenario: Viewing selected suggestions
     Given encounter note abstraction schema is set
     And encounter notes with the following information exist
       | Note Text                               |
