@@ -44,7 +44,7 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should_not be_nil
     end
 
-    it "does not FactoryGirl.create another 'has_karnofsky_performance_status' abstraction upon re-abstraction" do
+    it "does not create another 'has_karnofsky_performance_status' abstraction upon re-abstraction" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 90.')
       @encounter_note.abstract
       @encounter_note.reload.abstract
@@ -196,13 +196,13 @@ describe EncounterNote do
     end
 
     #negation
-    it "does not FactoryGirl.create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated name (using the sentential format)" do
+    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated name (using the sentential format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  No evidence of karnofsky performance status of 90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should be_nil
     end
 
-    it "does not FactoryGirl.create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated value (using the sentential format)" do
+    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated value (using the sentential format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status has no evidence of 90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should == 'karnofsky performance status'
@@ -228,7 +228,7 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.abstractor_suggestion_sources.first.match_value == "the patient's kps is 90."}.size.should == 1
     end
 
-    it "does not FactoryGirl.create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the canonical name/value format)" do
+    it "does not create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 2
@@ -236,7 +236,7 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 2
     end
 
-    it "does not FactoryGirl.create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the squished canonical name/value format)" do
+    it "does not create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the squished canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
@@ -244,7 +244,7 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
     end
 
-    it "does not FactoryGirl.create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the sentential format)" do
+    it "does not create another 'has_karnofsky_performance_status' abstraction suggestion source upon re-abstraction (using the sentential format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
@@ -288,13 +288,13 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should == "kps"
     end
 
-    it "does not FactoryGirl.create a 'has_karnofsky_performance_status' abstraction suggestion object value for a unknown abstraction suggestion " do
+    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion object value for a unknown abstraction suggestion " do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_object_value.should be_nil
     end
 
-    it "does not FactoryGirl.creates another 'has_karnofsky_performance_status' unknown abstraction suggestion upon re-abstraction" do
+    it "does not creates another 'has_karnofsky_performance_status' unknown abstraction suggestion upon re-abstraction" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.unknown }.size.should == 1
