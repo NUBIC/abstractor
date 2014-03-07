@@ -1,3 +1,6 @@
+ENV['CLASSPATH'] = "$CLASSPATH:#{File.expand_path('../..', __FILE__)}/lib/lingscope/dist/lingscope.jar:#{File.expand_path('../..', __FILE__)}/lib/lingscope/dist/lib/abner.jar"
+
+require 'stanford-core-nlp'
 module Abstractor
   class Parser
     attr_accessor :sentences, :abstractor_text
