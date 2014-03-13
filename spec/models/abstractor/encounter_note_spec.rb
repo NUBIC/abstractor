@@ -339,7 +339,7 @@ describe EncounterNote do
         EncounterNote.by_abstractor_suggestion_status('needs_review').should == [@encounter_note]
       end
 
-      it "can report what has been reviewed"  do
+      it "can report what has been reviewed" do
         @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
           abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
