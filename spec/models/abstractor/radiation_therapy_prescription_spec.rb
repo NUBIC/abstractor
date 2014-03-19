@@ -63,19 +63,19 @@ describe RadiationTherapyPrescription do
     it "creates a 'has_anatomical_location' abstraction suggestion match value from a from an abstractor object value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should == 'left parietal lobe'
+      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should == 'left parietal lobe'
     end
 
     it "creates a 'has_anatomical_location' abstraction suggestion match value from a from an abstractor object value variant" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should == 'left parietal'
+      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should == 'left parietal'
     end
 
     it "creates multiple 'has_anatomical_location' abstraction suggestion match values given multiple different matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Left parietal lobe.  Let me remind you that it is the left parietal.')
       radiation_therapy_prescription.abstract
-      Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.map(&:match_value)).should  == Set.new(["left parietal lobe.", "let me remind you that it is the left parietal."])
+      Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.map(&:sentence_match_value)).should  == Set.new(["left parietal lobe.", "let me remind you that it is the left parietal."])
     end
 
     #suggestions
@@ -104,14 +104,14 @@ describe RadiationTherapyPrescription do
     it "does not create a 'has_anatomical_location' abstraction suggestion match value from a negated value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Not the left parietal lobe.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.match_value.should be_nil
+      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should be_nil
     end
 
     #suggestion sources
     it "creates one 'has_anatomical_location' abstraction suggestion source given multiple identical matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Left parietal lobe.  Talk about some other stuff.  Left parietal lobe.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources.first.match_value == 'left parietal lobe.'}.size.should == 1
+      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources.first.sentence_match_value == 'left parietal lobe.'}.size.should == 1
     end
 
     it "does not create another 'has_anatomical_location' abstraction suggestion source upon re-abstraction (using the canonical name/value format)" do

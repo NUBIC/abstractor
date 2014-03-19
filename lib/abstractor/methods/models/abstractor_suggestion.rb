@@ -74,10 +74,10 @@ module Abstractor
           abstractor_abstraction.abstractor_suggestions.where('id != ?', id)
         end
 
-        def detect_abstractor_suggestion_source(abstractor_abstraction_source, match_value, source_id, source_type)
+        def detect_abstractor_suggestion_source(abstractor_abstraction_source, sentence_match_value, source_id, source_type)
           abstractor_suggestion_source = abstractor_suggestion_sources.detect do |abstractor_suggestion_source|
             abstractor_suggestion_source.abstractor_abstraction_source == abstractor_abstraction_source &&
-            abstractor_suggestion_source.match_value == match_value &&
+            abstractor_suggestion_source.sentence_match_value == sentence_match_value &&
             abstractor_suggestion_source.source_id == source_id &&
             abstractor_suggestion_source.source_type == source_type
           end
