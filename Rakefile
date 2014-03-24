@@ -3,7 +3,12 @@ begin
   require 'bundler/setup'
   require 'cucumber/rake/task'
   require 'rspec/core/rake_task'
+  require 'rubygems/package_task'
+  require 'nubic/gem_tasks'
 end
+
+gemspec = eval(File.read('abstractor.gemspec'), binding, 'abstractor.gemspec')
+Gem::PackageTask.new(gemspec).define
 
 APP_RAKEFILE = File.expand_path("../test/dummy/Rakefile", __FILE__)
 $:.unshift File.join(File.dirname(__FILE__), 'spec','support')
@@ -26,5 +31,8 @@ namespace :cucumber do
 end
 
 task :cucumber => 'cucumber:features'
+
+Nubic::GemTasks::DeployGemTask.new("pkg/#{gemspec.file_name}")
+task "deploy:gem" => :repackage
 
 Bundler::GemHelper.install_tasks
