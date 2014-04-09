@@ -188,7 +188,7 @@ DEPENDENCIES
   abstractor!
   ansi (~> 1.4.3, >= 1.4.3)
   capybara (~> 2.2.1, >= 2.2.1)
-  cucumber-rails (~> 1.4.0, >= 1.4.0)
+  cucumber-rails
   database_cleaner (~> 1.2.0, >= 1.2.0)
   factory_girl_rails (~> 4.4.0, >= 4.4.0)
   jquery-rails
@@ -200,3 +200,4 @@ DEPENDENCIES
   sprockets (~> 2.2.1, >= 2.2.1)
   sqlite3 (~> 1.3.8, >= 1.3.8)
   stanford-core-nlp
+  yard

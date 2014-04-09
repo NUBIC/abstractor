@@ -11,6 +11,7 @@ gem "jquery-rails"
 gem "jquery-ui-rails"
 gem 'stanford-core-nlp'
 gem 'paper_trail'
+gem "cucumber-rails", :group => :development, :require => false
 
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or

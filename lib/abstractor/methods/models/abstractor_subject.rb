@@ -52,9 +52,18 @@ module Abstractor
           abstractor_abstraction_sources.each do |abstractor_abstraction_source|
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
               abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
+
+              case ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              when 'sqlserver'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
+              when 'sqlite3'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
+              end
+
               parser = Abstractor::Parser.new(abstractor_text)
               abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
-                abstractor_object_value.object_variants.each do |object_variant|
+                object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
                   ranges = parser.range_all(Regexp.escape(object_variant.downcase))
                   if ranges.any?
                     ranges.each do |range|
@@ -221,6 +230,13 @@ module Abstractor
         def groupable?
           !abstractor_subject_group_member.nil?
         end
+
+        private
+
+          def object_variants(abstractor_object_value, abstractor_object_value_variants)
+            aovv = abstractor_object_value_variants.select { |abstractor_object_value_variant| abstractor_object_value_variant.abstractor_object_value_id == abstractor_object_value.id }
+            [abstractor_object_value.value].concat(aovv.map(&:value))
+          end
       end
     end
   end

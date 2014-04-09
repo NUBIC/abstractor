@@ -27,11 +27,12 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3', '~> 1.3.8', '>= 1.3.8'
   s.add_development_dependency 'rspec-rails', '~> 2.14.1', '>= 2.14.1'
   s.add_development_dependency 'factory_girl_rails', '~> 4.4.0', '>= 4.4.0'
-  s.add_development_dependency 'cucumber-rails', '~> 1.4.0', '>= 1.4.0'
+  s.add_development_dependency 'cucumber-rails','~> 1.4.0', '>= 1.4.0'
   s.add_development_dependency 'capybara', '~> 2.2.1', '>= 2.2.1'
   s.add_development_dependency 'selenium-webdriver', '~> 2.40.0', '>= 2.40.0'
   s.add_development_dependency 'database_cleaner', '~> 1.2.0', '>= 1.2.0'
   s.add_development_dependency 'ansi', '~> 1.4.3', '>= 1.4.3'
   s.add_development_dependency 'sprockets', '~> 2.2.1', '>= 2.2.1'
   s.add_development_dependency "nubic-gem-tasks", '~> 1.0', '>= 1.0.0'
+  s.add_development_dependency "yard"
 end

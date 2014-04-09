@@ -21,7 +21,7 @@ module Abstractor
 
     def self.manual_negated_match_value?(sentence, match_value)
       negated = false
-      ['non-','\bthere is no evidence of a ', '\binsufficient to make the diagnosis of ', '\binsufficient for the diagnosis of ', '\brule out ', '\bnegative for ', '\bno ', '\bnot ', '\bno evidence of ', '\bno evidence of a ', '\brules out the possibility of a ', '\bto exclude the possibility of '].each do |negation_cue|
+      ['non-','\bthere is no evidence of a ', '\bthere is no evidence of a metastatic ',  '\binsufficient to make the diagnosis of ', '\binsufficient to make the diagnosis of metastatic ',  '\binsufficient for the diagnosis of ',  '\binsufficient for the diagnosis of metastatic ',  '\brule out ', '\brule out metastatic ', '\bnegative for ', '\bnegative for metastatic ',  '\bno ', '\bno metastatic ', '\bnot ', '\bnot metastatic ',  '\bno evidence of ', '\bno evidence of metastatic ',  '\bno evidence of a ', '\bno evidence of a metastatic ',  '\brules out the possibility of a ', '\brules out the possibility of a metastatic ',  '\bto exclude the possibility of ', '\bto exclude the possibility of metastic '].each do |negation_cue|
         if !(sentence.downcase.scan(Regexp.new(negation_cue + match_value.downcase)).empty?)
           negated = true
         end
