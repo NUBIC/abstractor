@@ -54,15 +54,26 @@ module Abstractor
               abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
               abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
 
-              case ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              case adapter
               when 'sqlserver'
                 abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
               when 'sqlite3'
                 abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
               end
 
+              abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
+
+              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              case adapter
+              when 'sqlserver'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_values.value + '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              when 'sqlite3'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              end
+
               parser = Abstractor::Parser.new(abstractor_text)
-              abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+              abstractor_object_values.each do |abstractor_object_value|
                 object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
                   ranges = parser.range_all(Regexp.escape(object_variant.downcase))
                   if ranges.any?
