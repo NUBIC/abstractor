@@ -68,33 +68,33 @@ module Setup
 
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
 
-    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
+    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type_id: list_object_type.id, preferred_name: 'Anatomical location').first_or_create
     Site.where(:synonym => false).each do |site|
-      object_value = Abstractor::AbstractorObjectValue.create(:value => site.name)
-      Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, :abstractor_object_value => object_value)
+      object_value = Abstractor::AbstractorObjectValue.where(:value => site.name).first_or_create
+      Abstractor::AbstractorAbstractionSchemaObjectValue.where(:abstractor_abstraction_schema_id => anatomical_location_abstractor_abstraction_schema.id, :abstractor_object_value_id => object_value.id).first_or_create
       Site.where(:icdo3_code => site.icdo3_code, :synonym => true).each do |site_synonym|
-        Abstractor::AbstractorObjectValueVariant.create(:abstractor_object_value => object_value, :value => site_synonym.name)
+        Abstractor::AbstractorObjectValueVariant.where(:abstractor_object_value_id => object_value.id, :value => site_synonym.name).first_or_create
       end
     end
 
-    location_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'Anatomical Location')
+    location_group  = Abstractor::AbstractorSubjectGroup.where(:name => 'Anatomical Location').first_or_create
 
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, :abstractor_rule_type => v_rule)
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema_id => anatomical_location_abstractor_abstraction_schema.id, :abstractor_rule_type => v_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 1)
 
-    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => radio_button_list_object_type, preferred_name: 'Laterality')
-    left_ov       = Abstractor::AbstractorObjectValue.create(:value => 'left')
-    right_ov      = Abstractor::AbstractorObjectValue.create(:value => 'right')
-    bilateral_ov = Abstractor::AbstractorObjectValue.create(:value => 'bilateral')
+    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type_id => radio_button_list_object_type.id, preferred_name: 'Laterality').first_or_create
+    left_ov       = Abstractor::AbstractorObjectValue.where(:value => 'left').first_or_create
+    right_ov      = Abstractor::AbstractorObjectValue.where(:value => 'right').first_or_create
+    bilateral_ov = Abstractor::AbstractorObjectValue.where(:value => 'bilateral').first_or_create
 
     laterals = [left_ov, right_ov, bilateral_ov]
 
     laterals.each do |object_value|
-      Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_object_value => object_value)
+      Abstractor::AbstractorAbstractionSchemaObjectValue.where(:abstractor_abstraction_schema_id => laterality_abstractor_abstraction_schema.id, :abstractor_object_value_id => object_value.id).first_or_create
     end
 
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_rule_type => v_rule)
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema_id => laterality_abstractor_abstraction_schema.id, :abstractor_rule_type => v_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 2)
   end
@@ -174,5 +174,43 @@ module Setup
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
+  end
+
+  def self.radiation_therapy_remote_prescription
+    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
+
+    v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
+
+    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type_id: list_object_type.id, preferred_name: 'Anatomical location').first_or_create
+
+    Site.where(:synonym => false).each do |site|
+      object_value = Abstractor::AbstractorObjectValue.where(:value => site.name).first_or_create
+      Abstractor::AbstractorAbstractionSchemaObjectValue.where(:abstractor_abstraction_schema_id => anatomical_location_abstractor_abstraction_schema.id, :abstractor_object_value_id => object_value.id).first_or_create
+      Site.where(:icdo3_code => site.icdo3_code, :synonym => true).each do |site_synonym|
+        Abstractor::AbstractorObjectValueVariant.where(:abstractor_object_value_id => object_value.id, :value => site_synonym.name).first_or_create
+      end
+    end
+
+    location_group  = Abstractor::AbstractorSubjectGroup.where(:name => 'Anatomical Location').first_or_create
+
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyRemotePrescription', :abstractor_abstraction_schema_id => anatomical_location_abstractor_abstraction_schema.id, :abstractor_rule_type => v_rule)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 1)
+
+    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type_id => radio_button_list_object_type.id, preferred_name: 'Laterality').first_or_create
+    left_ov       = Abstractor::AbstractorObjectValue.where(:value => 'left').first_or_create
+    right_ov      = Abstractor::AbstractorObjectValue.where(:value => 'right').first_or_create
+    bilateral_ov = Abstractor::AbstractorObjectValue.where(:value => 'bilateral').first_or_create
+
+    laterals = [left_ov, right_ov, bilateral_ov]
+
+    laterals.each do |object_value|
+      Abstractor::AbstractorAbstractionSchemaObjectValue.where(:abstractor_abstraction_schema_id => laterality_abstractor_abstraction_schema.id, :abstractor_object_value_id => object_value.id).first_or_create
+    end
+
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyRemotePrescription', :abstractor_abstraction_schema_id => laterality_abstractor_abstraction_schema.id, :abstractor_rule_type => v_rule)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 2)
   end
 end

@@ -1,6 +1,10 @@
 module Abstractor
   module Abstractable
     def self.included(base)
+      unless base.ancestors.include?(ActiveRecord::Base)
+        raise 'Abstractor requires to store identifiers of objects linked to abstractions, therefore Abstractor::Abstractable expects to be included into an ActiveRecord::Base model. If you are not storing complete object locally, you can set up your module to inherit from Abstractor::AbstractorAbout and implement external_id method if id is not a preferred identifier.'
+      end
+
       base.class_eval do
         has_many :abstractor_abstractions, class_name: Abstractor::AbstractorAbstraction, as: :about
 

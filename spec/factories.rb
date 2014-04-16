@@ -7,6 +7,10 @@ FactoryGirl.define do
     site_name 'left lung'
   end
 
+  factory :radiation_therapy_remote_prescription do
+    external_id 'some_external_identifier'
+  end
+
   factory :abstractor_subject, :class => Abstractor::AbstractorSubject do
   end
 

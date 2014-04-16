@@ -19,7 +19,7 @@ module Abstractor
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::AbstractorSubjectRelation", :foreign_key => "subject_id"
 
 
-          base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :abstractor_rule_type, :abstractor_rule_type_id, :subject_type
+          base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :abstractor_rule_type, :abstractor_rule_type_id, :subject_type, :subject_id_method
         end
 
         # Instance Methods
@@ -51,42 +51,41 @@ module Abstractor
         def abstract_sentential_value(about, abstractor_abstraction)
           abstractor_abstraction_sources.each do |abstractor_abstraction_source|
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              if remote_source?(about)
+                abstractor_text = about.send(source[:source_method])
+              else
+                abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              end
+
               abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
 
-              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
-              case adapter
-              when 'sqlserver'
-                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
-              when 'sqlite3'
-                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
+              if remote_source?(about)
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?)", abstractor_object_value_ids)
+                abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?)", abstractor_object_value_ids).all).uniq
+              else
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE (#{like_cause('abstractor_object_value_variants.value')}))", abstractor_object_value_ids, source[:source_id]).all
+                abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE (#{like_cause('abstractor_object_values.value')}))", abstractor_object_value_ids, source[:source_id]).all).uniq
               end
 
-              abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
-
-              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
-              case adapter
-              when 'sqlserver'
-                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_values.value + '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
-              when 'sqlite3'
-                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
-              end
-
-              parser = Abstractor::Parser.new(abstractor_text)
-              abstractor_object_values.each do |abstractor_object_value|
-                object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
-                  ranges = parser.range_all(Regexp.escape(object_variant.downcase))
-                  if ranges.any?
-                    ranges.each do |range|
-                      sentence = parser.find_sentence(range)
-                      if sentence
-                        scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                        reject = (
-                                  Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
-                                  Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
-                                )
-                        if !reject
-                          suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil)
+              unless abstractor_text.blank?
+                parser = Abstractor::Parser.new(abstractor_text)
+                abstractor_object_values.each do |abstractor_object_value|
+                  object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
+                    ranges = parser.range_all(Regexp.escape(object_variant.downcase))
+                    if ranges.any?
+                      ranges.each do |range|
+                        sentence = parser.find_sentence(range)
+                        if sentence
+                          scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                          reject = (
+                                    Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
+                                    Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
+                                  )
+                          if !reject
+                            suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil)
+                          end
                         end
                       end
                     end
@@ -247,6 +246,20 @@ module Abstractor
           def object_variants(abstractor_object_value, abstractor_object_value_variants)
             aovv = abstractor_object_value_variants.select { |abstractor_object_value_variant| abstractor_object_value_variant.abstractor_object_value_id == abstractor_object_value.id }
             [abstractor_object_value.value].concat(aovv.map(&:value))
+          end
+
+          def like_cause value
+            adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
+            case adapter
+            when 'sqlserver'
+              "'%' + value + '%'"
+            when 'sqlite3'
+              "'%' || value || '%'"
+            end
+          end
+
+          def remote_source? about
+            about.class.ancestors.include?(Abstractor::AbstractorAbout)
           end
       end
     end

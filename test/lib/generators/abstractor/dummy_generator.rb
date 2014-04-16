@@ -46,6 +46,9 @@ module Abstractor
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  resources :radiation_therapy_prescriptions, :only => :edit\n}
       end
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :radiation_therapy_remote_prescriptions, :only => :edit\n}
+      end
     end
 
     def test_dummy_models
@@ -53,6 +56,7 @@ module Abstractor
       copy_file "create_encounter_notes.rb", "#{dummy_path}/db/migrate/#{10.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_encounter_notes.rb", :force => true
       copy_file "radiation_therapy_prescription.rb", "#{dummy_path}/app/models/radiation_therapy_prescription.rb", :force => true
       copy_file "create_radiation_therapy_prescriptions.rb", "#{dummy_path}/db/migrate/#{1.hour.ago.utc.strftime("%Y%m%d%H%M%S")}_create_radiation_therapy_prescriptions.rb", :force => true
+      copy_file "radiation_therapy_remote_prescription.rb", "#{dummy_path}/app/models/radiation_therapy_remote_prescription.rb", :force => true
       copy_file "site.rb", "#{dummy_path}/app/models/site.rb", :force => true
       copy_file "create_sites.rb", "#{dummy_path}/db/migrate/#{9.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_sites.rb", :force => true
       copy_file "site_category.rb", "#{dummy_path}/app/models/site_category.rb", :force => true
