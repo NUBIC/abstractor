@@ -75,11 +75,11 @@ module Abstractor
 
     def make_customizable
       if options["customize-all"] || options["customize-controllers"]
-        path = "#{Rails.root}/controllers/abstractor"
-        empty_directory controllers_directory
-        copy_file "controllers/abstractor_abstraction_groups_controller.rb", "#{controllers_directory}/abstractor_abstraction_groups_controller.rb"
-        copy_file "controllers/abstractor_abstractions_controller.rb", "#{controllers_directory}/abstractor_abstractions_controller.rb"
-        copy_file "controllers/abstractor_suggestions_controller.rb", "#{controllers_directory}/abstractor_suggestions_controller.rb"
+        path = "#{Rails.root}/app/controllers/abstractor"
+        empty_directory path
+        copy_file "controllers/abstractor_abstraction_groups_controller.rb", "#{path}/abstractor_abstraction_groups_controller.rb"
+        copy_file "controllers/abstractor_abstractions_controller.rb", "#{path}/abstractor_abstractions_controller.rb"
+        copy_file "controllers/abstractor_suggestions_controller.rb", "#{path}/abstractor_suggestions_controller.rb"
       end
 
       if options["customize-all"] || options["customize-helpers"]
