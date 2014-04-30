@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.summary     = 'Rails engine that provides functionality for the defintion of discrete data points to be derived from narrative text via natural language processing (NLP) and the presentation of NLP-derived abstracted data points for confirmation/revision.'
   s.description = 'Rails engine that provides functionality for the defintion of discrete data points to be derived from narrative text via natural language processing (NLP) and the presentation of NLP-derived abstracted data points for confirmation/revision.'
 
-  s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.rdoc']
+  s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
   s.add_dependency 'rails', '~> 3.2'
   s.add_dependency 'jquery-rails', '~> 3.1', '>= 3.1.0'
@@ -35,4 +35,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sprockets', '~> 2.2.1', '>= 2.2.1'
   s.add_development_dependency "nubic-gem-tasks", '~> 1.0', '>= 1.0.0'
   s.add_development_dependency "yard"
+  s.add_development_dependency "redcarpet"
 end

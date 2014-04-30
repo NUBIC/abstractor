@@ -11,6 +11,9 @@ describe EncounterNote do
     @always_unknown_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
     @abstractor_subject_always_unknown_abstraction_schema = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @always_unknown_abstraction_schema, :abstractor_rule_type => unknown_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_always_unknown_abstraction_schema, from_method: 'note_text')
+    @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
+    @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
+    @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
 
   describe "abstracting" do
@@ -333,9 +336,6 @@ describe EncounterNote do
 
     describe "querying by abstractor suggestion status" do
       before(:each) do
-        @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
-        @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-        @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
         @encounter_note.abstract
       end
@@ -365,6 +365,24 @@ describe EncounterNote do
 
         @encounter_note.reload.abstractor_abstractions_by_abstractor_suggestion_status([@abstractor_suggestion_status_accepted, @abstractor_suggestion_status_rejected]).size.should == 1
       end
+    end
+
+    #pivioting
+    it "can pivot abstractions as if regular columns on the abstractable entity", focus: true do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.save
+      end
+
+      pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
+      foo = EncounterNote.pivot_abstractions
+      puts 'little my says hi'
+      puts foo.class
+      expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: "90% - Able to carry on normal activity; minor signs or symptoms of disease." }])
     end
   end
 end

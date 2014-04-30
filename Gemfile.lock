@@ -134,6 +134,7 @@ GEM
     rake (10.1.1)
     rdoc (3.12.2)
       json (~> 1.4)
+    redcarpet (3.1.1)
     rjb (1.4.9)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
@@ -195,6 +196,7 @@ DEPENDENCIES
   jquery-ui-rails
   nubic-gem-tasks (~> 1.0, >= 1.0.0)
   paper_trail
+  redcarpet
   rspec-rails (~> 2.14.1, >= 2.14.1)
   selenium-webdriver (~> 2.40.0, >= 2.40.0)
   sprockets (~> 2.2.1, >= 2.2.1)

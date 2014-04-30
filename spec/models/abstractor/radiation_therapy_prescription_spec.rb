@@ -12,6 +12,7 @@ describe RadiationTherapyPrescription do
     @abstractor_abstraction_schema_has_laterality = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_laterality').first
     @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
     @abstractor_subject_abstraction_schema_has_laterality = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_laterality.id).first
+    @abstractor_suggestion_status_accepted = Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first
   end
 
   before(:each) do
@@ -187,6 +188,30 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
       Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema)).should == Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality])
+    end
+
+    #pivioting groups
+    it "can pivot grouped abstractions as if regular columns on the abstractable entity", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.save
+      end
+
+      abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name:'Anatomical Location').first
+
+      abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group_id: abstractor_subject_group.id, about_type: RadiationTherapyPrescription.to_s, about_id: radiation_therapy_prescription.id)
+      abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
+        abstraction = abstractor_subject.abstractor_abstractions.build(about_id: radiation_therapy_prescription.id, about_type: RadiationTherapyPrescription.to_s)
+        abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: abstractor_abstraction_group)
+        abstraction.save!
+      end
+
+      pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
+      expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: "left", has_anatomical_location: "parietal lobe" }, { id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: nil, has_anatomical_location: nil }]))
     end
   end
 end
