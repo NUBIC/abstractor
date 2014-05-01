@@ -29,8 +29,14 @@ Released on April 14, 2014
 
 Released on April 30, 2014
 
-* Fix Abstractable::ClassMethods::pivot_abstractions
-and Abstractable::ClassMethods::pivot_\_grouped_abstractions
+* Fix Abstractor::Abstractable::ClassMethods::pivot_abstractions
+and Abstractor::Abstractable::ClassMethods::pivot_\_grouped_abstractions
 
 * Fix generator to allow for local customization of Abstractor
 controllers.  For example, to add a check for authetication/authorization.
+
+## 1.0.4
+
+Released on May 1, 2014
+
+* Building from master branch instead of rails-3.2 branch.
