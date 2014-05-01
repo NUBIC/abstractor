@@ -1,0 +1,54 @@
+- abstractor_abstraction ||= @abstractor_abstraction
+- abstraction_schema = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
+
+.abstractor_abstraction_edit
+  = form_for abstractor_abstraction, :remote => true do |f|
+    .column-3
+      .abstraction_schema_name
+        = abstraction_schema.display_name
+    .column-7
+      - case abstraction_schema.abstractor_object_type.value
+      - when 'string'
+        = f.text_field :value
+      - when 'number'
+        = f.number_field :value
+      - when 'radio button list'
+        - values = abstraction_schema.abstractor_object_values.sort_by(&:value)
+        -  values.each do |value|
+          = f.radio_button :value, value.value
+          = f.label :value, value.value, value: value.value
+        = f.radio_button :value, '', {:style => 'display:none;' }
+        &nbsp;
+      - when 'list'
+        - values = abstraction_schema.abstractor_object_values.sort_by(&:value)
+        = f.select :value, values.map{|s| [s.value, s.value]}, {:include_blank => true}, :class => "combobox"
+      - when 'boolean'
+        - ['true', 'false'].each do |value|
+          = f.radio_button :value, value
+          = f.label :value, value
+        = f.radio_button :value, '', {:style => 'display:none;'}
+        &nbsp;
+      - else
+        = f.text_field :value
+      %br
+      = f.check_box :not_applicable
+      = f.label :not_applicable, 'not applicable'
+      &nbsp;
+      = f.check_box :unknown
+      = f.label :unknown, 'unknown'
+    .column-3
+      - abstractor_abstraction = f.object
+      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.reject{|s| s.from_method == 'unknown'}
+      - abstraction_sources.each do |abstraction_source|
+        - from_method = abstraction_source.from_method
+        -#%b= from_method.titleize
+        %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstraction_source.id}", :title => "#{abstractor_abstraction.about.class.to_s} #{from_method}"}
+          = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstraction_source.id}")
+          %br
+        %div{ :id => "abstraction_text_#{abstraction_source.id}", :class => 'tooltip'}
+          = abstractor_abstraction.about.send(from_method)
+    .column-4
+      = f.submit 'Save', :class => 'button positive'
+      = link_to 'Cancel', abstractor_abstraction, :class => 'button negative', :remote => true
+    .clear
+

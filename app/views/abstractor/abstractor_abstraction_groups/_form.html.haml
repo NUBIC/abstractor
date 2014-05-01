@@ -1,0 +1,10 @@
+- abstractor_abstraction_group ||= @abstractor_abstraction_group
+
+.abstractor_abstraction_group
+  - abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member).order('abstractor_subject_group_members.display_order').each do |abstractor_abstraction|
+    %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)}" }
+      = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
+  - if abstractor_abstraction_group.removable?
+    .abstractor_abstraction_actions
+      = link_to 'Delete group', abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group), :confirm => 'Are you sure?', :method => :delete, :class => "icon_link delete_link", :remote => true
+  %hr

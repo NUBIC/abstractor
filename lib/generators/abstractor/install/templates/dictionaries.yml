@@ -1,0 +1,235 @@
+# ---- General structure:
+#   :dictionaries:
+#    - :name: string                                                            # has to be unique within not-deleted dictionaries
+#      :parameter_categories:
+#       - :name: string                                                         # has to be unique within the dictionary
+#         :parameters:
+#           - :name: string                                                     # used for display
+#             :unique_identifier:                                               # has to be unique within the dictionary
+#             :export:
+#               :model                                                          # name of the model to be used for exporting
+#               :method                                                         # name of the model method to be used for exporting
+#             :search:                                                          # parameter search model and method combination has to be unique within the category
+#               :model: string                                                  # name of the model to be used for searching
+#               :method: string                                                 # name of the model method to be used for searching
+#               :parameter_type: numeric/date/list/combobox/text/string         # used to define applicable operators/display options. does not have to be restricted to the given list, but additional parameters will require adding operators to match
+#               :parameter_value_categories_source:                             # used to define parameter value categories
+#                 :model: string                                                # source model to be used to load parameter value categiories
+#                 :method: string                                               # method in the source model that returns parameter_value_categories in a form of [{:name => 'string, :unique_identifier => 'adventure', :display_order => 1, :collapse => true}]
+#               :parameter_value_categories:                                    # used to define parameter value categories
+#                 - :name: string
+#                   :unique_identifier: string                                  # has to be unique within parameter
+#                   :collapse: boolean                                          # used to define if parameter category should be collapsed in the list and its values hidden from the view
+#                   :display_order: integer
+#               :parameter_values:                                              # needs to be defined for list/combobox parameters unless parameter values come from the model, see ':source'
+#                 - :name: string                                               # used for display, if not provided, 'search_value' will be used instead
+#                   :search_value: string                                       # has to be unique within parameter, intendend to be used as a database value while searching
+#                   :parameter_value_category: string                           # used to define category for parameter value, should match one of parameter_value_categories unique_identifiers listed above
+#               :source:
+#                 :model: string                                                # source model to be used to load parameter values
+#                 :method: string                                               # method/method in the source model to be used to load parameter values
+
+---
+:dictionaries:
+  - :name: Sample dictionary
+    :parameter_categories:
+      - :name: Demographic criteria
+        :parameters:
+          - :name: Age at case collection date
+            :unique_identifier: age_at_case_collect
+            :search:
+              :model: Patient
+              :method: age_at_case_collect
+              :parameter_type: numeric
+
+          - :name: Age based on current date
+            :unique_identifier: age_based_on_current_date
+            :export:
+              :model: Patient
+              :method: age_based_on_current_date
+
+          - :name: Date of birth
+            :unique_identifier: birth_dt_tm
+            :search:
+              :model: Patient
+              :method: birth_dt_tm
+              :parameter_type: date
+            :export:
+              :model: Patient
+              :method: age_based_on_current_date
+
+          - :name: Ethnic group
+            :unique_identifier: ethnic_grp
+            :search:
+              :model: Patient
+              :method: ethnic_grp
+              :parameter_type: combobox
+              :parameter_values:
+                - :name: Hispanic or Latino
+                  :search_value: hisp_or_latino
+                - :name: NOT Hispanic or Latino
+                  :search_value: not_hisp_or_latino
+                - :name: Unable to answer
+                  :search_value: unknown
+                - :name: Declined to answer
+                  :search_value: declined
+
+          - :name: Consented
+            :unique_identifier: surg_inpatient_mortality
+            :search:
+              :model: Surgery
+              :method: consented
+              :parameter_type: list
+              :parameter_values:
+                - :search_value: yes
+                - :search_value: no
+
+          - :name: Gender
+            :unique_identifier: sex
+            :search:
+              :model: Patient
+              :method: sex
+              :parameter_type: list
+              :parameter_values:
+                - :name: Male
+                  :search_value: male
+                - :name: Female
+                  :search_value: female
+                - :name: Indeterminent
+                  :search_value: indeterminent
+                - :name: Unknown
+                  :search_value: unknown
+                - :name: Unspecified
+                  :search_value: uncpecified
+            :export:
+              :model: Patient
+              :method: gender
+
+          - :name: Race
+            :exclusive: false
+            :unique_identifier: race
+            :search:
+              :model: Patient
+              :method: race
+              :parameter_type: combobox
+              :parameter_values:
+                - :search_value: American Indian or Alaska Native
+                - :search_value: Asian
+                - :search_value: Black or African American
+                - :search_value: Hispanic or Latino
+                - :search_value: Native Hawaiian or Other Pacific Islander
+                - :search_value: White or Caucasian
+                - :search_value: Other
+                - :search_value: Declined to answer
+                - :search_value: Unable to answer
+            :export:
+              :model: Patient
+              :method: race
+
+      - :name: Case criteria
+        :parameters:
+          - :name: Accession date
+            :unique_identifier: accessioned_dt_tm
+            :search:
+              :model: Case
+              :method: accessioned_dt_tm
+              :parameter_type: date
+
+          - :name: Text search diagnosis
+            :exclusive: false
+            :unique_identifier: case_specimen_diagnosis
+            :search:
+              :model: Case
+              :method: case_specimen_diagnosis
+              :parameter_type: text
+
+  - :name: Librarian dictionary
+    :parameter_categories:
+      - :name: By author
+        :parameters:
+          - :name: "Last name"
+            :unique_identifier: autor_last_name
+            :search:
+              :model: Author
+              :method: autor_last_name
+              :parameter_type: string
+
+          - :name: "First name"
+            :unique_identifier: autor_first_name
+            :search:
+              :model: Author
+              :method: autor_first_name
+              :parameter_type: text
+
+          - :name: "Country"
+            :unique_identifier: country
+            :search:
+              :model: Author
+              :method: country
+              :parameter_type: text
+
+          - :name: "Type"
+            :unique_identifier: author_type
+            :search:
+              :model: Book
+              :method: type
+              :parameter_type: list
+              :parameter_values:
+                - :search_value: author
+                - :search_value: co-author
+                - :search_value: reviewer
+      - :name: Book criteria
+        :parameters:
+          - :name: "Type"
+            :unique_identifier: book_type
+            :search:
+              :model: Book
+              :method: type
+              :parameter_type: combobox
+              :parameter_values:
+                - :search_value: book
+                - :search_value: journal
+                - :search_value: article
+                - :search_value: electronic journal
+
+          - :name: "Genre"
+            :unique_identifier: book_genre
+            :search:
+              :model: Book
+              :method: Genre
+              :parameter_type: combobox
+              :parameter_value_categories:
+                - :name: Adventure
+                  :unique_identifier: adventure
+                  :collapse: true
+                  :display_order: 1
+                - :name: Comic novel
+                  :unique_identifier: comic
+                - :name: Historical
+                  :unique_identifier: historical
+              :parameter_values:
+                - :search_value: "Robinsonade"
+                  :parameter_value_category: adventure
+                - :search_value: "Black comedy"
+                  :parameter_value_category: comic
+                - :search_value: "Parody"
+                  :parameter_value_category: comic
+                - :search_value: "Lost World"
+                  :parameter_value_category: adventure
+                - :search_value: "Brit lit"
+                - :search_value: "Pulp fiction"
+
+          - :name: "Title"
+            :unique_identifier: title
+            :search:
+              :model: Book
+              :method: title
+              :parameter_type: text
+
+          - :name: "Keyword"
+            :unique_identifier: text
+            :search:
+              :model: Book
+              :method: text
+              :parameter_type: text
+
