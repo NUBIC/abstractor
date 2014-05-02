@@ -48,3 +48,9 @@ Released on May 2, 2014
 *  Enable the views to deal with a
 relative url root set via in
 config.action\_controller.relative\_url\_root
+
+## 1.0.6
+
+Released on May 2, 2014
+
+*
