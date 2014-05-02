@@ -60,6 +60,8 @@ module Abstractor
                 abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
               when 'sqlite3'
                 abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
+              when 'postgresql'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
               end
 
               abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
@@ -70,6 +72,8 @@ module Abstractor
                 abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_values.value + '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
               when 'sqlite3'
                 abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              when 'postgresql'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
               end
 
               parser = Abstractor::Parser.new(abstractor_text)
