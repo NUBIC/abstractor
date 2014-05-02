@@ -57,3 +57,11 @@ Released on May 2, 2014
 prepend a relative url root if the path alreadys includes the
 relative url root.  Mysterious Rails 3 Engine issue with
 URL helpers.
+
+## 1.0.7
+
+Released on May 2, 2014
+
+* Wrap delete link for abstraction groups with
+Abstractor::UserInterface::abstractor\_relative\_path
+in app/views/abstractor/abstractor\_abstraction\_groups
