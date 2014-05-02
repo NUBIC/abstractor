@@ -368,7 +368,7 @@ describe EncounterNote do
     end
 
     #pivioting
-    it "can pivot abstractions as if regular columns on the abstractable entity", focus: true do
+    it "can pivot abstractions as if regular columns on the abstractable entity", focus: false do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       encounter_note.abstract
 

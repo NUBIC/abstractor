@@ -28,7 +28,7 @@ module Abstractor
     def self.abstractor_relative_path(path)
       prefix = Rails.application.config.action_controller.relative_url_root
 
-      if prefix.blank?
+      if prefix.blank? || path.include?(prefix)
         url = path
       else
         url = prefix + path
