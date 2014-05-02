@@ -53,4 +53,7 @@ config.action\_controller.relative\_url\_root
 
 Released on May 2, 2014
 
-*
+* Abstractor::UserInteface::abstractor_relative_path do not
+prepend a relative url root if the path alreadys includes the
+relative url root.  Mysterious Rails 3 Engine issue with
+URL helpers.
