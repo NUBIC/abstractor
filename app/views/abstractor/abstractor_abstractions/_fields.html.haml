@@ -14,7 +14,7 @@
         - if rejected_suggestions.length == abstractor_suggestions.length
           %span.editable_abstraction
             = abstractor_abstraction.display_value
-          = link_to 'edit', abstractor.edit_abstractor_abstraction_path(abstractor_abstraction), :class=>'icon_link edit_link'
+          = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
         - else
           = abstractor_abstraction.display_value
         - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
@@ -28,7 +28,7 @@
     - if abstractor_suggestions.any?
       .column-9
         - abstractor_suggestions.each do |abstractor_suggestion|
-          = form_for [abstractor_abstraction, abstractor_suggestion], url: abstractor.abstractor_abstraction_abstractor_suggestion_path(abstractor_abstraction, abstractor_suggestion), method: :put, remote: true, html: { class: 'edit_abstractor_suggestion' } do |f|
+          = form_for [abstractor_abstraction, abstractor_suggestion], url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_abstractor_suggestion_path(abstractor_abstraction, abstractor_suggestion)), method: :put, remote: true, html: { class: 'edit_abstractor_suggestion' } do |f|
             = render 'abstractor/shared/error_messages', :object => f.object
             .column-5
               .abstractor_suggestion_values

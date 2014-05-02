@@ -28,7 +28,7 @@ module Abstractor
             return unless deleted?
             abstractor_abstraction_group_members.each do |gm|
               gm.soft_delete!
-              gm.abstractor_abstractor_abstraction.soft_delete!
+              gm.abstractor_abstraction.soft_delete!
             end
           end
       end

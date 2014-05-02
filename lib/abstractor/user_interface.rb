@@ -17,5 +17,17 @@ module Abstractor
         text.gsub(/(#{match})/i, options[:highlighter])
       end.html_safe
     end
+
+    def self.abstractor_relative_path(path)
+      prefix = Rails.application.config.action_controller.relative_url_root
+
+      if prefix.blank?
+        url = path
+      else
+        url = prefix + path
+      end
+
+      url
+    end
   end
 end

@@ -2,7 +2,7 @@
 - abstraction_schema = abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema
 
 .abstractor_abstraction_edit
-  = form_for abstractor_abstraction, :remote => true do |f|
+  = form_for abstractor_abstraction, url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_path(abstractor_abstraction)), method: :put, :remote => true do |f|
     .column-3
       .abstraction_schema_name
         = abstraction_schema.display_name
@@ -51,4 +51,3 @@
       = f.submit 'Save', :class => 'button positive'
       = link_to 'Cancel', abstractor_abstraction, :class => 'button negative', :remote => true
     .clear
-
