@@ -30,7 +30,7 @@ Released on April 14, 2014
 Released on April 30, 2014
 
 * Fix Abstractor::Abstractable::ClassMethods::pivot_abstractions
-and Abstractor::Abstractable::ClassMethods::pivot_\_grouped_abstractions
+and Abstractor::Abstractable::ClassMethods::pivot\_grouped_abstractions
 
 * Fix generator to allow for local customization of Abstractor
 controllers.  For example, to add a check for authetication/authorization.
@@ -40,3 +40,11 @@ controllers.  For example, to add a check for authetication/authorization.
 Released on May 1, 2014
 
 * Building from master branch instead of rails-3.2 branch.
+
+## 1.0.5
+
+Released on May 2, 2014
+
+*  Enable the views to deal with a
+relative url root set via in
+config.action\_controller.relative\_url\_root
