@@ -65,3 +65,12 @@ Released on May 2, 2014
 * Wrap delete link for abstraction groups with
 Abstractor::UserInterface::abstractor\_relative\_path
 in app/views/abstractor/abstractor\_abstraction\_groups
+
+
+## 1.0.8
+
+Released on May 2, 2014
+
+* Performance optimization in
+Abstractor::AbstractorSubject#abstract\_sentential\_value
+did not have a case statement for PostgreSQL.
