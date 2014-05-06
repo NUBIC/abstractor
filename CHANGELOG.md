@@ -74,3 +74,15 @@ Released on May 2, 2014
 * Performance optimization in
 Abstractor::AbstractorSubject#abstract\_sentential\_value
 did not have a case statement for PostgreSQL.
+
+## 1.0.9
+
+Released on May 5, 2014
+
+* Make rake task abstractor:setup:system not
+insert duplicates if run more than once.
+
+* Make Abstractor::InstallGenerator less potentially
+destructive for an innocent user with some other
+pending migrations they were not expecting to
+be migrated yet.
