@@ -10,9 +10,10 @@ Gem::Specification.new do |s|
   s.version     = Abstractor::VERSION
   s.licenses    = ['MIT']
   s.authors     = ['Michael Gurley, Yulia Bushmanova']
-  s.email       = ['m-gurley@northwestern.edu, y.bushmanova@gmail.com']
-  s.summary     = 'Rails engine that provides functionality for the defintion of discrete data points to be derived from narrative text via natural language processing (NLP) and the presentation of NLP-derived abstracted data points for confirmation/revision.'
-  s.description = 'Rails engine that provides functionality for the defintion of discrete data points to be derived from narrative text via natural language processing (NLP) and the presentation of NLP-derived abstracted data points for confirmation/revision.'
+  s.email       = ['michaeljamesgurley@gmail.com, y.bushmanova@gmail.com']
+  s.summary     = 'A Rails engine gem for deriving discrete data points from narrative text via natural language processing.  The gem includes a user interface to present the abstracted data points for confirmation/revision by curator.'
+  s.description = 'A Rails engine gem for deriving discrete data points from narrative text via natural language processing.  The gem includes a user interface to present the abstracted data points for confirmation/revision by curator.'
+  s.required_ruby_version = '>= 1.9.3'
 
   s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
@@ -33,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'database_cleaner', '~> 1.2.0', '>= 1.2.0'
   s.add_development_dependency 'ansi', '~> 1.4.3', '>= 1.4.3'
   s.add_development_dependency 'sprockets', '~> 2.2.1', '>= 2.2.1'
-  s.add_development_dependency "nubic-gem-tasks", '~> 1.0', '>= 1.0.0'
-  s.add_development_dependency "yard"
-  s.add_development_dependency "redcarpet"
+  s.add_development_dependency "nubic-gem-tasks", '~> 1.0.0', '>= 1.0.0'
+  s.add_development_dependency "yard", '~> 0.8.7.3', '>= 0.8.7.3'
+  s.add_development_dependency "redcarpet", '~> 3.1.1', '>= 3.1.1'
 end
