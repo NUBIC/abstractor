@@ -1,24 +1,28 @@
 module Abstractor
   module Setup
     def self.system
-      Abstractor::AbstractorObjectType.create(:value => 'list')
-      Abstractor::AbstractorObjectType.create(:value => 'number')
-      Abstractor::AbstractorObjectType.create(:value => 'boolean')
-      Abstractor::AbstractorObjectType.create(:value => 'string')
-      Abstractor::AbstractorObjectType.create(:value => 'radio button list')
+      puts 'Setting up AbstractorObjectType'
+      Abstractor::AbstractorObjectType.find_or_create_by_value('list')
+      Abstractor::AbstractorObjectType.find_or_create_by_value('number')
+      Abstractor::AbstractorObjectType.find_or_create_by_value('boolean')
+      Abstractor::AbstractorObjectType.find_or_create_by_value('string')
+      Abstractor::AbstractorObjectType.find_or_create_by_value('radio button list')
 
-      Abstractor::AbstractorRuleType.create(:name => 'name/value', :description => 'search for value associated with name')
-      Abstractor::AbstractorRuleType.create(:name =>'name', :description => 'search for name match')
-      Abstractor::AbstractorRuleType.create(:name =>'value', :description => 'search for value match')
-      Abstractor::AbstractorRuleType.create(:name =>'unknown', :description => 'do not try to abstract, always assign "unknown"')
-      Abstractor::AbstractorRuleType.create(:name =>'custom', :description => 'use whatever from_method returns as a value')
+      puts 'Setting up AbstractorRuleType'
+      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name: 'name/value', description:'search for value associated with name')
+      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name:'name', description: 'search for name match')
+      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name:'value', description: 'search for value match')
+      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name: 'unknown', description: 'do not try to abstract, always assign "unknown"')
+      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name:'custom', description: 'use whatever from_method returns as a value')
 
-      Abstractor::AbstractorSuggestionStatus.create(:name => 'Needs review')
-      Abstractor::AbstractorSuggestionStatus.create(:name => 'Accepted')
-      Abstractor::AbstractorSuggestionStatus.create(:name => 'Rejected')
+      puts 'Setting up AbstractorSuggestionStatus'
+      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Needs review')
+      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Accepted')
+      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Rejected')
 
-      Abstractor::AbstractorRelationType.create(:name => 'member_of')
-      Abstractor::AbstractorRelationType.create(:name => 'preceded_by')
+      puts 'Setting up AbstractorRelationType'
+      Abstractor::AbstractorRelationType.find_or_create_by_name('member_of')
+      Abstractor::AbstractorRelationType.find_or_create_by_name('preceded_by')
     end
   end
 end
