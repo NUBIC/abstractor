@@ -19,10 +19,18 @@ namespace :abstractor do
       Dir.chdir('test/dummy') if File.exists?("test/dummy")
 
       abstractor_generator_task  = %Q{rails generate abstractor:install}
+      migration_task  = %Q{bundle exec rake db:migrate}
+      abstractor_setup_system_task  = %Q{bundle exec rake abstractor:setup:system}
       task_params = [%Q{ bundle exec rake -f test/dummy/Rakefile db:test:prepare }]
 
       puts "Setting up Abstractor ........."
       system abstractor_generator_task
+
+      puts "Migrating dummy ........."
+      system migration_task
+
+      puts "Setting up Abstractor system ........."
+      system migration_task
 
       # puts "Setting up dictionaries ........."
       # system dictionary_generator_task

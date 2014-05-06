@@ -3,7 +3,6 @@ require "rails/generators"
 
 module Abstractor
   class InstallGenerator < Rails::Generators::Base
-    class_option "no-migrate", :type => :boolean
     class_option "customize-all", :type => :boolean
     class_option "customize-controllers", :type => :boolean
     class_option "customize-models", :type => :boolean
@@ -46,32 +45,12 @@ module Abstractor
                        :after => "ActionController::Base\n")
     end
 
-    def run_migrations
-      unless options["no-migrate"]
-        puts "Running rake db:migrate"
-        `rake db:migrate`
-      end
-    end
-
-    def seed_database_with_setup_system
-      unless options["no-migrate"]
-        puts "Running rake abstractor:setup:system"
-        `rake abstractor:setup:system`
-      end
-    end
-
     def mount_engine
       puts "Mounting Abstractor::Engine at \"/\" in config/routes.rb..."
       insert_into_file("#{Rails.root}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  mount Abstractor::Engine, :at => "/"\n}
       end
     end
-
-    # def sample_abstraction_schema
-    #   path = "#{Rails.root}/lib"
-    #   empty_directory "#{path}/setup"
-    #   copy_file "abstraction_schema.yml", "#{path}/setup/abstraction_schema.yml"
-    # end
 
     def make_customizable
       if options["customize-all"] || options["customize-controllers"]
