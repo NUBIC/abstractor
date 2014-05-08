@@ -37,7 +37,6 @@ module Abstractor
       template "application.rb", "#{dummy_path}/config/application.rb", :force => true
       template "environments/development.rb", "#{dummy_path}/config/environments/development.rb", :force => true
       template "environments/test.rb", "#{dummy_path}/config/environments/test.rb", :force => true
-      directory 'stanford-core-nlp-full', "#{dummy_path}/lib/stanford-core-nlp-full"
       directory 'setup', "#{dummy_path}/lib/setup"
       copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do

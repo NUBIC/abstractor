@@ -34,7 +34,4 @@ Dummy::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
-  StanfordCoreNLP.use :english
-  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-core-nlp-full/"
-  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-core-nlp-full/"
 end

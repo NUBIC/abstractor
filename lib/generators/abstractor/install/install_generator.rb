@@ -9,6 +9,7 @@ module Abstractor
     class_option "customize-helpers", :type => :boolean
     class_option "customize-layout", :type => :boolean
     class_option "current-user-helper", :type => :string
+    class_option "install-stanford-core-nlp", :type => :boolean
 
     def self.source_paths
       paths = self.superclass.source_paths
@@ -49,6 +50,21 @@ module Abstractor
       puts "Mounting Abstractor::Engine at \"/\" in config/routes.rb..."
       insert_into_file("#{Rails.root}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  mount Abstractor::Engine, :at => "/"\n}
+      end
+    end
+
+    def setup_stanford_core_nlp
+      unless options["install-stanford-core-nlp"]
+        puts "Running rake abstractor:setup:stanford_core_nlp"
+        puts 'Please be patient...this could take a while'
+        `rake abstractor:setup:stanford_core_nlp`
+
+        insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /::Application.configure do\n/) do
+'  StanfordCoreNLP.use :english
+  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-core-nlp/"
+  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-core-nlp/"
+'
+        end
       end
     end
 

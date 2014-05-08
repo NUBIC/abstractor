@@ -46,6 +46,10 @@ Add abstractor to your Gemfile:
 
   gem 'abstractor'
 
+Also add the paper\_trail gem to your Gemfile (if it is not already there):
+
+  gem 'paper_trail'
+
 Bundle, install, and migrate:
 
 * bundle install

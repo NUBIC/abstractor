@@ -35,6 +35,6 @@ Dummy::Application.configure do
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
   StanfordCoreNLP.use :english
-  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-core-nlp-full/"
-  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-core-nlp-full/"
+  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-core-nlp/"
+  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-core-nlp/"
 end
