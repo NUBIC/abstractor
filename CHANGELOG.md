@@ -86,3 +86,13 @@ insert duplicates if run more than once.
 destructive for an innocent user with some other
 pending migrations they were not expecting to
 be migrated yet.
+
+## 1.0.10
+
+Released on May 8, 2014
+
+* Add a rake task abstractor:setup:stanford\_core_nlp to retrieve
+  and unzip a built version of the Stanford Core NLP package
+  from: http://louismullie.com/treat/stanford-core-nlp-minimal.zip/
+  Louis Mullie is the maintainer of the stanford-core-nlp gem
+  https://github.com/louismullie/stanford-core-nlp.
