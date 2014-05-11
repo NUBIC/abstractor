@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'sass-rails', '~> 3.2.6', '>= 3.2.6'
   s.add_dependency 'paper_trail', '~> 3.0.0', '>= 3.0.0'
   s.add_dependency 'stanford-core-nlp', '~> 0.5.1', '>= 0.5.1'
-  s.add_dependency 'rubyzip'
+  s.add_dependency 'rubyzip', '~> 1.1.0', '>= 1.1.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.8', '>= 1.3.8'
   s.add_development_dependency 'rspec-rails', '~> 2.14.1', '>= 2.14.1'
