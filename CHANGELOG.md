@@ -96,3 +96,18 @@ Released on May 8, 2014
   from: http://louismullie.com/treat/stanford-core-nlp-minimal.zip/
   Louis Mullie is the maintainer of the stanford-core-nlp gem
   https://github.com/louismullie/stanford-core-nlp.
+
+## 1.0.11
+
+Released on May 13, 2014
+
+* Add support for instructing the Abstractor::Parser
+to treat new lines always as sentences.
+Will need to make this configurable per
+abstractor abstraction source later.
+
+* Use the
+ActionView::Helpers::TextHelper#simple_format
+when displaying abstractor abstraction source.
+This helps us take advantage of text with useful
+linke break/spacing formatting.
