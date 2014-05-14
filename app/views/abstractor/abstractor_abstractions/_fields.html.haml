@@ -43,9 +43,9 @@
                         - abstractable_from_column = about.send(from_method)
                         - unless abstractable_from_column.nil?
                           - if abstractor_suggestion_source.match_value
-                            = Abstractor::UserInterface.highlight(abstractable_from_column.clone, abstractor_suggestion_source.match_value.strip)
+                            = Abstractor::UserInterface.highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.match_value.strip)
                           - else
-                            = abstractable_from_column.clone
+                            = simple_format(abstractable_from_column.clone)
             .column-3
               = f.select :abstractor_suggestion_status_id, Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id]}
     - else

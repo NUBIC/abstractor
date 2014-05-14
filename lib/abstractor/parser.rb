@@ -3,8 +3,16 @@ module Abstractor
   class Parser
     attr_accessor :sentences, :abstractor_text
 
-    def initialize(abstractor_text)
+    def initialize(abstractor_text, options = {})
+      options = { new_line_is_sentence_break: true }.merge(options)
       @abstractor_text = abstractor_text
+
+      puts options[:new_line_is_sentence_break]
+      if options[:new_line_is_sentence_break]
+        StanfordCoreNLP.custom_properties['ssplit.newlineIsSentenceBreak'] = 'always'
+      else
+        StanfordCoreNLP.custom_properties['ssplit.newlineIsSentenceBreak'] = 'two'
+      end
 
       pipeline =  StanfordCoreNLP.load(:tokenize, :ssplit)
       t = StanfordCoreNLP::Annotation.new(@abstractor_text)
