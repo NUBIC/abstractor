@@ -3,6 +3,7 @@ require "rails/generators"
 
 module Abstractor
   class InstallGenerator < Rails::Generators::Base
+    class_option "no-migrations", :type => :boolean
     class_option "customize-all", :type => :boolean
     class_option "customize-controllers", :type => :boolean
     class_option "customize-models", :type => :boolean

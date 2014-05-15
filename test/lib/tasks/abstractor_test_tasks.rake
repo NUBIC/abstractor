@@ -30,7 +30,7 @@ namespace :abstractor do
       system migration_task
 
       puts "Setting up Abstractor system ........."
-      system migration_task
+      system abstractor_setup_system_task
 
       # puts "Setting up dictionaries ........."
       # system dictionary_generator_task
