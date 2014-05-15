@@ -46,7 +46,7 @@
           = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstraction_source.id}")
           %br
         %div{ :id => "abstraction_text_#{abstraction_source.id}", :class => 'tooltip'}
-          = abstractor_abstraction.about.send(from_method)
+          = simple_format(abstractor_abstraction.about.send(from_method))
     .column-4
       = f.submit 'Save', :class => 'button positive'
       = link_to 'Cancel', abstractor_abstraction, :class => 'button negative', :remote => true
