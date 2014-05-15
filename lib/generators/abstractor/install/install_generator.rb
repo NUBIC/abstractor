@@ -56,13 +56,22 @@ module Abstractor
     def setup_stanford_core_nlp
       unless options["install-stanford-core-nlp"]
         puts "Running rake abstractor:setup:stanford_core_nlp"
-        puts 'Please be patient...this could take a while'
+        puts 'Please be patient...this could take a while.'
         `rake abstractor:setup:stanford_core_nlp`
 
         insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /::Application.configure do\n/) do
 '  StanfordCoreNLP.use :english
-  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-core-nlp/"
-  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-core-nlp/"
+  StanfordCoreNLP.model_files = {}
+  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/"
+  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/"
+  StanfordCoreNLP.default_jars = [
+    "joda-time.jar",
+    "xom.jar",
+    "stanford-corenlp-3.3.1.jar",
+    "stanford-corenlp-3.3.1-models.jar",
+    "jollyday.jar",
+    "bridge.jar"
+  ]
 '
         end
       end

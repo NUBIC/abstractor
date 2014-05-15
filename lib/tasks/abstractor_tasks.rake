@@ -10,18 +10,21 @@ namespace :abstractor do
 
     desc "Setup Stanford CoreNLP library in lib/stanford-core-nlp directory"
     task :stanford_core_nlp => :environment do
-      directory = "#{Rails.root}/lib/stanford-core-nlp/"
-      Dir.mkdir(directory) unless File.exists?(directory)
       puts 'Please be patient...This could take a while.'
-      file = "#{Rails.root}/lib/stanford-core-nlp/stanford-core-nlp-minimal.zip"
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04.zip"
       open(file, 'wb') do |fo|
-        fo.print open('http://louismullie.com/treat/stanford-core-nlp-minimal.zip').read
+        fo.print open('http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip').read
       end
 
-      file = "#{Rails.root}/lib/stanford-core-nlp/stanford-core-nlp-minimal.zip"
-      destination = "#{Rails.root}/lib/stanford-core-nlp/"
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04.zip"
+      destination = "#{Rails.root}/lib/"
       puts 'Unzipping...'
       unzip_file(file, destination)
+
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/bridge.jar"
+      open(file, 'wb') do |fo|
+        fo.print open('https://github.com/louismullie/stanford-core-nlp/blob/master/bin/bridge.jar').read
+      end
     end
   end
 
