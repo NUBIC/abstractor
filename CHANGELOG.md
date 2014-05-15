@@ -111,3 +111,18 @@ ActionView::Helpers::TextHelper#simple_format
 when displaying abstractor abstraction source.
 This helps us take advantage of text with useful
 linke break/spacing formatting.
+
+## 1.0.12
+
+Released on May 15, 2014
+
+* Use the
+ActionView::Helpers::TextHelper#simple_format
+when displaying abstractor abstraction.from_method.
+in the abstractor/abstractor_abstractions/edit.html.haml
+This helps us take advantage of text with useful
+linke break/spacing formatting.
+
+* Trying automate the install of the gem and setup of testbed
+with newer standard version of Stanford Core NLP.
+Not working completely yet.
