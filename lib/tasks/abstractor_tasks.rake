@@ -8,7 +8,7 @@ namespace :abstractor do
       Abstractor::Setup.system
     end
 
-    desc "Setup Stanford CoreNLP library in lib/stanford-core-nlp directory"
+    desc "Setup Stanford CoreNLP library in lib/stanford-corenlp-full-2014-01-04/ directory"
     task :stanford_core_nlp => :environment do
       puts 'Please be patient...This could take a while.'
       file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04.zip"
@@ -23,7 +23,7 @@ namespace :abstractor do
 
       file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/bridge.jar"
       open(file, 'wb') do |fo|
-        fo.print open('https://github.com/louismullie/stanford-core-nlp/blob/master/bin/bridge.jar').read
+        fo.print open('https://github.com/NUBIC/abstractor/lib/stanford-core-nlp/bridge.jar').read
       end
     end
   end
