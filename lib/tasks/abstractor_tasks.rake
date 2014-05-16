@@ -23,7 +23,7 @@ namespace :abstractor do
 
       file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/bridge.jar"
       open(file, 'wb') do |fo|
-        fo.print open('https://github.com/NUBIC/abstractor/lib/stanford-core-nlp/bridge.jar').read
+        fo.print open('https://github.com/louismullie/stanford-core-nlp/blob/master/bin/bridge.jar?raw=true').read
       end
     end
   end
