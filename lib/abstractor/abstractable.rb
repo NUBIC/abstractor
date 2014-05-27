@@ -79,24 +79,47 @@ module Abstractor
         end
       end
 
-      def abstractor_subjects
-        Abstractor::AbstractorSubject.where(subject_type: self.to_s)
+      ##
+      # Reports the abstractor subjects associated with the abstractable entity.
+      # By default, the method will return all abstractor subjects.
+      # The :grouped option allows the filtration to grouped or non-grouped
+      # abstractor subjects.
+      # grouped: true filters to only grouped abstractor subjects.
+      # grouped: false filters to only nont-grouped abstractor subjects.
+      #
+      # @param [Hash] options to filter the the list of abstractor subjects
+      # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
+      def abstractor_subjects(options = {})
+        options = { grouped: nil }.merge(options)
+        subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
+        subjects = case options[:grouped]
+        when true
+          subjects.select{ |s| s.abstractor_subject_group_member}
+        when false
+          subjects.reject{ |s| s.abstractor_subject_group_member}
+        when nil
+          subjects
+        end
+        subjects
       end
 
-      def abstractor_abstraction_schemas
-        abstractor_subjects.map(&:abstractor_abstraction_schema)
+      ##
+      # Reports the abstractor abstraction schemas associated with the abstractable entity.
+      # By default, the method will return all abstractor abstraction schemas.
+      # the :grouped options allows the filtration to grouped or non-grouped
+      # abstractor abstraction schemas.
+      # grouped: true filters to only grouped abstractor abstraction schemas.
+      # grouped: false filters to only nont-grouped abstractor abstraction schemas.
+      #
+      # @param [Hash] options to filter the the list of abstractor abstractions schemas
+      # @return ActiveRecord::Relation list of Abstactor::AbstractorAbstractionSchema objects
+      def abstractor_abstraction_schemas(options= {})
+        options = { grouped: nil }.merge(options)
+        abstractor_subjects(options).map(&:abstractor_abstraction_schema)
       end
 
       def abstractor_subject_groups
-        abstractor_subjects.map(&:abstractor_subject_group).uniq
-      end
-
-      def prepare_pivot_select
-        select =[]
-        abstractor_abstraction_schemas.map(&:predicate).each do |predicate|
-          select << "MAX(CASE WHEN data.predicate = '#{predicate}' THEN data.value ELSE NULL END) AS #{predicate}"
-        end
-        select = select.join(',')
+        abstractor_subjects.map(&:abstractor_subject_group).compact.uniq
       end
 
       ##
@@ -113,8 +136,8 @@ module Abstractor
       #
       # @return ActiveRecord::Relation
       def pivot_abstractions
-        select = prepare_pivot_select
-        joins = "JOIN
+        select = prepare_pivot_select(grouped: false)
+        joins = "LEFT JOIN
         (
         SELECT #{self.table_name}.id AS subject_id,
         #{select}
@@ -157,11 +180,10 @@ module Abstractor
       #
       # @param [String] abstractor_subject_groups_name name of {Abstractor::Methods::Models:AbtractorSubjectGroup}
       # @return ActiveRecord::Relation
-      # @see Abstractor::Methods::Models:AbtractorSubjectGroup
-
+      # @see Abstractor::Methods::Models:AbstractorSubjectGroup
       def pivot_grouped_abstractions(abstractor_subject_groups_name)
         abstractor_subject_group = abstractor_subject_groups.detect { |abstractor_subject_group| abstractor_subject_group.name ==  abstractor_subject_groups_name }
-        select = prepare_pivot_select
+        select = prepare_pivot_select(grouped: true)
         joins = "JOIN
         (
         SELECT #{self.table_name}.id AS subject_id,
@@ -185,6 +207,18 @@ module Abstractor
         "
         joins(joins).select("#{self.table_name}.*, pivoted_abstractions.*")
       end
+
+      private
+
+        def prepare_pivot_select(options= {})
+          options.reverse_merge!({ grouped: nil })
+          options = { grouped: nil }.merge(options)
+          select =[]
+          abstractor_abstraction_schemas(options).map(&:predicate).each do |predicate|
+            select << "MAX(CASE WHEN data.predicate = '#{predicate}' THEN data.value ELSE NULL END) AS #{predicate}"
+          end
+          select = select.join(',')
+        end
     end
   end
 end

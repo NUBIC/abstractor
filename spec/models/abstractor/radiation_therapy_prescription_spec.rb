@@ -213,5 +213,56 @@ describe RadiationTherapyPrescription do
       pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
       expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: "left", has_anatomical_location: "parietal lobe" }, { id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: nil, has_anatomical_location: nil }]))
     end
+
+    describe "a mix of grouped and non-grouped abstractions" do
+      before(:each) do
+        string_object_type = Abstractor::AbstractorObjectType.where(value: 'string').first
+        unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+        moomin_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_moomin', display_name: 'Moomin', abstractor_object_type: string_object_type, preferred_name: 'Moomin')
+        abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => moomin_abstraction_schema, :abstractor_rule_type => unknown_rule)
+        @radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      end
+
+      it "does not include grouped abstractions when pivoting non-grouped abstractions", focus: false do
+        pivots = RadiationTherapyPrescription.pivot_abstractions.where(id: @radiation_therapy_prescription.id)
+        expect(pivots.first).to respond_to(:has_moomin)
+        expect(pivots.first).not_to respond_to(:has_laterality)
+        expect(pivots.first).not_to respond_to(:has_anatomical_location)
+      end
+
+      it "does not include non-grouped abstractions when pivoting grouped abstractions", focus: false do
+        @radiation_therapy_prescription.abstract
+        pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: @radiation_therapy_prescription.id)
+        expect(pivots.first).not_to respond_to(:has_moomin)
+        expect(pivots.first).to respond_to(:has_laterality)
+        expect(pivots.first).to respond_to(:has_anatomical_location)
+      end
+
+      # abstractor subjects
+      it "reports all abstractor subjects if the grouped options is not specified", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_subjects.size).to eq(3)
+      end
+
+      it "can report its grouped abstractor subjects", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_subjects(grouped: true).size).to eq(2)
+      end
+
+      it "can report its ungrouped abstractor subjects", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_subjects(grouped: false).size).to eq(1)
+      end
+
+      # abstraction schemas
+      it "reports all abstractor subjects if the grouped options is not specified", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas.size).to eq(3)
+      end
+
+      it "can report its grouped abstraction schemas ", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas(grouped: true).size).to eq(2)
+      end
+
+      it "can report its ungrouped abstractor subjects", focus: false do
+        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas(grouped: false).size).to eq(1)
+      end
+    end
   end
 end

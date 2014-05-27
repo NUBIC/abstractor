@@ -379,10 +379,13 @@ describe EncounterNote do
       end
 
       pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
-      foo = EncounterNote.pivot_abstractions
-      puts 'little my says hi'
-      puts foo.class
       expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: "90% - Able to carry on normal activity; minor signs or symptoms of disease." }])
+    end
+
+    it "can pivot abstractions as if regular columns on the abstractable entity (even if the entity has not been abstracted)", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
+      expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: nil }])
     end
   end
 end
