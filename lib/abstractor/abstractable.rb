@@ -51,14 +51,16 @@ module Abstractor
         abstractor_abstractions.map(&:abstractor_suggestions).flatten.select { |as| Array.new(abstractor_suggestion_statuses).any? { |abstractor_suggestion_status| as.abstractor_suggestion_status == abstractor_suggestion_status } }
       end
 
-      def remove_abstractions
+      def remove_abstractions(only_unreviewed = true)
         abstractor_abstractions.each do |abstractor_abstraction|
-          abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-            abstractor_suggestion.abstractor_suggestion_sources.destroy_all
-            abstractor_suggestion.abstractor_suggestion_object_value.destroy
-            abstractor_suggestion.destroy
+          if !only_unreviewed || (only_unreviewed && abstractor_abstraction.unreviewed?)
+            abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+              abstractor_suggestion.abstractor_suggestion_sources.destroy_all
+              abstractor_suggestion.abstractor_suggestion_object_value.destroy
+              abstractor_suggestion.destroy
+            end
+            abstractor_abstraction.destroy
           end
-          abstractor_abstraction.destroy
         end
       end
     end

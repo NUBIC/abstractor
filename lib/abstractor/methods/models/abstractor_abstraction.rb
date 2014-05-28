@@ -59,6 +59,11 @@ module Abstractor
             abstractor_suggestion.suggested_value == suggested_value
           end
         end
+
+        def unreviewed?
+          abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first
+          abstractor_suggestions.any? { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_status == abstractor_suggestion_status_needs_review }
+        end
       end
     end
   end

@@ -54,6 +54,31 @@ describe EncounterNote do
       @encounter_note.reload.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_karnofsky_performance_status' }.size.should == 1
     end
 
+    #removing abstractions
+    it "can remove abstractions", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      encounter_note.abstract
+
+      encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should_not be_nil
+      encounter_note.remove_abstractions
+      encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should be_nil
+    end
+
+    it "will not remove reviewed abstractions (if so instructed)", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.save
+      end
+
+      encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should_not be_nil
+      encounter_note.remove_abstractions
+      encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should_not be_nil
+    end
+
     #suggestion suggested value
     it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
