@@ -1,6 +1,24 @@
 # Abstractor Changelog
 =======
 
+
+## 1.0.14
+
+Released on May 28, 2014
+
+* Removing abstractions should easily be confined to
+only unreviewed abstractions.
+See https://github.com/NUBIC/abstractor/issues/1
+
+* Display the text from the abstractor\_suggestion\_sources
+table instead of abstractor\_abstraction\_sources in the
+user interface.
+See https://github.com/NUBIC/abstractor/issues/2
+
+* Display the 'sentence match value' instead of the
+'match value' in the user interface.
+See https://github.com/NUBIC/abstractor/issues/3
+
 ## 1.0.13
 
 Released on May 27, 2014
