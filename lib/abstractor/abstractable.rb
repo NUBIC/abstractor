@@ -82,15 +82,14 @@ module Abstractor
       end
 
       ##
-      # Reports the abstractor subjects associated with the abstractable entity.
-      # By default, the method will return all abstractor subjects.
-      # The :grouped option allows the filtration to grouped or non-grouped
-      # abstractor subjects.
-      # grouped: true filters to only grouped abstractor subjects.
-      # grouped: false filters to only nont-grouped abstractor subjects.
+      # Returns the abstractor subjects associated with the abstractable entity.
       #
-      # @param [Hash] options to filter the the list of abstractor subjects
+      # By default, the method will return all abstractor subjects.
+      #
+      # @param [Hash] options the options to filter the objects returned
+      # @option options [Boolean] :grouped Filters the list of Abstactor::AbstractorSubject objects to grouped and non-grouped.  Defaults to nil which returns all objects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
+
       def abstractor_subjects(options = {})
         options = { grouped: nil }.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
@@ -106,14 +105,12 @@ module Abstractor
       end
 
       ##
-      # Reports the abstractor abstraction schemas associated with the abstractable entity.
-      # By default, the method will return all abstractor abstraction schemas.
-      # the :grouped options allows the filtration to grouped or non-grouped
-      # abstractor abstraction schemas.
-      # grouped: true filters to only grouped abstractor abstraction schemas.
-      # grouped: false filters to only nont-grouped abstractor abstraction schemas.
+      # Returns the abstractor abstraction schemas associated with the abstractable entity.
       #
-      # @param [Hash] options to filter the the list of abstractor abstractions schemas
+      # By default, the method will return all abstractor abstraction schemas.
+      #
+      # @param [Hash] options the options to filter the objects returned
+      # @option options [Boolean] :grouped Filters the list of Abstractor::AbstractorAbstractionSchema objects to grouped and non-grouped.  Defaults to nil which returns all objects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorAbstractionSchema objects
       def abstractor_abstraction_schemas(options= {})
         options = { grouped: nil }.merge(options)
