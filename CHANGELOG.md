@@ -2,6 +2,14 @@
 =======
 
 
+## 1.0.15
+
+Released on May 28, 2014
+
+* Support the display of 'unknown' and 'not applicable'
+abstractions when pivoting.
+See https://github.com/NUBIC/abstractor/issues/5
+
 ## 1.0.14
 
 Released on May 28, 2014
