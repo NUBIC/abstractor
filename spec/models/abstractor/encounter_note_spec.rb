@@ -407,6 +407,38 @@ describe EncounterNote do
       expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: "90% - Able to carry on normal activity; minor signs or symptoms of disease." }])
     end
 
+    it "can pivot abstractions as if regular columns on the abstractable entity if the vaue is marked as 'unknown'", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.save
+        abstractor_abstraction.unknown = true
+        abstractor_abstraction.save!
+      end
+
+      pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
+      expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: 'unknown' }])
+    end
+
+    it "can pivot abstractions as if regular columns on the abstractable entity if the vaue is marked as 'not applicable'", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+      encounter_note.abstract
+
+      encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status =   @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        abstractor_suggestion.save
+        abstractor_abstraction.not_applicable = true
+        abstractor_abstraction.save!
+      end
+
+      pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
+      expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: 'not applicable' }])
+    end
+
     it "can pivot abstractions as if regular columns on the abstractable entity (even if the entity has not been abstracted)", focus: false do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }

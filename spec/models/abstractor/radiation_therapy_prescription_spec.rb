@@ -13,6 +13,8 @@ describe RadiationTherapyPrescription do
     @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
     @abstractor_subject_abstraction_schema_has_laterality = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_laterality.id).first
     @abstractor_suggestion_status_accepted = Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first
+    @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
+    @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
 
   before(:each) do
@@ -212,6 +214,39 @@ describe RadiationTherapyPrescription do
 
       pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
       expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: "left", has_anatomical_location: "parietal lobe" }, { id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: nil, has_anatomical_location: nil }]))
+    end
+
+
+    it "can pivot grouped abstractions as if regular columns on the abstractable entity if the vaue is marked as 'unknown'", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.save
+        abstractor_abstraction.unknown = true
+        abstractor_abstraction.save!
+      end
+
+      pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
+      expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: 'unknown', has_anatomical_location: 'unknown' } ]))
+    end
+
+    it "can pivot grouped abstractions as if regular columns on the abstractable entity if the vaue is marked as 'not applicable'", focus: true do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+
+      radiation_therapy_prescription.reload.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_rejected
+        abstractor_suggestion.save
+        abstractor_abstraction.not_applicable = true
+        abstractor_abstraction.save!
+      end
+
+      pivots = RadiationTherapyPrescription.pivot_grouped_abstractions('Anatomical Location').where(id: radiation_therapy_prescription.id).map { |rtp| { id: rtp.id, site_name: rtp.site_name, has_laterality: rtp.has_laterality, has_anatomical_location: rtp.has_anatomical_location } }
+      expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: 'not applicable', has_anatomical_location: 'not applicable' } ]))
     end
 
     describe "a mix of grouped and non-grouped abstractions" do
