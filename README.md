@@ -46,11 +46,15 @@ Add abstractor to your Gemfile:
 
   gem 'abstractor'
 
+Add the stanford-core-nlp gem to your Gemfile.  Currently need to use a fork for support of the setting of custom options on annotaotrs.
+
+  gem 'stanford-core-nlp', :git => 'https://github.com/mgurley/stanford-core-nlp', :branch => 'custom-properties'
+
 Also add the paper\_trail gem to your Gemfile (if it is not already there):
 
   gem 'paper_trail'
 
-Bundle, install, and migrate:
+Bundle, install, and migrate.  The abstractor:install generator can take a long time because it needs to download and intall the Stanford CoreNLP library into your application's lib directory:
 
 * bundle install
 * bundle exec rails g abstractor:install
