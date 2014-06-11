@@ -7,6 +7,12 @@ Abstractor.AbstractionUI = function(){
     parent_div.load($(this).attr('href'), function(){
       parent_div.find('.combobox').combobox({watermark:'a value'});
       parent_div.find('input[type="submit"], button, a.button').button();
+      $('.abstractor_datepicker').datepicker({
+        altFormat: 'yy-mm-dd',
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true
+      });
     });
     parent_div.addClass('highlighted');
     //parent_div.siblings('.abstractor_abstraction').block({ message: null, overlayCSS: { opacity: .2 }});

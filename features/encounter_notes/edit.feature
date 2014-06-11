@@ -21,7 +21,7 @@ Feature: Editing encounter note
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    When I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Rejected" selected
@@ -35,7 +35,7 @@ Feature: Editing encounter note
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I select "Accepted" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    When I select "Accepted" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "unknown"
     Then "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Accepted" selected
@@ -49,7 +49,7 @@ Feature: Editing encounter note
       | Hello, I have no idea what is your KPS. |
     When I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
-    When I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    When I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I follow "edit"
     And I check "not applicable"
     And I press "Save"
@@ -65,7 +65,7 @@ Feature: Editing encounter note
       | Note Text              |
       | Looking good. KPS: 100 |
     When I go to the last encounter note edit page
-    When I select "Accepted" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    When I select "Accepted" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I go to the last encounter note edit page
     Then I should see "Karnofsky performance status"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
@@ -107,7 +107,7 @@ Feature: Editing encounter note
       | Note Text                                    |
       | Looking good. Not too sure about KPS though. |
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I follow "edit"
     And I check "not applicable"
     And I press "Save"
@@ -170,25 +170,25 @@ Feature: Editing encounter note
       | Note Text                                                      |
       | Looking good. KPS: 100.  On second thought make that KPS: 50.  |
     And I go to the last encounter note edit page
-    And I select "Rejected" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion"
+    And I select "Rejected" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
-    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".edit_abstractor_suggestion" should have "Needs review" selected
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
+    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should have "Needs review" selected
     And I should not see an ".edit_link" element
-    When I select "Accepted" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion"
+    When I select "Accepted" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
-    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "100% - Normal; no complaints; no evidence of disease."
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".edit_abstractor_suggestion" should have "Rejected" selected
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "100% - Normal; no complaints; no evidence of disease."
+    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".has_karnofsky_performance_status .edit_abstractor_suggestion" should have "Rejected" selected
     And I should not see an ".edit_link" element
-    When I select "Accepted" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".edit_abstractor_suggestion"
+    When I select "Accepted" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
-    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "50% - Requires considerable assistance and frequent medical care."
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Rejected" selected
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "50% - Requires considerable assistance and frequent medical care."
+    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should have "Rejected" selected
     And I should not see an ".edit_link" element
-    When I select "Needs review" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".edit_abstractor_suggestion"
+    When I select "Needs review" from "#abstractor_suggestion_abstractor_suggestion_status_id" in the last ".has_karnofsky_performance_status .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
-    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Needs review" selected
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
+    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".has_karnofsky_performance_status .edit_abstractor_suggestion" should have "Needs review" selected
     And I should not see an ".edit_link" element
 
   @javascript
@@ -198,7 +198,7 @@ Feature: Editing encounter note
       | Note Text                            |
       |The patient is looking good.  KPS: 100|
     And I go to the last encounter note edit page
-    And I click within "span.abstractor_abstraction_source_tooltip_img"
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100"
@@ -211,7 +211,7 @@ Feature: Editing encounter note
       | Note Text                                |
       |Hello, your KPS is something. Have a great day!|
     When I go to the last encounter note edit page
-    And I click within "span.abstractor_abstraction_source_tooltip_img"
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is something. Have a great day!"
@@ -224,7 +224,7 @@ Feature: Editing encounter note
       | Note Text                                |
       |This is your physical assessment. Have a great day!|
     When I go to the last encounter note edit page
-    And I click within "span.abstractor_abstraction_source_tooltip_img"
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "This is your physical assessment. Have a great day!"
@@ -237,14 +237,14 @@ Feature: Editing encounter note
       | Note Text                                                  |
       |Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!|
     And I go to the last encounter note edit page
-    And I click on "img" within the first "span.abstractor_abstraction_source_tooltip_img"
+    And I click on "img" within the first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!"
     And ".ui-dialog-content" should equal highlighted text "Hello, your KPS is 100%."
     And ".ui-dialog-content" should not equal highlighted text "Yes, KPS is 100%!"
     When I go to the last encounter note edit page
-    And  I click on "img" within the last "span.abstractor_abstraction_source_tooltip_img"
+    And  I click on "img" within the last ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is 100%. Have a great day!"
@@ -258,7 +258,7 @@ Feature: Editing encounter note
       | Note Text              |
       |Hello, your KPS is 100%.|
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I wait for the ajax request to finish
@@ -298,7 +298,7 @@ Feature: Editing encounter note
       | Note Text              |
       |Hello, your KPS is 100%.|
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
@@ -320,7 +320,7 @@ Feature: Editing encounter note
       | Note Text                 |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
@@ -336,7 +336,7 @@ Feature: Editing encounter note
       | Note Text                  |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I check "input#abstractor_abstraction_not_applicable" within the first ".abstractor_abstraction"
@@ -358,7 +358,7 @@ Feature: Editing encounter note
       | Note Text                 |
       |Hello, you look good to me.|
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
@@ -388,10 +388,29 @@ Feature: Editing encounter note
       | Note Text                            |
       | Hello, you look good to me. KPS: 100 |
     And I go to the last encounter note edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id"
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".abstractor_abstraction"
     And I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
     And I press "Save"
     And I wait for the ajax request to finish
     Then "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Accepted" selected
+
+  @javascript
+  Scenario: User setting the value of an abstraction schema with a date object type
+    Given encounter note abstraction schema is set
+    And encounter notes with the following information exist
+      | Note Text                               |
+      | Hello, I have no idea what is your KPS. |
+    When I go to the last encounter note edit page
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_karnofsky_performance_status_date"
+    And I go to the last encounter note edit page
+    Then ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
+    And I should see an ".edit_link" element
+    When I click on ".edit_link" within the first ".has_karnofsky_performance_status_date"
+    And I wait for the ajax request to finish
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_karnofsky_performance_status_date"
+    And I press "Save"
+    And I wait for the ajax request to finish
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "2014-06-03"
+    And I wait 10 seconds

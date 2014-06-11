@@ -10,8 +10,10 @@ describe RadiationTherapyPrescription do
     Setup.radiation_therapy_prescription
     @abstractor_abstraction_schema_has_anatomical_location = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location').first
     @abstractor_abstraction_schema_has_laterality = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_laterality').first
+    @abstractor_abstraction_schema_has_radiation_therapy_prescription_date = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_radiation_therapy_prescription_date').first
     @abstractor_subject_abstraction_schema_has_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_anatomical_location.id).first
     @abstractor_subject_abstraction_schema_has_laterality = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_laterality.id).first
+    @abstractor_subject_abstraction_schema_has_radiation_therapy_prescription_date = Abstractor::AbstractorSubject.where(subject_type: RadiationTherapyPrescription.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_has_radiation_therapy_prescription_date.id).first
     @abstractor_suggestion_status_accepted = Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first
     @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
     @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
@@ -170,26 +172,26 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size.should == 1
     end
 
-    it "creates a abstractor abstraction group member for each abstractor abstraction" do
+    it "creates a abstractor abstraction group member for each abstractor abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 2
+      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 3
     end
 
-    it "does create duplicate abstractor abstraction grup members upon re-abstraction" do
+    it "does create duplicate abstractor abstraction grup members upon re-abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       radiation_therapy_prescription.reload.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 2
+      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 3
     end
 
-    it "creates a abstractor abstraction group member of the right kind for each abstractor abstraction" do
+    it "creates a abstractor abstraction group member of the right kind for each abstractor abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema)).should == Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality])
+      Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema)).should == Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality, @abstractor_abstraction_schema_has_radiation_therapy_prescription_date])
     end
 
     #pivioting groups
@@ -233,7 +235,7 @@ describe RadiationTherapyPrescription do
       expect(Set.new(pivots)).to eq(Set.new([{ id: radiation_therapy_prescription.id, site_name: radiation_therapy_prescription.site_name, has_laterality: 'unknown', has_anatomical_location: 'unknown' } ]))
     end
 
-    it "can pivot grouped abstractions as if regular columns on the abstractable entity if the vaue is marked as 'not applicable'", focus: true do
+    it "can pivot grouped abstractions as if regular columns on the abstractable entity if the vaue is marked as 'not applicable'", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
 
@@ -275,11 +277,11 @@ describe RadiationTherapyPrescription do
 
       # abstractor subjects
       it "reports all abstractor subjects if the grouped options is not specified", focus: false do
-        expect(RadiationTherapyPrescription.abstractor_subjects.size).to eq(3)
+        expect(RadiationTherapyPrescription.abstractor_subjects.size).to eq(4)
       end
 
       it "can report its grouped abstractor subjects", focus: false do
-        expect(RadiationTherapyPrescription.abstractor_subjects(grouped: true).size).to eq(2)
+        expect(RadiationTherapyPrescription.abstractor_subjects(grouped: true).size).to eq(3)
       end
 
       it "can report its ungrouped abstractor subjects", focus: false do
@@ -288,11 +290,11 @@ describe RadiationTherapyPrescription do
 
       # abstraction schemas
       it "reports all abstractor subjects if the grouped options is not specified", focus: false do
-        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas.size).to eq(3)
+        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas.size).to eq(4)
       end
 
       it "can report its grouped abstraction schemas ", focus: false do
-        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas(grouped: true).size).to eq(2)
+        expect(RadiationTherapyPrescription.abstractor_abstraction_schemas(grouped: true).size).to eq(3)
       end
 
       it "can report its ungrouped abstractor subjects", focus: false do

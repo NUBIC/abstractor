@@ -1,3 +1,9 @@
+When /^(?:|I )fill in "([^"]*)" with "([^"]*)" within "(.*?)"$/ do |field, value, parent|
+  within(parent) do
+    fill_in(field, :with => value)
+  end
+end
+
 When /^(?:|I )check "([^"]*)" within "(.*?)"$/ do |field, parent|
   within(parent) do
     check(field)

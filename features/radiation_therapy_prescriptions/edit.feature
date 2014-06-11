@@ -91,3 +91,18 @@ Feature: Editing radiation therapy prescription
     And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".delete_link"
     And ".abstractor_abstraction_actions" in the first ".abstractor_abstraction_group" should not contain selector ".delete_link"
     And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain selector ".edit_link"
+
+  @javascript
+  Scenario: User setting the value of an abstraction schema with a date object type in a group
+    Given radiation therapy prescription abstraction schema is set
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | Vague blather.                          |
+    When I go to the last radiation therapy prescription edit page
+    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_radiation_therapy_prescription_date"
+    And I wait for the ajax request to finish
+    And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
+    And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_radiation_therapy_prescription_date"
+    And I press "Save"
+    And I wait for the ajax request to finish
+    Then ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "2014-06-03"

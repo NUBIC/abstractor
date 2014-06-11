@@ -97,6 +97,13 @@ module Setup
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_rule_type => v_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 2)
+
+    date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
+    unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+    prescription_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_radiation_therapy_prescription_date', display_name: 'Radiation therapy prescription date', abstractor_object_type: date_object_type, preferred_name: 'Radiation therapy prescription date')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => prescription_date_abstractor_abstraction_schema, :abstractor_rule_type => unknown_rule)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 3)
   end
 
   def self.encounter_note
@@ -173,6 +180,12 @@ module Setup
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '0% ')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
+
+    date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
+    unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+    kps_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status_date', display_name: 'Karnofsky performance status date', abstractor_object_type: date_object_type, preferred_name: 'Karnofsky performance status date')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema, :abstractor_rule_type => unknown_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
   end
 end
