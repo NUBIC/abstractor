@@ -1,6 +1,17 @@
 # Abstractor Changelog
 =======
 
+## 1.0.16
+
+Released on June 11, 2014
+
+* Point back to louismullie/stanford-core-nlp
+master branch for the stanford-core-nlp gem.
+See https://github.com/NUBIC/abstractor/issues/8
+
+* Support date as an object type for abstraction
+schemas.
+See https://github.com/NUBIC/abstractor/issues/6
 
 ## 1.0.15
 
