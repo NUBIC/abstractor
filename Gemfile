@@ -9,7 +9,7 @@ gemspec
 # jquery-rails is used by the dummy application
 gem "jquery-rails"
 gem "jquery-ui-rails"
-gem 'stanford-core-nlp', :git => 'https://github.com/mgurley/stanford-core-nlp', :branch => 'custom-properties'
+gem 'stanford-core-nlp', :git => 'https://github.com/louismullie/stanford-core-nlp', :branch => 'master'
 gem 'paper_trail'
 gem "cucumber-rails", :group => :development, :require => false
 

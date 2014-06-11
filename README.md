@@ -48,10 +48,10 @@ Add abstractor to your Gemfile:
 gem 'abstractor'
 ```
 
-Add the stanford-core-nlp gem to your Gemfile.  Currently need to use a fork for support of the setting of custom options on annotaotrs.
+Add the stanford-core-nlp gem to your Gemfile.  Currently need to use the master branch of the official repository until a new version of the gem is released:
 
 ```ruby
-gem 'stanford-core-nlp', :git => 'https://github.com/mgurley/stanford-core-nlp', :branch => 'custom-properties'
+gem 'stanford-core-nlp', :git => 'https://github.com/louismullie/stanford-core-nlp', :branch => 'master',
 ```
 
 Also add the paper\_trail gem to your Gemfile (if it is not already there):

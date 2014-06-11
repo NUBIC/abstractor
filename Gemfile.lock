@@ -1,7 +1,7 @@
 GIT
-  remote: https://github.com/mgurley/stanford-core-nlp
-  revision: ebd9f02af361665575c456c0f0e81e1b172eaf5e
-  branch: custom-properties
+  remote: https://github.com/louismullie/stanford-core-nlp
+  revision: bbc73ae3fba004a5a4d1bf8713b908b9b144c83f
+  branch: master
   specs:
     stanford-core-nlp (0.5.1)
       bind-it (~> 0.2.5)
