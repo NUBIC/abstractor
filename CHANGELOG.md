@@ -1,6 +1,13 @@
 # Abstractor Changelog
 =======
 
+## 1.0.17
+
+Released on June 12, 2014
+
+* Change the confirmation of an abstractor suggestion to a radio button list from a select.
+See https://github.com/NUBIC/abstractor/issues/9
+
 ## 1.0.16
 
 Released on June 11, 2014
