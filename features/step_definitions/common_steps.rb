@@ -1,3 +1,20 @@
+Then /^the "([^"]*)" radio button within(?: the (first|last))? "([^\"]*)" should be checked$/ do |label, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    field_checked = find_field(label)['checked']
+    if field_checked.respond_to? :should
+      field_checked.should be_true
+    else
+      assert field_checked
+    end
+  }
+end
+
+When /^(?:|I )choose "([^"]*)" within(?: the (first|last))? "(.*?)"$/ do |field, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    choose(field)
+  }
+end
+
 When /^(?:|I )fill in "([^"]*)" with "([^"]*)" within "(.*?)"$/ do |field, value, parent|
   within(parent) do
     fill_in(field, :with => value)
@@ -190,17 +207,6 @@ Then /^the "([^"]*)" disabled field(?: within (.*))? should not contain "([^"]*)
       field_value.should_not =~ /#{value}/
     else
       assert_no_match(/#{value}/, field_value)
-    end
-  end
-end
-
-Then /^the "([^"]*)" radio button(?: within (.*))? should be checked$/ do |label, parent|
-  with_scope(parent) do
-    field_checked = find_field(label)['checked']
-    if field_checked.respond_to? :should
-      field_checked.should be_true
-    else
-      assert field_checked
     end
   end
 end

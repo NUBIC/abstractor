@@ -74,9 +74,10 @@ Abstractor.AbstractionUI = function(){
 };
 
 Abstractor.AbstractionSuggestionUI = function(){
-  $(document).on('change', 'form.edit_abstractor_suggestion select', function() {
+  $(document).on('change', '#abstractor_suggestion_abstractor_suggestion_status_id_1, #abstractor_suggestion_abstractor_suggestion_status_id_2, #abstractor_suggestion_abstractor_suggestion_status_id_3', function() {
     $(this).closest('form').submit();
   });
+
   $(document).on('ajax:success', 'form.edit_abstractor_suggestion', function(e, data, status, xhr){
     $(this).closest('.abstractor_abstraction').html(xhr.responseText);
   });

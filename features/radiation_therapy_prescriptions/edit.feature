@@ -8,7 +8,7 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_laterality"
+    And I choose "Rejected" within the first ".has_laterality .edit_abstractor_suggestion"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".has_laterality"
     And I choose "left"
@@ -58,7 +58,7 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Needs review" selected
+    And the "Needs review" radio button within the first ".has_anatomical_location" should be checked
     And I should not see an ".edit_link" element
     And I should see "Add group"
     And I should not see "Delete group"
@@ -73,7 +73,7 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And "#abstractor_suggestion_abstractor_suggestion_status_id" in the first ".edit_abstractor_suggestion" should have "Needs review" selected
+    And the "Needs review" radio button within the last ".has_anatomical_location" should be checked
     And I should not see an ".edit_link" element
     And I should see "Add group"
     And I should not see "Delete group"
@@ -99,7 +99,7 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    And I select "Rejected" from "abstractor_suggestion_abstractor_suggestion_status_id" within ".has_radiation_therapy_prescription_date"
+    And I choose "Rejected" within the first ".has_radiation_therapy_prescription_date"
     And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".has_radiation_therapy_prescription_date"
     And I fill in "abstractor_abstraction_value" with "2014-06-03" within ".has_radiation_therapy_prescription_date"
