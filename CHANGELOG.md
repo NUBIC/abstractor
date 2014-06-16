@@ -1,6 +1,13 @@
 # Abstractor Changelog
 =======
 
+## 1.0.19
+
+Released on June 16, 2014
+
+* Setting an entire abstraction group to something else than 'unknown' for an abstraction with a suggestion of 'unknown' updates more than necessary.
+See https://github.com/NUBIC/abstractor/issues/12
+
 ## 1.0.18
 
 Released on June 16, 2014
