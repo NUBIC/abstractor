@@ -1,6 +1,13 @@
 # Abstractor Changelog
 =======
 
+## 1.0.18
+
+Released on June 16, 2014
+
+* Allow an entire abstraction group to be marked as 'not applicable ' or 'unknown'.
+See https://github.com/NUBIC/abstractor/issues/10
+
 ## 1.0.17
 
 Released on June 12, 2014
