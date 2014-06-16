@@ -93,4 +93,9 @@ Abstractor.AbstractionGroupUI = function(){
     parent_div = $(this).closest('.abstractor_subject_groups_container');
     parent_div.find('.abstractor_subject_groups').append(xhr.responseText);
   });
+
+  $(document).on('ajax:success', '.abstractor_abstraction_group .update_link', function(e, data, status, xhr){
+    parent_div = $(this).closest('.abstractor_abstraction_group');
+    parent_div.html(xhr.responseText);
+  });
 };

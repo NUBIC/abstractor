@@ -194,6 +194,40 @@ describe RadiationTherapyPrescription do
       Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema)).should == Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality, @abstractor_abstraction_schema_has_radiation_therapy_prescription_date])
     end
 
+    describe "updating all abstraction group members" do
+      before(:each) do
+        @radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+        @radiation_therapy_prescription.abstract
+        abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
+        @abstractor_abstraction_group = @radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first
+      end
+
+      it "to 'not applicable'", focus: false do
+        @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil, nil]
+        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true, true]
+      end
+
+      it "to 'unknown'", focus: false do
+        @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil, nil]
+        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
+        @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true, true]
+      end
+
+      it "rejects all abstraction suggestion statuses", focus: false do
+        rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+        needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
+        abstractor_suggestions = @abstractor_abstraction_group.abstractor_abstractions.map(&:abstractor_suggestions).flatten
+        abstractor_suggestions.map(&:abstractor_suggestion_status).should == [needs_review_status, needs_review_status, needs_review_status]
+        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        abstractor_suggestions.each(&:reload).map(&:abstractor_suggestion_status).should == [rejected_status, rejected_status, rejected_status]
+      end
+
+      it "raises an error if passed an invalid argument", focus: false do
+        expect{ @abstractor_abstraction_group.update_abstractor_abstraction_other_value('little my') }.to raise_error(ArgumentError)
+      end
+    end
+
     #pivioting groups
     it "can pivot grouped abstractions as if regular columns on the abstractable entity", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')

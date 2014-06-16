@@ -106,3 +106,47 @@ Feature: Editing radiation therapy prescription
     And I press "Save"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "2014-06-03"
+
+  @javascript
+  Scenario: User setting all the values to 'not applicable' in an abstraction group
+    Given radiation therapy prescription abstraction schema is set
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | Vague blather.                          |
+    When I go to the last radiation therapy prescription edit page
+    Then the "Needs review" radio button within the first ".has_anatomical_location" should be checked
+    And the "Needs review" radio button within the first ".has_laterality" should be checked
+    And the "Needs review" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
+    When I confirm link "Not applicable group" in the first ".abstractor_abstraction_group"
+    And I wait for the ajax request to finish
+    Then the "Rejected" radio button within the first ".has_anatomical_location" should be checked
+    And the "Rejected" radio button within the first ".has_laterality" should be checked
+    And the "Rejected" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "not applicable"
+
+  @javascript
+  Scenario: User setting all the values to 'unknown' in an abstraction group
+    Given radiation therapy prescription abstraction schema is set
+    And radiation therapy prescriptions with the following information exist
+      | Site                                    |
+      | Vague blather.                          |
+    When I go to the last radiation therapy prescription edit page
+    Then the "Needs review" radio button within the first ".has_anatomical_location" should be checked
+    And the "Needs review" radio button within the first ".has_laterality" should be checked
+    And the "Needs review" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
+    When I confirm link "Unknown group" in the first ".abstractor_abstraction_group"
+    And I wait for the ajax request to finish
+    Then the "Accepted" radio button within the first ".has_anatomical_location" should be checked
+    And the "Accepted" radio button within the first ".has_laterality" should be checked
+    And the "Accepted" radio button within the first ".has_radiation_therapy_prescription_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "unknown"

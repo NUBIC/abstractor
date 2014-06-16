@@ -4,6 +4,7 @@ module Abstractor
       module AbstractorAbstractionGroupsController
         def self.included(base)
           base.send :helper, :all
+          base.send :before_filter, :set_abstractor_abstraction_group, only: [:destroy, :update]
         end
 
         def create
@@ -20,8 +21,7 @@ module Abstractor
         end
 
         def destroy
-          abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.find(params[:id])
-          if abstractor_abstraction_group.soft_delete!
+          if @abstractor_abstraction_group.soft_delete!
             flash[:notice] = "Group was successfully deleted."
           else
             flash[:error] = "Group could not be deactivated: #{abstractor_abstraction_group.errors.full_messages.join(',')}"
@@ -31,6 +31,20 @@ module Abstractor
             format.json { head :no_content }
           end
         end
+
+        def update
+          abstractor_abstraction_value = params[:abstractor_abstraction_value]
+          @abstractor_abstraction_group.update_abstractor_abstraction_other_value(abstractor_abstraction_value)
+
+          respond_to do |format|
+            format.html { render action: "edit", layout: false }
+          end
+        end
+
+        private
+          def set_abstractor_abstraction_group
+            @abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.find(params[:id])
+          end
       end
     end
   end
