@@ -214,6 +214,20 @@ describe RadiationTherapyPrescription do
         @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true, true]
       end
 
+      it "does not update more than necessary", focus: false do
+        PaperTrail.enabled = true
+        radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'vague blather')
+        radiation_therapy_prescription.abstract
+        abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
+        abstractor_abstraction_group = radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first
+
+        abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [1,1,1]
+        abstractor_abstraction_group.reload.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
+        abstractor_abstraction_group.reload.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [3,3,3]
+        PaperTrail.enabled = false
+      end
+
       it "rejects all abstraction suggestion statuses", focus: false do
         rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
         needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first

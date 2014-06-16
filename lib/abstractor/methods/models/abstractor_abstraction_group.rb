@@ -35,6 +35,7 @@ module Abstractor
           raise(ArgumentError, "abstraction_value_type argument invalid") unless Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPES.include?(abstraction_other_value_type)
 
           rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+          accepted_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
           case abstraction_other_value_type
           when Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN
             unknown = true
@@ -48,19 +49,28 @@ module Abstractor
             if abstraction_other_value_type
               abstractor_abstractions.each do |abstractor_abstraction|
                 abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
-                  abstractor_suggestion.abstractor_suggestion_status = rejected_status
-                  abstractor_suggestion.save!
+                  if unknown && abstractor_suggestion.unknown
+                    abstractor_suggestion.abstractor_suggestion_status = accepted_status
+                    abstractor_suggestion.save!
+                  else
+                    set_abstractor_abstraction(abstractor_abstraction, unknown, not_applicable)
+                    abstractor_suggestion.abstractor_suggestion_status = rejected_status
+                    abstractor_suggestion.save!
+                  end
                 end
-                abstractor_abstraction.value = nil
-                abstractor_abstraction.unknown = unknown
-                abstractor_abstraction.not_applicable = not_applicable
-                abstractor_abstraction.save!
               end
             end
           end
         end
 
         private
+          def set_abstractor_abstraction(abstractor_abstraction, unknown, not_applicable)
+            abstractor_abstraction.value = nil
+            abstractor_abstraction.unknown = unknown
+            abstractor_abstraction.not_applicable = not_applicable
+            abstractor_abstraction.save!
+          end
+
           def update_abstractor_abstraction_group_members
             return unless deleted?
             abstractor_abstraction_group_members.each do |gm|
