@@ -1,6 +1,13 @@
 # Abstractor Changelog
 =======
 
+## 1.0.20
+
+Released on June 17, 2014
+
+* Allow an entire set of abstractions for an abstractable entity to be marked as  'not applicable ' or 'unknown'.
+See https://github.com/NUBIC/abstractor/issues/12
+
 ## 1.0.19
 
 Released on June 16, 2014
