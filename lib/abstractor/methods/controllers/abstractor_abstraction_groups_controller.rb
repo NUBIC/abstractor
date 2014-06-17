@@ -34,8 +34,7 @@ module Abstractor
 
         def update
           abstractor_abstraction_value = params[:abstractor_abstraction_value]
-          @abstractor_abstraction_group.update_abstractor_abstraction_other_value(abstractor_abstraction_value)
-
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, abstractor_abstraction_value)
           respond_to do |format|
             format.html { render action: "edit", layout: false }
           end

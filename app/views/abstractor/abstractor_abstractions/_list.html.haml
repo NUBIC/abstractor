@@ -1,5 +1,8 @@
 - about ||= @about
 .abstractor_abstractions
+  = link_to 'Not applicable all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'not applicable')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
+  %br
+  = link_to 'Unknown all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'unknown')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
   - abstractor_subject_groups = Abstractor::AbstractorSubjectGroup.joins(:abstractor_subjects).where(:abstractor_subjects => {:subject_type => about.class}).order('abstractor_subject_groups.id').not_deleted.to_a.uniq
   - abstractor_subject_groups.each do |abstractor_subject_group|
     .abstractor_subject_groups_container

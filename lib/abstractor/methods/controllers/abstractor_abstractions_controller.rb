@@ -31,6 +31,15 @@ module Abstractor
           end
         end
 
+        def update_all
+          abstractor_abstraction_value = params[:abstractor_abstraction_value]
+          @about = params[:about_type].constantize.find(params[:about_id])
+          Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@about.abstractor_abstractions, abstractor_abstraction_value)
+          respond_to do |format|
+            format.html { redirect_to :back }
+          end
+        end
+
         private
           def set_abstractor_abstraction
             @abstractor_abstraction = Abstractor::AbstractorAbstraction.find(params[:id])

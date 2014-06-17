@@ -53,7 +53,7 @@
                 = f.label :abstractor_suggestion_status_id, value.first, value: value.last
                 %br
               = f.radio_button :abstractor_suggestion_status_id, '', {:style => 'display:none;' }
-              %hr
+            %hr
     - else
       .column-9
         - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.each do |abstractor_abstraction_source|

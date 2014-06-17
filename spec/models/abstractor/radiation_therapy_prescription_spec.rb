@@ -204,13 +204,13 @@ describe RadiationTherapyPrescription do
 
       it "to 'not applicable'", focus: false do
         @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil, nil]
-        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
         @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true, true]
       end
 
       it "to 'unknown'", focus: false do
         @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil, nil]
-        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
+        Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
         @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true, true]
       end
 
@@ -222,8 +222,8 @@ describe RadiationTherapyPrescription do
         abstractor_abstraction_group = radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first
 
         abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [1,1,1]
-        abstractor_abstraction_group.reload.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
-        abstractor_abstraction_group.reload.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
+        Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
         abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [3,3,3]
         PaperTrail.enabled = false
       end
@@ -233,12 +233,12 @@ describe RadiationTherapyPrescription do
         needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
         abstractor_suggestions = @abstractor_abstraction_group.abstractor_abstractions.map(&:abstractor_suggestions).flatten
         abstractor_suggestions.map(&:abstractor_suggestion_status).should == [needs_review_status, needs_review_status, needs_review_status]
-        @abstractor_abstraction_group.update_abstractor_abstraction_other_value(Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+        Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
         abstractor_suggestions.each(&:reload).map(&:abstractor_suggestion_status).should == [rejected_status, rejected_status, rejected_status]
       end
 
       it "raises an error if passed an invalid argument", focus: false do
-        expect{ @abstractor_abstraction_group.update_abstractor_abstraction_other_value('little my') }.to raise_error(ArgumentError)
+        expect{ Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value('little my') }.to raise_error(ArgumentError)
       end
     end
 

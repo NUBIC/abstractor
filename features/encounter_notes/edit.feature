@@ -413,4 +413,38 @@ Feature: Editing encounter note
     And I press "Save"
     And I wait for the ajax request to finish
     Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "2014-06-03"
-    And I wait 10 seconds
+
+  @javascript
+  Scenario: User setting all the values to 'not applicable' for an abstractable entitty
+    Given encounter note abstraction schema is set
+    And encounter notes with the following information exist
+      | Note Text                               |
+      | Hello, I have no idea what is your KPS. |
+    When I go to the last encounter note edit page
+    Then the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
+    And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
+    When I confirm link "Not applicable all" in the first ".abstractor_abstractions"
+    Then the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
+    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "not applicable"
+
+
+  @javascript
+  Scenario: User setting all the values to 'unknown' for an abstractable entitty
+    Given encounter note abstraction schema is set
+    And encounter notes with the following information exist
+      | Note Text                               |
+      | Hello, I have no idea what is your KPS. |
+    When I go to the last encounter note edit page
+    Then the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
+    And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
+    When I confirm link "Unknown all" in the first ".abstractor_abstractions"
+    Then the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
+    And the "Accepted" radio button within ".has_karnofsky_performance_status_date" should be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "unknown"
