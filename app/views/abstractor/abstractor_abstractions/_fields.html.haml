@@ -49,8 +49,9 @@
             .column-3
               - values = Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id] }
               -  values.each do |value|
-                = f.radio_button :abstractor_suggestion_status_id, value.last
-                = f.label :abstractor_suggestion_status_id, value.first, value: value.last
+                - id = "abstractor_suggestion_abstractor_suggestion_status_id_#{value.last}_#{abstractor_suggestion.id}"
+                = f.radio_button :abstractor_suggestion_status_id, value.last, id: id, class: 'abstractor_suggestion_status_selection'
+                = f.label :abstractor_suggestion_status_id, value.first, value: value.last, for: id
                 %br
               = f.radio_button :abstractor_suggestion_status_id, '', {:style => 'display:none;' }
             %hr
@@ -65,5 +66,4 @@
               - abstractable_from_column = about.send(from_method)
               - unless abstractable_from_column.nil?
                 = abstractable_from_column.clone
-
     .clear

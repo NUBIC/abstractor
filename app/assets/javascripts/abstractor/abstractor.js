@@ -74,7 +74,7 @@ Abstractor.AbstractionUI = function(){
 };
 
 Abstractor.AbstractionSuggestionUI = function(){
-  $(document).on('change', '#abstractor_suggestion_abstractor_suggestion_status_id_1, #abstractor_suggestion_abstractor_suggestion_status_id_2, #abstractor_suggestion_abstractor_suggestion_status_id_3', function() {
+  $(document).on('change', '.abstractor_suggestion_status_selection', function() {
     $(this).closest('form').submit();
   });
 
