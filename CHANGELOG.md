@@ -1,9 +1,17 @@
 # Abstractor Changelog
 =======
 
+## 1.0.22
+
+Released on June 19, 2014
+
+* Clicking a label on a suggestion status radio button always updates the first suggestion on the page.
+See https://github.com/NUBIC/abstractor/issues/15
+
+
 ## 1.0.21
 
-Released on June 17, 2014
+Released on June 19, 2014
 
 * Implement support for the 'custom' rule type to allow for the custom generation of suggestions.
 See https://github.com/NUBIC/abstractor/issues/14
