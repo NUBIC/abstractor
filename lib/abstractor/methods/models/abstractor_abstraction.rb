@@ -25,8 +25,8 @@ module Abstractor
           # Hooks
           base.send :after_save, :review_matching_suggestions#, :if => lambda {|abstractor_abstraction| abstractor_abstraction.value_changed?}
 
-          base.send :extend, ClassMethods
           base.send(:include, InstanceMethods)
+          base.extend(ClassMethods)
         end
 
         module InstanceMethods

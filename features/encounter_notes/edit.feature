@@ -431,7 +431,6 @@ Feature: Editing encounter note
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "not applicable"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "not applicable"
 
-
   @javascript
   Scenario: User setting all the values to 'unknown' for an abstractable entitty
     Given encounter note abstraction schema is set
@@ -445,6 +444,6 @@ Feature: Editing encounter note
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
     When I confirm link "Unknown all" in the first ".abstractor_abstractions"
     Then the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
-    And the "Accepted" radio button within ".has_karnofsky_performance_status_date" should be checked
+    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "unknown"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "unknown"

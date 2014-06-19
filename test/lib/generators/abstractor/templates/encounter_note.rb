@@ -13,4 +13,12 @@ class EncounterNote < ActiveRecord::Base
   def broken_custom_method
     []
   end
+
+  def encounter_date
+    ['2014-06-26']
+  end
+
+  def empty_encounter_date
+    []
+  end
 end

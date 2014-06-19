@@ -183,9 +183,9 @@ module Setup
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
 
     date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
-    unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+    custom_rule = Abstractor::AbstractorRuleType.where(name: 'custom').first
     kps_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status_date', display_name: 'Karnofsky performance status date', abstractor_object_type: date_object_type, preferred_name: 'Karnofsky performance status date')
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema, :abstractor_rule_type => unknown_rule)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema, :abstractor_rule_type => custom_rule)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'encounter_date')
   end
 end

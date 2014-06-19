@@ -9,10 +9,10 @@ describe EncounterNote do
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
-    @abstractor_subject_abstraction_schema_alwahys_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown, :abstractor_rule_type => unknown_rule)
+    @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown, :abstractor_rule_type => unknown_rule)
     @abstractor_abstraction_schema_kps_date = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status_date').first
     @abstractor_subject_abstraction_schema_kps_date = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps_date.id).first
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_alwahys_unknown, from_method: 'note_text')
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text')
     @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
     @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
     @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
@@ -33,13 +33,13 @@ describe EncounterNote do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
 
-      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_alwahys_unknown).should_not be_nil
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown).should_not be_nil
     end
 
     it "creates an abstraction with an suggestion of 'unknown' for a rule type of 'unknown'" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
-      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_alwahys_unknown).abstractor_suggestions.first.unknown.should be_true
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown).abstractor_suggestions.first.unknown.should be_true
     end
 
     it "creates a 'has_karnofsky_performance_status' abstraction'" do
@@ -185,6 +185,36 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size.should == 1
     end
 
+    it "creates one 'has_karnofsky_performance_status_date' abstraction suggestion (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2014-06-26'}.size.should == 1
+    end
+
+    it "does not create another 'has_karnofsky_performance_status_date' abstraction suggestion upon re-abstraction (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.size.should == 1
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.size.should == 1
+    end
+
+    it "does not create a'has_karnofsky_performance_status_date' abstraction 'unknown' suggestion if the custom rule makes a suggestion (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.unknown.nil? }.size.should == 1
+    end
+
+    it "does create a'has_karnofsky_performance_status_date' abstraction 'unknown' suggestion if the custom rule does not make a suggestion (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      abstractor_abstraction_source = @abstractor_subject_abstraction_schema_kps_date.abstractor_abstraction_sources.first
+      abstractor_abstraction_source.custom_method = 'empty_encounter_date'
+      abstractor_abstraction_source.save!
+      @encounter_note.abstract
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.size).to eq(1)
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.unknown == true }.size.should == 1
+    end
+
     #suggestion match value
     it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a preferred name/predicate (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
@@ -281,6 +311,20 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
+    end
+
+    it "creates one 'has_karnofsky_performance_status_date' abstraction suggestion source (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.first.abstractor_suggestion_sources.first.custom_method).to eq('encounter_date')
+    end
+
+    it "does not create another 'has_karnofsky_performance_status_date' abstraction suggestion source upon re-abstraction (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
+      @encounter_note.abstract
+      @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
     end
 
     #abstractor object value

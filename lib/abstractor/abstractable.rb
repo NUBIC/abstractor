@@ -1,8 +1,6 @@
 module Abstractor
   module Abstractable
     def self.included(base)
-      base.send(:include, InstanceMethods)
-      base.extend(ClassMethods)
       base.class_eval do
         has_many :abstractor_abstractions, class_name: Abstractor::AbstractorAbstraction, as: :about
 
@@ -10,6 +8,8 @@ module Abstractor
 
         accepts_nested_attributes_for :abstractor_abstractions, allow_destroy: false
       end
+      base.send(:include, InstanceMethods)
+      base.extend(ClassMethods)
     end
 
     module InstanceMethods
@@ -56,7 +56,7 @@ module Abstractor
           if !only_unreviewed || (only_unreviewed && abstractor_abstraction.unreviewed?)
             abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
               abstractor_suggestion.abstractor_suggestion_sources.destroy_all
-              abstractor_suggestion.abstractor_suggestion_object_value.destroy
+              abstractor_suggestion.abstractor_suggestion_object_value.destroy if abstractor_suggestion.abstractor_suggestion_object_value
               abstractor_suggestion.destroy
             end
             abstractor_abstraction.destroy
@@ -89,7 +89,6 @@ module Abstractor
       # @param [Hash] options the options to filter the objects returned
       # @option options [Boolean] :grouped Filters the list of Abstactor::AbstractorSubject objects to grouped and non-grouped.  Defaults to nil which returns all objects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
-
       def abstractor_subjects(options = {})
         options = { grouped: nil }.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
