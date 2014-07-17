@@ -24,6 +24,9 @@
       - when 'list'
         - values = abstraction_schema.abstractor_object_values.sort_by(&:value)
         = f.select :value, values.map{|s| [s.value, s.value]}, {:include_blank => true}, :class => "combobox"
+      - when 'dynamic list'
+        - values = abstractor_abstraction.about.send(abstractor_abstraction.abstractor_subject.dynamic_list_method).sort_by { |l| l[:value] }
+        = f.select :value, values.map{|s| [s[:value], s[:id]]}, {:include_blank => true}, :class => "combobox"
       - when 'boolean'
         - ['true', 'false'].each do |value|
           = f.radio_button :value, value

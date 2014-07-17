@@ -40,6 +40,9 @@ module Abstractor
       directory 'setup', "#{dummy_path}/lib/setup"
       copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :imaging_exams, :only => :edit\n}
+      end
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  resources :encounter_notes, :only => :edit\n}
       end
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
@@ -48,6 +51,8 @@ module Abstractor
     end
 
     def test_dummy_models
+      copy_file "imaging_exam.rb", "#{dummy_path}/app/models/imaging_exam.rb", :force => true
+      copy_file "create_imaging_exams.rb", "#{dummy_path}/db/migrate/#{11.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_imaging_exams.rb", :force => true
       copy_file "encounter_note.rb", "#{dummy_path}/app/models/encounter_note.rb", :force => true
       copy_file "create_encounter_notes.rb", "#{dummy_path}/db/migrate/#{10.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_encounter_notes.rb", :force => true
       copy_file "radiation_therapy_prescription.rb", "#{dummy_path}/app/models/radiation_therapy_prescription.rb", :force => true
@@ -60,11 +65,13 @@ module Abstractor
     end
 
     def test_dummy_controllers
+      template "imaging_exams_controller.rb", "#{dummy_path}/app/controllers/imaging_exams_controller.rb", :force => true
       template "encounter_notes_controller.rb", "#{dummy_path}/app/controllers/encounter_notes_controller.rb", :force => true
       template "radiation_therapy_prescriptions_controller.rb", "#{dummy_path}/app/controllers/radiation_therapy_prescriptions_controller.rb", :force => true
     end
 
     def test_dummy_views
+      template "views/imaging_exams/edit.html.haml", "#{dummy_path}/app/views/imaging_exams/edit.html.haml", :force => true
       template "views/encounter_notes/edit.html.haml", "#{dummy_path}/app/views/encounter_notes/edit.html.haml", :force => true
       template "views/radiation_therapy_prescriptions/edit.html.haml", "#{dummy_path}/app/views/radiation_therapy_prescriptions/edit.html.haml", :force => true
     end

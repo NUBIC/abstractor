@@ -32,10 +32,6 @@
   padding: 0.75em 0.5em 0.4em 0.5em;
 }
 
-.abstractor_abstractions fieldset .delete_link {
-  float: right;
-}
-
 .abstractor_abstractions fieldset input.combobox {
   vertical-align: bottom;
   width: 12em !important;
@@ -311,4 +307,7 @@ span.tooltip_img {
 
 .abstractor_abstraction_actions {
   float: right;
+}
+.abstractor_abstraction_actions a {
+  margin: .25em;
 }

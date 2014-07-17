@@ -1,4 +1,8 @@
 FactoryGirl.define do
+  factory :imaging_exam do
+    note_text ''
+  end
+
   factory :encounter_note do
     note_text ''
   end

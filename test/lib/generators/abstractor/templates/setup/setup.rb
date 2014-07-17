@@ -188,4 +188,13 @@ module Setup
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema, :abstractor_rule_type => custom_rule)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'encounter_date')
   end
+
+  def self.imaging_exam
+    dynamic_list_object_type = Abstractor::AbstractorObjectType.where(value: 'dynamic list').first
+    custom_rule = Abstractor::AbstractorRuleType.where(name: 'custom').first
+
+    imaging_confirmed_extent_of_resection_surgery_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_imaging_confirmed_extent_of_resction_surgery', display_name: 'Surgery', abstractor_object_type: dynamic_list_object_type, preferred_name: 'Surgery')
+    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'ImagingExam', abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_surgery_abstractor_abstraction_schema, abstractor_rule_type: custom_rule, dynamic_list_method: 'surgeries_dynamic_list_method')
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'surgery_suggestions')
+  end
 end

@@ -3,7 +3,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing not reviewed suggestions
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -15,7 +15,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing selected suggestions
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -29,7 +29,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing accepted unknown suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -43,7 +43,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing not applicable suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -60,7 +60,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing accepted suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text              |
       | Looking good. KPS: 100 |
@@ -74,7 +74,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Changing status for unknown suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                    |
       | Looking good. Not too sure about KPS though. |
@@ -102,7 +102,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Changing status for not applicable suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                    |
       | Looking good. Not too sure about KPS though. |
@@ -135,7 +135,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Changing status for a suggestion
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text               |
       | Looking good. KPS: 100. |
@@ -165,7 +165,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Changing status for multiple sugestions
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                                      |
       | Looking good. KPS: 100.  On second thought make that KPS: 50.  |
@@ -193,7 +193,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing source for suggestion with source and match value
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                            |
       |The patient is looking good.  KPS: 100|
@@ -206,7 +206,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing source for suggestion with source and no match value
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                |
       |Hello, your KPS is something. Have a great day!|
@@ -219,7 +219,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing source for unknown suggestion without match value
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                |
       |This is your physical assessment. Have a great day!|
@@ -232,7 +232,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Viewing source for suggestion with source and multiple match values
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                                                  |
       |Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!|
@@ -253,7 +253,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: Accessing abstraction edit form
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text              |
       |Hello, your KPS is 100%.|
@@ -293,7 +293,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User creating unknown abstraction
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text              |
       |Hello, your KPS is 100%.|
@@ -315,7 +315,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User creating unknown abstraction when unknown suggestion exists
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                 |
       |Hello, you look good to me.|
@@ -331,7 +331,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User creating not applicable abstraction
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                  |
       |Hello, you look good to me.|
@@ -353,7 +353,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User creating abstraction
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                 |
       |Hello, you look good to me.|
@@ -383,7 +383,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User creating abstraction when matching suggestion exists
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                            |
       | Hello, you look good to me. KPS: 100 |
@@ -398,7 +398,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User setting the value of an abstraction schema with a date object type
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -416,7 +416,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User setting all the values to 'not applicable' for an abstractable entitty
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |
@@ -433,7 +433,7 @@ Feature: Editing encounter note
 
   @javascript
   Scenario: User setting all the values to 'unknown' for an abstractable entitty
-    Given encounter note abstraction schema is set
+    Given abstraction schemas are set
     And encounter notes with the following information exist
       | Note Text                               |
       | Hello, I have no idea what is your KPS. |

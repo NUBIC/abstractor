@@ -18,15 +18,6 @@ Given /^radiation therapy prescription(?: with site "([^"]*)")? exists$/ do |tex
   radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, :site_name => text )
 end
 
-Given /^radiation therapy prescription abstraction schema is set$/ do
-  Abstractor::Setup.system
-  Setup.sites
-  Setup.custom_site_synonyms
-  Setup.site_categories
-  Setup.laterality
-  Setup.radiation_therapy_prescription
-end
-
 Given /^last radiation therapy prescription has anatomical location abstraction$/ do
   radiation_therapy_prescription = RadiationTherapyPrescription.last
   schema = AbstractorAbstractionSchema.where(:predicate => 'has_anatomical_location').first

@@ -7,9 +7,7 @@
 
   .abstractor_abstraction_actions
     = link_to 'Not applicable group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'not applicable')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link", :remote => true
-    %br
     = link_to 'Unknown group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'unknown')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link", :remote => true
     - if abstractor_abstraction_group.removable?
-      %br
       = link_to 'Delete group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group)), :confirm => 'Are you sure?', :method => :delete, :class => "icon_link delete_link", :remote => true
   %hr

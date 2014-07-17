@@ -8,6 +8,7 @@ module Abstractor
       Abstractor::AbstractorObjectType.find_or_create_by_value('string')
       Abstractor::AbstractorObjectType.find_or_create_by_value('radio button list')
       Abstractor::AbstractorObjectType.find_or_create_by_value('date')
+      Abstractor::AbstractorObjectType.find_or_create_by_value('dynamic list')
 
       puts 'Setting up AbstractorRuleType'
       Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name: 'name/value', description:'search for value associated with name')

@@ -3,7 +3,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: Editing an abstraction with radio button list
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |
@@ -27,7 +27,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: Adding and removing abstraction groups
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |
@@ -51,7 +51,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: Viewing abstraction groups with no suggestions
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |
@@ -66,7 +66,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: Viewing abstraction groups with suggestions
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | right temporal lobe                     |
@@ -81,7 +81,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: Adding abstraction groups to abstraction groups with suggestions
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | treat the temporal lobe                 |
@@ -94,7 +94,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: User setting the value of an abstraction schema with a date object type in a group
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |
@@ -109,7 +109,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: User setting all the values to 'not applicable' in an abstraction group
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |
@@ -131,7 +131,7 @@ Feature: Editing radiation therapy prescription
 
   @javascript
   Scenario: User setting all the values to 'unknown' in an abstraction group
-    Given radiation therapy prescription abstraction schema is set
+    Given abstraction schemas are set
     And radiation therapy prescriptions with the following information exist
       | Site                                    |
       | Vague blather.                          |

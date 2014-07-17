@@ -9,7 +9,7 @@ ENV["RAILS_ENV"] ||= "test"
 begin
   require File.expand_path("../../../test/dummy/config/environment.rb", __FILE__)
 rescue LoadError
-  puts ANSI.red{ "ERROR: You must execute `bundle exec rake discerner:test:dummy_app` to run cucumber features"}
+  puts ANSI.red{ "ERROR: You must execute `bundle exec rake abstractor:test:dummy_app` to run cucumber features"}
 end
 
 ENV["RAILS_ROOT"] ||= File.dirname(__FILE__) + "../../../test/dummy"

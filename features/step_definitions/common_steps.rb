@@ -353,3 +353,14 @@ def get_scope(position, scope_selector)
   end
   item
 end
+
+Given /^abstraction schemas are set$/ do
+  Abstractor::Setup.system
+  Setup.encounter_note
+  Setup.sites
+  Setup.custom_site_synonyms
+  Setup.site_categories
+  Setup.laterality
+  Setup.radiation_therapy_prescription
+  Setup.imaging_exam
+end

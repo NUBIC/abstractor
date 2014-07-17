@@ -20,11 +20,6 @@ Given /^encounter note(?: with text "([^"]*)")? exists$/ do |text|
   note = FactoryGirl.create(:epic_encounter_note, encounter_row_src_id: encounter.id, note_text: text)
 end
 
-Given /^encounter note abstraction schema is set$/ do
-  Abstractor::Setup.system
-  Setup.encounter_note
-end
-
 Given /^last encounter note has abstraction$/ do
   note = EncounterNote.last
   schema = AbstractorAbstractionSchema.where(:predicate => 'has_karnofsky_performance_status').first
