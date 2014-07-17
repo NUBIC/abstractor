@@ -1,13 +1,19 @@
 # Abstractor Changelog
 =======
 
+## 1.0.23
+
+Released on July 16, 2014
+
+* Support a dynamic list abstractor object type.
+See https://github.com/NUBIC/abstractor/issues/16
+
 ## 1.0.22
 
 Released on June 19, 2014
 
 * Clicking a label on a suggestion status radio button always updates the first suggestion on the page.
 See https://github.com/NUBIC/abstractor/issues/15
-
 
 ## 1.0.21
 
