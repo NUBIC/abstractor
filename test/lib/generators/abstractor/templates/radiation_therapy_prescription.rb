@@ -1,4 +1,4 @@
 class RadiationTherapyPrescription < ActiveRecord::Base
-  attr_accessible :site_name
   include Abstractor::Abstractable
+  attr_accessible :site_name
 end

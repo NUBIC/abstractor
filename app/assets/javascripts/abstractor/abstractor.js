@@ -71,6 +71,13 @@ Abstractor.AbstractionUI = function(){
     zIndex: 40000,
     dialogClass: "ui-dialog_abstractor"
   });
+
+  $(document).on('change', 'select.indirect_source_list', function () {
+    var source_type = $(this).attr('rel'),
+        value = $(this).find('option:selected').prop('value');
+    $(this).siblings('.indirect_source_text').hide();
+    $(this).siblings('.' + source_type + '_' + value).show();
+  });
 };
 
 Abstractor.AbstractionSuggestionUI = function(){

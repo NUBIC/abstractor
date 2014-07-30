@@ -43,10 +43,9 @@
       = f.label :unknown, 'unknown'
     .column-3
       - abstractor_abstraction = f.object
-      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.reject{|s| s.from_method == 'unknown'}
+      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }
       - abstraction_sources.each do |abstraction_source|
         - from_method = abstraction_source.from_method
-        -#%b= from_method.titleize
         %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstraction_source.id}", :title => "#{abstractor_abstraction.about.class.to_s} #{from_method}"}
           = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstraction_source.id}")
           %br
@@ -56,3 +55,19 @@
       = f.submit 'Save', :class => 'button positive'
       = link_to 'Cancel', abstractor_abstraction, :class => 'button negative', :remote => true
     .clear
+    .indirect_sources
+      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }
+      = f.fields_for :abstractor_indirect_sources, f.object.abstractor_indirect_sources do |abstractor_indirect_source_form|
+        .indirect_source
+          - abstraction_source = abstraction_sources.select { |abstraction_source| abstraction_source.id == abstractor_indirect_source_form.object.abstractor_abstraction_source_id }.first
+          - source_setup = abstractor_abstraction.about.send(abstraction_source.from_method)
+          - sources = source_setup[:sources].all
+          %label
+            Indirect Source:
+            = source_setup[:source_type].tableize.humanize
+          %br
+          = abstractor_indirect_source_form.select :source_id, sources.map{ |s| [s.send(source_setup[:source_name_method]), s.id] }, { :include_blank => 'None' }, :size => "#{sources.size + 1}", class: 'indirect_source_list', rel: "#{source_setup[:source_type]}"
+          - sources.each do |source|
+            - hidden = abstractor_indirect_source_form.object.source_id == source.id ? '' : 'hidden'
+            %div{ class: "indirect_source_text #{hidden} #{source_setup[:source_type]}_#{source.id}"}
+              = source.send(source_setup[:source_method])

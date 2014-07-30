@@ -304,7 +304,7 @@ describe RadiationTherapyPrescription do
         string_object_type = Abstractor::AbstractorObjectType.where(value: 'string').first
         unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
         moomin_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_moomin', display_name: 'Moomin', abstractor_object_type: string_object_type, preferred_name: 'Moomin')
-        abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => moomin_abstraction_schema, :abstractor_rule_type => unknown_rule)
+        abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => moomin_abstraction_schema)
         @radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       end
 

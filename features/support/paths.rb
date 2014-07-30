@@ -4,8 +4,10 @@ module NavigationHelpers
 
     when /the home page/
       root_path
-    when /the last imaging exam edit page/
-      edit_imaging_exam_path(ImagingExam.last)
+    when /the last surgery edit page/
+      edit_surgery_path(Surgery.last)
+    when /the last pathology case edit page/
+      edit_pathology_case_path(PathologyCase.last)
     when /the last encounter note edit page/
       edit_encounter_note_path(EncounterNote.last)
     when /the last radiation therapy prescription edit page/

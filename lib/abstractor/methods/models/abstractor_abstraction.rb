@@ -11,19 +11,21 @@ module Abstractor
 
           base.send :has_many, :abstractor_suggestions
           base.send :has_many, :abstractor_abstraction_sources, :through => :abstractor_abstractor_suggestions
+          base.send :has_many, :abstractor_indirect_sources
 
           base.send :has_one, :abstractor_abstraction_group_member
           base.send :has_one, :abstractor_abstraction_group, :through => :abstractor_abstraction_group_member
           base.send :has_one, :abstractor_abstraction_schema, :through => :abstractor_subject
 
           base.send :accepts_nested_attributes_for, :abstractor_suggestions
+          base.send :accepts_nested_attributes_for, :abstractor_indirect_sources
 
           base.send :belongs_to, :about, polymorphic: true
 
-          base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at
+          base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
 
           # Hooks
-          base.send :after_save, :review_matching_suggestions#, :if => lambda {|abstractor_abstraction| abstractor_abstraction.value_changed?}
+          base.send :after_save, :review_matching_suggestions
 
           base.send(:include, InstanceMethods)
           base.extend(ClassMethods)
@@ -67,6 +69,19 @@ module Abstractor
           def unreviewed?
             abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first
             abstractor_suggestions.any? { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_status == abstractor_suggestion_status_needs_review }
+          end
+
+          ##
+          # Detects if the abstraction already has an Abstractor::AbstractorIndirectSource based on the Abstractor::AbstractorAbstractionSource passed via the abstractor_abstraction_source parameter.
+          # Retuns it if present.  Otherwise nil.
+          #
+          # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source An instance of Abstractor::AbstractorAbstractionSource to check for the presence of an Abstractor::AbstractorIndirectSource.
+          # @return [Abstractor::AbstractorIndirectSource, nil]
+          def detect_abstractor_indirect_source(abstractor_abstraction_source)
+            abstractor_indirect_source = nil
+            abstractor_indirect_source = abstractor_indirect_sources(true).detect do |ais|
+              ais.abstractor_abstraction_source == abstractor_abstraction_source
+            end
           end
         end
 

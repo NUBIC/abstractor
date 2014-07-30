@@ -7,10 +7,13 @@ module Abstractor
 
           # Associations
           base.send :belongs_to, :abstractor_subject
+          base.send :belongs_to, :abstractor_rule_type
+          base.send :belongs_to, :abstractor_abstraction_source_type
           base.send :has_many, :abstractor_suggestion_sources
           base.send :has_many, :abstractor_abstractions, :through => :abstractor_suggestion_sources
+          base.send :has_many, :abstractor_indirect_sources
 
-          base.send :attr_accessible, :abstractor_subject, :abstractor_subject_id, :deleted_at, :from_method, :custom_method
+          base.send :attr_accessible, :abstractor_subject, :abstractor_subject_id, :deleted_at, :from_method, :custom_method, :abstractor_rule_type, :abstractor_rule_type_id, :abstractor_abstraction_source_type, :abstractor_abstraction_source_type_id
         end
 
         def normalize_from_method_to_sources(about)

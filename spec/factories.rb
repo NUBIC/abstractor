@@ -1,5 +1,23 @@
 FactoryGirl.define do
+  factory :surgical_procedure_report do
+    note_text ''
+    sequence(:patient_id)
+  end
+
   factory :imaging_exam do
+    note_text ''
+    sequence(:patient_id)
+  end
+
+  factory :surgery do
+    sequence(:surg_case_id)
+    sequence(:surg_case_nbr) do |n|
+      "OR-#{n}"
+    end
+    sequence(:patient_id)
+  end
+
+  factory :pathology_case do
     note_text ''
   end
 

@@ -8,20 +8,20 @@ namespace :abstractor do
       Abstractor::Setup.system
     end
 
-    desc "Setup Stanford CoreNLP library in lib/stanford-corenlp-full-2014-01-04/ directory"
+    desc "Setup Stanford CoreNLP library in lib/stanford-corenlp-full-2014-06-16/ directory"
     task :stanford_core_nlp => :environment do
       puts 'Please be patient...This could take a while.'
-      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04.zip"
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16.zip"
       open(file, 'wb') do |fo|
-        fo.print open('http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip').read
+        fo.print open('http://nlp.stanford.edu/software/stanford-corenlp-full-2014-06-16.zip').read
       end
 
-      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04.zip"
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16.zip"
       destination = "#{Rails.root}/lib/"
       puts 'Unzipping...'
       unzip_file(file, destination)
 
-      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/bridge.jar"
+      file = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/bridge.jar"
       open(file, 'wb') do |fo|
         fo.print open('https://github.com/louismullie/stanford-core-nlp/blob/master/bin/bridge.jar?raw=true').read
       end

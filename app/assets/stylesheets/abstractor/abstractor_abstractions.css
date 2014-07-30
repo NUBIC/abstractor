@@ -311,3 +311,23 @@ span.tooltip_img {
 .abstractor_abstraction_actions a {
   margin: .25em;
 }
+
+.abstractor_abstraction_edit .indirect_source_list {
+  margin-bottom: 1em;
+}
+
+.indirect_sources label {
+  font-weight: bold !important;
+}
+
+.indirect_source_list {
+  width: 20em;
+}
+
+.indirect_source_text {
+   border: 1px solid #969696;
+}
+
+.indirect_source {
+  margin-bottom: 1em;
+}

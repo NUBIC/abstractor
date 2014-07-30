@@ -18,3 +18,22 @@ Setup.imaging_exam
 ie = ImagingExam.create!(note_text: 'MRI looks good to me.')
 ie.abstract
 http://0.0.0.0:3000/imaging_exams/1/edit
+
+
+Abstractor::Setup.system
+require './lib/setup/setup/'
+Setup.surgery
+s = Surgery.create!(surg_case_id: 1, surg_case_nbr: 'OR-1', patient_id: 1)
+s.abstract
+s = Surgery.create!(surg_case_id: 2, surg_case_nbr: 'OR-2', patient_id: 1)
+s.abstract
+ie = ImagingExam.create!(note_text: 'MRI looks good to me 1.', patient_id: 1, report_date: '1/1/2014', accession_number: '123')
+ie = ImagingExam.create!(note_text: 'MRI looks good to me 2.', patient_id: 1, report_date: '5/1/2014', accession_number: '456')
+ie = ImagingExam.create!(note_text: 'MRI looks good to me 3.', patient_id: 2, report_date: '8/1/2014', accession_number: '789')
+
+spr = SurgicalProcedureReport.create!(note_text: 'Surgery went well 1.', patient_id: 1, report_date: '9/1/2013', reference_number: '111')
+spr = SurgicalProcedureReport.create!(note_text: 'Surgery went well 2.', patient_id: 1, report_date: '10/1/2013', reference_number: '222')
+spr = SurgicalProcedureReport.create!(note_text: 'Surgery went not so well me 3.', patient_id: 2, report_date: '11/1/2013', reference_number: '333')
+
+
+http://0.0.0.0:3000/surgeries/1/edit

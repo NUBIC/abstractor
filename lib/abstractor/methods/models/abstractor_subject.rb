@@ -6,7 +6,6 @@ module Abstractor
           base.send :include, SoftDelete
 
           # Associations
-          base.send :belongs_to, :abstractor_rule_type
           base.send :belongs_to, :abstractor_abstraction_schema
 
           base.send :has_one, :abstractor_subject_group_member
@@ -19,119 +18,168 @@ module Abstractor
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::AbstractorSubjectRelation", :foreign_key => "subject_id"
 
 
-          base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :abstractor_rule_type, :abstractor_rule_type_id, :subject_type, :dynamic_list_method
+          base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :subject_type, :dynamic_list_method
           base.send(:include, InstanceMethods)
         end
 
         module InstanceMethods
           ##
-          # Creates or finds and instance of an Abstactor::AbstractorAbstraction.
+          # Creates or finds an instance of an Abstractor::AbstractorAbstraction.
           # The method will create instances of Abstractor::AbstractorSuggestion and
           # Abstractor::AbstractorSuggestionSource for the abstractable entity
           # passed via the about parameter.
           #
-          # The Abstractor::AbstractorSubject#abstractor_rule_type attribute determines the abstraction strategy:
+          # The method cycles through each Abstractor::AbstractorAbstractionSource setup
+          # for the instance of the Abstractor::AbstractorSubject.
+          # The Abstractor::AbstractorSubject#abstractor_abstraction_source_type
+          # attribute determines the abstraction strategy:
+          #
+          # * 'nlp suggestion': creates instances of Abstractor::AbstractorSuggestion based on natural language processing (nlp) logic searching the text provided by the Abstractor::AbstractorSubject#from_methd attribute.
+          # * 'custom suggestion': creates instances of Abstractor::AbstractorSuggestion based on custom logic delegated to the method configured in AbstractorAbstractionSource#custom_method.
+          # * 'indirect': creates an instance of Abstractor::AbstractorIndirectSource wih null source_type, source_id, source_method attributes -- all waiting to be set upon selection of an indirect source.
+          #
+          # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @return [void]
+          def abstract(about)
+            abstractor_abstraction = about.find_or_create_abstractor_abstraction(abstractor_abstraction_schema, self)
+
+            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+              case abstractor_abstraction_source.abstractor_abstraction_source_type.name
+              when 'nlp suggestion'
+                abstract_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+              when 'custom suggestion'
+                abstract_custom_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+              when 'indirect'
+                abstract_indirect_source(about, abstractor_abstraction, abstractor_abstraction_source)
+              end
+            end
+          end
+
+          ##
+          # Creates an instance of Abstractor::AbstractorIndirectSource -- if one does not already exist --
+          # for the abstractor_abstraction and abstraction_source parameters.
+          # An 'indirect' Abstractor::AbstractorAbstractionSources give developers
+          # the ability to define a pool of documents that are indrectly related to an
+          # abstraction.  The developer is responsible for implementing a
+          # method on the abstractable enttiy specified in Abstractor::AbstractorAbstractionSource#from_method.
+          # The method should return a hash with the following keys populated:
+          #
+          # * [Array<ActiveRecord::Base>] :sources An array of active record objects that constitute the list of indirect sources.
+          # * [Symbol] :source_id A method specifying the primary key of each member in sources.
+          # * [Symbol] :source_method A method specifying the source text of each member in sources.
+          #
+          # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to insert an indirect source.
+          # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the indirec source.
+          # @return [void]
+          def abstract_indirect_source(about, abstractor_abstraction, abstractor_abstraction_source)
+            if !abstractor_abstraction.detect_abstractor_indirect_source(abstractor_abstraction_source)
+              source = about.send(abstractor_abstraction_source.from_method)
+              abstractor_abstraction.abstractor_indirect_sources.build(abstractor_abstraction_source: abstractor_abstraction_source, source_type: source[:source_type], source_method: source[:source_method])
+              abstractor_abstraction.save!
+            end
+          end
+
+          ##
+          # Creates instances of Abstractor::AbstractorSuggestion and Abstractor::AbstractorSuggestionSource
+          # based on natural languange processing (nlp).
+          #
+          # The Abstractor::AbstractorSubject#abstractor_rule_type attribute determines the nlp strategy to employ:
           #
           # * 'name/value': attempts to search for non-negated sentences mentioning of an Abstractor::AbstractorAbstractionSchema#predicate and an Abstractor::AbstractorObjectValue
           # * 'value': attempts to search for non-negated sentences mentioning an Abstractor::AbstractorObjectValue
           # * 'unknown': will automatically create an 'unknown' Abstractor::AbstractorSuggestion
-          # * 'custom': will create instances of Abstractor::AbstractorSuggestion based on custom logic delegated to the method on the about parameter configured in AbstractorAbstractionSource#custom_method
           #
-          # @param [ActiveRecord::Base] about the entity abstract.  An instnace of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to make suggestions against.
+          # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the rule type and from method to make nlp suggestions.
           # @return [void]
-          def abstract(about)
-            abstractor_abstraction = about.find_or_create_abstractor_abstraction(abstractor_abstraction_schema, self)
-            case abstractor_rule_type.name
+
+          def abstract_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+            case abstractor_abstraction_source.abstractor_rule_type.name
             when 'name/value'
-              abstract_name_value(about, abstractor_abstraction)
+              abstract_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
             when 'value'
-              abstract_value(about, abstractor_abstraction)
+              abstract_value(about, abstractor_abstraction, abstractor_abstraction_source)
             when 'unknown'
-              abstract_unknown(about, abstractor_abstraction)
-            when 'custom'
-              abstract_custom(about, abstractor_abstraction)
+              abstract_unknown(about, abstractor_abstraction, abstractor_abstraction_source)
             end
           end
 
-          # Cycle through instances of Abstractor::AbstractorSuggestionSources
-          # --each time calling the method on the about paramter configured by
-          # the AbstractorAbstractionSource#custom_method attribute.
-          # Setting up an Abstractor::AbstractorSubject with a
-          # 'custom' rule type obligates the developer to implement an instance
-          # method on the abstractable entitty to make suggestions as
-          # appropriate.  The 'custom' rule type is intened to faciliate a
-          # way to generate suggestions in a completely customizable way.
+          # Creates instances of Abstractor::AbstractorSuggestion and Abstractor::AbstractorSuggestionSource
+          # based on calling the method  configured by the AbstractorAbstractionSource#custom_method attribute.
+          # The method is called on the abstractable entity passed via the about parameter.
           #
-          # @param [ActiveRecord::Base] about the entity to abstraction
-          # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction the instance of an abstractor abstraction
+          # Setting up an Abstractor::AbstractorSubject with an AbstractorAbstractionSource
+          # with an AbstractorAbstractionSource#abstractor_abstraction_source_type attribute
+          # set to 'custom suggestion' obligates the developer to implement an instance
+          # method on the abstractable entitty to make suggestions as
+          # appropriate.  The 'custom suggestion' source type is
+          # intended to faciliate the generation of suggestions in a customizable way.
+          #
+          # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to make suggestions against.
+          # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the custom method to invoke on the abstractable entity to make custom suggestions.
           # @return [void]
-          def abstract_custom(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              suggested_values = about.send(abstractor_abstraction_source.custom_method)
-              suggested_values.each do |suggested_value|
-                suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, suggested_value, nil, nil, abstractor_abstraction_source.custom_method)
+          def abstract_custom_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+            suggested_values = about.send(abstractor_abstraction_source.custom_method)
+            suggested_values.each do |suggested_value|
+              suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, suggested_value, nil, nil, abstractor_abstraction_source.custom_method)
+            end
+            create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+          end
+
+          def abstract_unknown(about, abstractor_abstraction, abstractor_abstraction_source)
+            create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+          end
+
+          def abstract_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstract_sentential_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+          end
+
+          def abstract_sentential_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
+              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
+
+              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              case adapter
+              when 'sqlserver'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
+              when 'sqlite3'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
+              when 'postgresql'
+                abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
               end
-              create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            end
-          end
 
-          def abstract_unknown(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            end
-          end
+              abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
 
-          def abstract_value(about, abstractor_abstraction)
-            abstract_sentential_value(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            end
-          end
+              adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
+              case adapter
+              when 'sqlserver'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_values.value + '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              when 'sqlite3'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              when 'postgresql'
+                abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
+              end
 
-          def abstract_sentential_value(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-                abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
-                abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
-
-                adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
-                case adapter
-                when 'sqlserver'
-                  abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_value_variants.value + '%'))", abstractor_object_value_ids, source[:source_id]).all
-                when 'sqlite3'
-                  abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
-                when 'postgresql'
-                  abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_value_variants.value || '%'))", abstractor_object_value_ids, source[:source_id]).all
-                end
-
-                abstractor_object_values = abstractor_object_value_variants.map(&:abstractor_object_value).uniq
-
-                adapter = ActiveRecord::Base.connection.instance_values["config"][:adapter]
-                case adapter
-                when 'sqlserver'
-                  abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' + abstractor_object_values.value + '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
-                when 'sqlite3'
-                  abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} LIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
-                when 'postgresql'
-                  abstractor_object_values.concat(Abstractor::AbstractorObjectValue.where("abstractor_object_values.id in (?) AND EXISTS (SELECT 1 FROM #{source[:source_type].table_name} WHERE #{source[:source_type].table_name}.id = ? AND #{source[:source_type].table_name}.#{source[:source_method]} ILIKE ('%' || abstractor_object_values.value || '%'))", abstractor_object_value_ids, source[:source_id]).all).uniq
-                end
-
-                parser = Abstractor::Parser.new(abstractor_text)
-                abstractor_object_values.each do |abstractor_object_value|
-                  object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
-                    ranges = parser.range_all(Regexp.escape(object_variant.downcase))
-                    if ranges.any?
-                      ranges.each do |range|
-                        sentence = parser.find_sentence(range)
-                        if sentence
-                          scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                          reject = (
-                                    Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
-                                    Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
-                                  )
-                          if !reject
-                            suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
-                          end
+              parser = Abstractor::Parser.new(abstractor_text)
+              abstractor_object_values.each do |abstractor_object_value|
+                object_variants(abstractor_object_value, abstractor_object_value_variants).each do |object_variant|
+                  ranges = parser.range_all(Regexp.escape(object_variant.downcase))
+                  if ranges.any?
+                    ranges.each do |range|
+                      sentence = parser.find_sentence(range)
+                      if sentence
+                        scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                        reject = (
+                                  Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
+                                  Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
+                                )
+                        if !reject
+                          suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
                         end
                       end
                     end
@@ -141,34 +189,30 @@ module Abstractor
             end
           end
 
-          def abstract_name_value(about, abstractor_abstraction)
-            abstract_canonical_name_value(about, abstractor_abstraction)
-            abstract_sentential_name_value(about, abstractor_abstraction)
-            create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            end
+          def abstract_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction, abstractor_abstraction_source)
+            create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
           end
 
-          def abstract_canonical_name_value(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-                abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
-                parser = Abstractor::Parser.new(abstractor_text)
-                abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
-                  abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
-                    abstractor_object_value.object_variants.each do |object_variant|
-                      match_value = "#{Regexp.escape(predicate_variant)}:\s*#{Regexp.escape(object_variant)}"
-                      matches = parser.scan(match_value, word_boundary: true).uniq
-                      matches.each do |match|
-                        suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
-                      end
+          def abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
+              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              parser = Abstractor::Parser.new(abstractor_text)
+              abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
+                abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                  abstractor_object_value.object_variants.each do |object_variant|
+                    match_value = "#{Regexp.escape(predicate_variant)}:\s*#{Regexp.escape(object_variant)}"
+                    matches = parser.scan(match_value, word_boundary: true).uniq
+                    matches.each do |match|
+                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
+                    end
 
-                      match_value = "#{Regexp.escape(predicate_variant)}#{Regexp.escape(object_variant)}"
-                      matches = parser.scan(match_value, word_boundary: true).uniq
-                      matches.each do |match|
-                        suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
-                      end
+                    match_value = "#{Regexp.escape(predicate_variant)}#{Regexp.escape(object_variant)}"
+                    matches = parser.scan(match_value, word_boundary: true).uniq
+                    matches.each do |match|
+                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
                     end
                   end
                 end
@@ -176,31 +220,29 @@ module Abstractor
             end
           end
 
-          def abstract_sentential_name_value(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-                abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
-                parser = Abstractor::Parser.new(abstractor_text)
-                abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
-                  ranges = parser.range_all(Regexp.escape(predicate_variant))
-                  if ranges.any?
-                    ranges.each do |range|
-                      sentence = parser.find_sentence(range)
-                      if sentence
-                        abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
-                          abstractor_object_value.object_variants.each do |object_variant|
-                            match = parser.match_sentence(sentence[:sentence], Regexp.escape(object_variant))
-                            if match
-                              scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                              reject = (
-                                         Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
-                                         Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
-                                         Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
-                                         Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
-                                       )
-                              if !reject
-                                suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
-                              end
+          def abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
+              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              parser = Abstractor::Parser.new(abstractor_text)
+              abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
+                ranges = parser.range_all(Regexp.escape(predicate_variant))
+                if ranges.any?
+                  ranges.each do |range|
+                    sentence = parser.find_sentence(range)
+                    if sentence
+                      abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                        abstractor_object_value.object_variants.each do |object_variant|
+                          match = parser.match_sentence(sentence[:sentence], Regexp.escape(object_variant))
+                          if match
+                            scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                            reject = (
+                                       Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
+                                       Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
+                                       Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
+                                       Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
+                                     )
+                            if !reject
+                              suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
                             end
                           end
                         end
@@ -253,27 +295,25 @@ module Abstractor
             suggested_value.instance_of?(Abstractor::AbstractorObjectValue)
           end
 
-          def create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction)
-            abstractor_abstraction_sources.each do |abstractor_abstraction_source|
-              abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-                abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
-                parser = Abstractor::Parser.new(abstractor_text)
-                #Create an 'unknown' suggestion based on match name only if we have not made a suggstion
-                if abstractor_abstraction.abstractor_suggestions(true).empty?
-                  abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
-                    ranges = parser.range_all(Regexp.escape(predicate_variant))
-                    if ranges
-                      ranges.each do |range|
-                        sentence = parser.find_sentence(range)
-                        if sentence
-                          scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                          reject = (
-                                    Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
-                                    Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant)
-                                  )
-                          if !reject
-                            suggest(abstractor_abstraction, abstractor_abstraction_source, predicate_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil)
-                          end
+          def create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction, abstractor_abstraction_source)
+            abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
+              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              parser = Abstractor::Parser.new(abstractor_text)
+              #Create an 'unknown' suggestion based on match name only if we have not made a suggstion
+              if abstractor_abstraction.abstractor_suggestions(true).empty?
+                abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
+                  ranges = parser.range_all(Regexp.escape(predicate_variant))
+                  if ranges
+                    ranges.each do |range|
+                      sentence = parser.find_sentence(range)
+                      if sentence
+                        scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                        reject = (
+                                  Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
+                                  Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant)
+                                )
+                        if !reject
+                          suggest(abstractor_abstraction, abstractor_abstraction_source, predicate_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil)
                         end
                       end
                     end

@@ -1,5 +1,7 @@
 module Abstractor
   module Abstractable
+    # @!parse include Abstractor::Abstractable::InstanceMethods
+    # @!parse extend Abstractor::Abstractable::ClassMethods
     def self.included(base)
       base.class_eval do
         has_many :abstractor_abstractions, class_name: Abstractor::AbstractorAbstraction, as: :about
@@ -66,16 +68,20 @@ module Abstractor
     end
 
     module ClassMethods
-      def by_abstractor_suggestion_status(abstractor_suggestion_status)
-        abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
-        abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-        abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
-
-        case abstractor_suggestion_status
+      ##
+      # Returns all abstractable entities filtered by the parameter abstractor_abstraction_status:
+      #
+      # * 'needs_review': Filter abstractable entites having at least one abstraction without a determined value (value, unknown or not_applicable).
+      # * 'reviewed': Filter abstractable entites having no abstractions without a determined value (value, unknown or not_applicable).
+      #
+      # @param [String] abstractor_abstraction_status Filter abstactable entities that an abstraction that 'needs_review' or are all abstractions are 'reviewed'.
+      # @return [ActiveRecord::Relation] List of abstractable entities.
+      def by_abstractor_abstraction_status(abstractor_abstraction_status)
+        case abstractor_abstraction_status
         when 'needs_review'
-          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id AND aas.abstractor_suggestion_status_id = ? WHERE #{self.table_name}.id = aa.about_id)", abstractor_suggestion_status_needs_review])
+          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' WHERE #{self.table_name}.id = aa.about_id AND aa.value IS NULL AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
         when 'reviewed'
-          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id WHERE #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' JOIN abstractor_suggestions aas ON aa.id = aas.abstractor_abstraction_id  AND aas.abstractor_suggestion_status_id = ? WHERE #{self.table_name}.id = aa.about_id)", abstractor_suggestion_status_needs_review])
+          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' WHERE #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}'WHERE #{self.table_name}.id = aa.about_id AND aa.value IS NOT NULL AND aa.unknown != ? AND aa.not_applicable != ?)", true, true])
         else
           where(nil)
         end

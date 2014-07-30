@@ -1,6 +1,43 @@
 # Abstractor Changelog
 =======
 
+## 2.0.0
+
+Released on July 29, 2014
+
+* Improve the test coverage of supporting a dynamic list
+abstractor object type.
+See https://github.com/NUBIC/abstractor/issues/16
+* Querying abstractions that 'need review' or are
+'reviewed' should be based on whether an
+abstraction has been answered.
+See https://github.com/NUBIC/abstractor/issues/19
+* Add support for selecting indirect sources as
+evidence of an abstraction.
+See https://github.com/NUBIC/abstractor/issues/18
+
+Bumping to version 2.0 because this
+commit includes a migration that
+* adds a column abstractor_abstraction_source_type_id
+to abstractor_abstraction_sources, which is a
+foreign key to a new table
+abstractor_abstraction_source_types.  There
+are kinds of types: 'nlp suggestion',
+'custom suggestion' and 'indirect'.
+
+* moves abstractor_rule_type_id from
+abstractor_subjects to
+abstractor_abstraction_sources and now
+confines its use to sources of only
+type 'nlp suggestion'
+
+Existing users will need to migrate data
+This will entail creating a script to
+update abstractor\_abstraction\_source_type\_id
+and abstractor\_rule\_type\_id
+for exisitng entries in
+abstractor\_abstraction\_sources.
+
 ## 1.0.23
 
 Released on July 16, 2014

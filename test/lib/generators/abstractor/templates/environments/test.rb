@@ -36,13 +36,13 @@ Dummy::Application.configure do
   config.active_support.deprecation = :stderr
   StanfordCoreNLP.use :english
   StanfordCoreNLP.model_files = {}
-  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/"
-  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-01-04/"
+  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/"
+  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/"
   StanfordCoreNLP.default_jars = [
     "joda-time.jar",
     "xom.jar",
-    "stanford-corenlp-3.3.1.jar",
-    "stanford-corenlp-3.3.1-models.jar",
+    "stanford-corenlp-3.4.jar",
+    "stanford-corenlp-3.4-models.jar",
     "jollyday.jar",
     "bridge.jar"
   ]

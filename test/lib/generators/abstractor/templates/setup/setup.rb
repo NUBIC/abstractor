@@ -65,7 +65,7 @@ module Setup
   def self.radiation_therapy_prescription
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
-
+    source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
 
     anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
@@ -79,8 +79,8 @@ module Setup
 
     location_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'Anatomical Location')
 
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, :abstractor_rule_type => v_rule)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 1)
 
     laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => radio_button_list_object_type, preferred_name: 'Laterality')
@@ -94,26 +94,27 @@ module Setup
       Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_object_value => object_value)
     end
 
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_rule_type => v_rule)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => laterality_abstractor_abstraction_schema)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 2)
 
     date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
-    unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
+    unknown_rule_type = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     prescription_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_radiation_therapy_prescription_date', display_name: 'Radiation therapy prescription date', abstractor_object_type: date_object_type, preferred_name: 'Radiation therapy prescription date')
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => prescription_date_abstractor_abstraction_schema, :abstractor_rule_type => unknown_rule)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => prescription_date_abstractor_abstraction_schema)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_abstraction_source_type: source_type_nlp_suggestion, abstractor_rule_type: unknown_rule_type)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 3)
   end
 
   def self.encounter_note
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
+    source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     kps_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status', display_name: 'Karnofsky performance status', abstractor_object_type: list_object_type, preferred_name: 'Karnofsky performance status')
     Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, value: 'kps')
     Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, value: 'Karnofsky performance status (assessment scale)')
     Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, value: 'Karnofsky index')
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_abstractor_abstraction_schema, :abstractor_rule_type => n_v_rule)
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_abstractor_abstraction_schema)
     abstractor_object_values = []
     abstractor_object_value = nil
     abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: '100% - Normal; no complaints; no evidence of disease.')
@@ -180,21 +181,37 @@ module Setup
     abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: '0% ')
     abstractor_object_value.save
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text')
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => n_v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
 
     date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
-    custom_rule = Abstractor::AbstractorRuleType.where(name: 'custom').first
+    custom_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'custom suggestion').first
     kps_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status_date', display_name: 'Karnofsky performance status date', abstractor_object_type: date_object_type, preferred_name: 'Karnofsky performance status date')
-    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema, :abstractor_rule_type => custom_rule)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'encounter_date')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => kps_date_abstractor_abstraction_schema)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'encounter_date', abstractor_abstraction_source_type: custom_suggestion_source_type)
   end
 
-  def self.imaging_exam
+  def self.pathology_case
     dynamic_list_object_type = Abstractor::AbstractorObjectType.where(value: 'dynamic list').first
-    custom_rule = Abstractor::AbstractorRuleType.where(name: 'custom').first
+    nlp_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
+    unknown_rule_type = Abstractor::AbstractorRuleType.where(name: 'unknown').first
 
-    imaging_confirmed_extent_of_resection_surgery_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_imaging_confirmed_extent_of_resction_surgery', display_name: 'Surgery', abstractor_object_type: dynamic_list_object_type, preferred_name: 'Surgery')
-    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'ImagingExam', abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_surgery_abstractor_abstraction_schema, abstractor_rule_type: custom_rule, dynamic_list_method: 'surgeries_dynamic_list_method')
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', custom_method: 'surgery_suggestions')
+    surgery_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_surgery', display_name: 'Surgery', abstractor_object_type: dynamic_list_object_type, preferred_name: 'Surgery')
+    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'PathologyCase', abstractor_abstraction_schema: surgery_abstraction_schema, dynamic_list_method: 'patient_surgeries')
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: nlp_suggestion_source_type, abstractor_rule_type: unknown_rule_type)
+  end
+
+  def self.surgery
+    indirect_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    imaging_confirmed_extent_of_resection_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_imaging_confirmed_extent_of_resection', display_name: 'Extent of resection', abstractor_object_type: list_object_type, preferred_name: 'Extent of resection')
+    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Gross total resection')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Subtotal resection')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'Surgery', abstractor_abstraction_schema: imaging_confirmed_extent_of_resection_abstraction_schema)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, abstractor_abstraction_source_type: indirect_source_type, from_method: 'patient_imaging_exams')
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, abstractor_abstraction_source_type: indirect_source_type, from_method: 'patient_surgical_procedure_reports')
   end
 end

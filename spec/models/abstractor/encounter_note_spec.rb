@@ -9,47 +9,48 @@ describe EncounterNote do
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
-    @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown, :abstractor_rule_type => unknown_rule)
+    @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown)
     @abstractor_abstraction_schema_kps_date = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status_date').first
     @abstractor_subject_abstraction_schema_kps_date = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps_date.id).first
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text')
+    source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text', abstractor_abstraction_source_type: source_type_nlp_suggestion, :abstractor_rule_type => unknown_rule)
     @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
     @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
     @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
 
   describe "abstracting" do
-    it "can report its abstractor subjects" do
+    it "can report its abstractor subjects", focus: false do
       abstractor_subjects = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s)
       Set.new(EncounterNote.abstractor_subjects).should == Set.new(abstractor_subjects)
     end
 
-    it "can report its abstractor abstraction schemas" do
+    it "can report its abstractor abstraction schemas", focus: false do
       Set.new(EncounterNote.abstractor_abstraction_schemas).should == Set.new([@abstractor_abstraction_schema_kps, @abstractor_abstraction_always_unknown, @abstractor_abstraction_schema_kps_date])
     end
 
     #abstractions
-    it "creates a 'has_always_unknown' abstraction for a rule type of 'unknown'" do
+    it "creates a 'has_always_unknown' abstraction for a rule type of 'unknown'", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
 
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown).should_not be_nil
     end
 
-    it "creates an abstraction with an suggestion of 'unknown' for a rule type of 'unknown'" do
+    it "creates an abstraction with an suggestion of 'unknown' for a rule type of 'unknown'", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown).abstractor_suggestions.first.unknown.should be_true
     end
 
-    it "creates a 'has_karnofsky_performance_status' abstraction'" do
+    it "creates a 'has_karnofsky_performance_status' abstraction'", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
       @encounter_note.abstract
 
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).should_not be_nil
     end
 
-    it "does not create another 'has_karnofsky_performance_status' abstraction upon re-abstraction" do
+    it "does not create another 'has_karnofsky_performance_status' abstraction upon re-abstraction", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 90.')
       @encounter_note.abstract
       @encounter_note.reload.abstract
@@ -82,25 +83,25 @@ describe EncounterNote do
     end
 
     #suggestion suggested value
-    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the canonical name/value format)" do
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the canonical name/value format)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value.should == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'
     end
 
-    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the squished canonical name/value format)" do
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the squished canonical name/value format)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status90.')
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value.should == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'
     end
 
-    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the sentential format)" do
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the sentential format)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's Karnofsky performance status is 20.")
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value.should == "20% - Very sick; hospital admission necessary; active supportive treatment necessary."
     end
 
-    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the canonical name/value format)" do
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the canonical name/value format)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
       @encounter_note.abstract
 
@@ -411,25 +412,25 @@ describe EncounterNote do
         @encounter_note.abstract
       end
 
-      it "can report what needs to be reviewed" do
-        EncounterNote.by_abstractor_suggestion_status('needs_review').should == [@encounter_note]
+      it "can report what needs to be reviewed", focus: false do
+        EncounterNote.by_abstractor_abstraction_status('needs_review').should == [@encounter_note]
       end
 
-      it "can report what has been reviewed" do
+      it "can report what has been reviewed", focus: false do
         @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
           abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
           abstractor_suggestion.save
         end
 
-        EncounterNote.by_abstractor_suggestion_status('reviewed').should == [@encounter_note]
+        EncounterNote.by_abstractor_abstraction_status('reviewed').should == [@encounter_note]
       end
 
-      it "can report what needs to be reviewed for an instance" do
+      it "can report what needs to be reviewed for an instance", focus: false do
         @encounter_note.reload.abstractor_abstractions_by_abstractor_suggestion_status([@abstractor_suggestion_status_needs_review]).size.should == 3
       end
 
-      it "can report what has been reviewed for an instance" do
+      it "can report what has been reviewed for an instance", focus: false do
         abstractor_suggestion = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first
         abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
         abstractor_suggestion.save

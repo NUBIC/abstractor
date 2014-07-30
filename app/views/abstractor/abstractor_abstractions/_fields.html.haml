@@ -57,7 +57,7 @@
             %hr
     - else
       .column-9
-        - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+        - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }.each do |abstractor_abstraction_source|
           - from_method = abstractor_abstraction_source.from_method
           - if about.respond_to?(from_method)
             %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstractor_abstraction_source.id}", :title => "#{about.class.to_s} #{from_method}"}
