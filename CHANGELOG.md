@@ -1,6 +1,18 @@
 # Abstractor Changelog
 =======
 
+## 2.0.1
+
+Released on July 31, 2014
+
+* Display the user interface the source specified
+in the suggestion source.
+See https://github.com/NUBIC/abstractor/issues/20
+
+* The system should be able to handle a nil
+'from_method' setup for an abstraction source.
+See https://github.com/NUBIC/abstractor/issues/21
+
 ## 2.0.0
 
 Released on July 29, 2014

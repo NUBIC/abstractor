@@ -3,7 +3,7 @@ Abstractor
 Abstractor is a Rails engine gem for deriving discrete data points
 from narrative text via natural language processing.  The gem includes
 a user interface to present the abstracted data points for
-confirmation/revision by curator.
+confirmation/revision by a curator.
 
 Reader's note: this README uses [YARD][] markup to provide links to
 Abstractor's API documentation. If you aren't already, consider reading it
