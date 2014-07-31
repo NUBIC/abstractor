@@ -1,4 +1,10 @@
 FactoryGirl.define do
+  factory :surgical_procedure do
+    sequence(:surg_case_id)
+    description ''
+    modifier    ''
+  end
+
   factory :surgical_procedure_report do
     note_text ''
     sequence(:patient_id)

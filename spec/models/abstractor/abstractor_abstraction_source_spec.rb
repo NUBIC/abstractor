@@ -11,17 +11,23 @@ describe  Abstractor::AbstractorAbstractionSource do
 
   it "can normalize its from method from a string", focus: false do
     abstractor_abstraction_source = FactoryGirl.create(:abstractor_abstraction_source, abstractor_subject: @abstractor_subject, from_method: 'note_text')
-    abstractor_abstraction_source.normalize_from_method_to_sources(@encounter_note).should == [{:source_type=>EncounterNote, :source_id=> @encounter_note.id, :source_method=>"note_text"}]
+    abstractor_abstraction_source.normalize_from_method_to_sources(@encounter_note).should == [ { source_type: EncounterNote, source_id: @encounter_note.id, source_method: "note_text"}]
   end
 
-  it "can normalize its from method from a nil", focus: false do
+  it "can normalize its from method when the method returns nil", focus: false do
     encounter_note = FactoryGirl.create(:encounter_note, note_text: "can't be nil")
     abstractor_abstraction_source = FactoryGirl.create(:abstractor_abstraction_source, abstractor_subject: @abstractor_subject, from_method: 'custom_method_nil')
-    abstractor_abstraction_source.normalize_from_method_to_sources(encounter_note).should == [{:source_type=>EncounterNote, :source_id=> encounter_note.id, :source_method=>"custom_method_nil"}]
+    abstractor_abstraction_source.normalize_from_method_to_sources(encounter_note).should == [{ source_type: EncounterNote, source_id: encounter_note.id, source_method: "custom_method_nil" }]
+  end
+
+  it "can normalize its from method when it is nil", focus: false do
+    encounter_note = FactoryGirl.create(:encounter_note, note_text: "can't be nil")
+    abstractor_abstraction_source = FactoryGirl.create(:abstractor_abstraction_source, abstractor_subject: @abstractor_subject, from_method: nil)
+    abstractor_abstraction_source.normalize_from_method_to_sources(encounter_note).should == [{ source_type: EncounterNote, source_id: encounter_note.id, source_method: nil }]
   end
 
   it "can normalize its from method from a custom method", focus: false do
     abstractor_abstraction_source = FactoryGirl.create(:abstractor_abstraction_source, abstractor_subject: @abstractor_subject, from_method: 'custom_method')
-    abstractor_abstraction_source.normalize_from_method_to_sources(@encounter_note).should == [{:source_type=> nil, :source_id=> nil, :source_method=>nil}]
+    abstractor_abstraction_source.normalize_from_method_to_sources(@encounter_note).should == [{ source_type: nil, source_id: nil, source_method: nil }]
   end
 end

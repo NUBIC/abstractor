@@ -1,3 +1,9 @@
+Then(/^I should see (\d+) "(.*?)" within(?: the (first|last))? "(.*?)"$/) do |count, selector, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    all(selector, :visible => true).size.should eq(count.to_i)
+  }
+end
+
 Then /^the "([^"]*)" radio button within(?: the (first|last))? "([^\"]*)" should be checked$/ do |label, position, scope_selector|
   within_scope(get_scope(position, scope_selector)) {
     field_checked = find_field(label)['checked']

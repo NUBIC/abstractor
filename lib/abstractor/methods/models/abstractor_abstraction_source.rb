@@ -18,7 +18,8 @@ module Abstractor
 
         def normalize_from_method_to_sources(about)
           sources = []
-          fm = about.send(from_method)
+          fm = nil
+          fm = about.send(from_method) unless from_method.blank?
           if fm.is_a?(String) || fm.nil?
             sources = [{ source_type: about.class , source_id: about.id , source_method: from_method }]
           else
