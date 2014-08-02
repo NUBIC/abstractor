@@ -416,6 +416,30 @@ describe EncounterNote do
         EncounterNote.by_abstractor_abstraction_status('needs_review').should == [@encounter_note]
       end
 
+      it "can report what needs to be reviewed (including 'blanked' values)", focus: false do
+        expect(EncounterNote.by_abstractor_abstraction_status('needs_review')).to eq([@encounter_note])
+
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          expect(abstractor_abstraction.value).to be_nil
+          abstractor_abstraction.value = ''
+          abstractor_abstraction.save!
+        end
+
+        EncounterNote.by_abstractor_abstraction_status('needs_review').should == [@encounter_note]
+      end
+
+      it "can report what has been reviewed (including 'blanked' values)", focus: false do
+        expect(EncounterNote.by_abstractor_abstraction_status('needs_review')).to eq([@encounter_note])
+
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          expect(abstractor_abstraction.value).to be_nil
+          abstractor_abstraction.value = ''
+          abstractor_abstraction.save!
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status('reviewed')).to eq([])
+      end
+
       it "can report what has been reviewed", focus: false do
         @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first

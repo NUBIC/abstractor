@@ -79,9 +79,9 @@ module Abstractor
       def by_abstractor_abstraction_status(abstractor_abstraction_status)
         case abstractor_abstraction_status
         when 'needs_review'
-          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' WHERE #{self.table_name}.id = aa.about_id AND aa.value IS NULL AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
+          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND (aa.value IS NULL OR aa.value = '') AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
         when 'reviewed'
-          where(["EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}' WHERE #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_subjects asb JOIN abstractor_abstractions aa ON asb.id = aa.abstractor_subject_id AND asb.subject_type = '#{self.to_s}'WHERE #{self.table_name}.id = aa.about_id AND aa.value IS NOT NULL AND aa.unknown != ? AND aa.not_applicable != ?)", true, true])
+          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '' AND COALESCE(aa.unknown, ?) != ? AND COALESCE(aa.not_applicable, ?) != ?)", false, true, false, true])
         else
           where(nil)
         end
