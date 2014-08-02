@@ -451,7 +451,7 @@ describe EncounterNote do
       end
 
       it "can report what needs to be reviewed for an instance", focus: false do
-        @encounter_note.reload.abstractor_abstractions_by_abstractor_suggestion_status([@abstractor_suggestion_status_needs_review]).size.should == 3
+        @encounter_note.reload.abstractor_abstractions_by_abstractor_status('needs_review').size.should == 3
       end
 
       it "can report what has been reviewed for an instance", focus: false do
@@ -459,7 +459,7 @@ describe EncounterNote do
         abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
         abstractor_suggestion.save
 
-        @encounter_note.reload.abstractor_abstractions_by_abstractor_suggestion_status([@abstractor_suggestion_status_accepted, @abstractor_suggestion_status_rejected]).size.should == 1
+        @encounter_note.reload.abstractor_abstractions_by_abstractor_status('reviewed').size.should == 1
       end
     end
 

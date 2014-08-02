@@ -49,8 +49,21 @@ module Abstractor
         abstractor_abstraction_group
       end
 
-      def abstractor_abstractions_by_abstractor_suggestion_status(abstractor_suggestion_statuses)
-        abstractor_abstractions.map(&:abstractor_suggestions).flatten.select { |as| Array.new(abstractor_suggestion_statuses).any? { |abstractor_suggestion_status| as.abstractor_suggestion_status == abstractor_suggestion_status } }
+      ##
+      # Returns all abstraction for the abstractable entity by abstractor_abstraction_status:
+      #
+      # * 'needs_review': Filter abstractions without a determined value (value, unknown or not_applicable).
+      # * 'reviewed': Filter abstractions having a determined value (value, unknown or not_applicable).
+      #
+      # @param [String] abstractor_abstraction_status Filter abstractions that need review or are reviews.
+      # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
+      def abstractor_abstractions_by_abstractor_status(abstractor_abstraction_status)
+        case abstractor_abstraction_status
+        when 'needs_review'
+          abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.value.blank? && abstractor_abstraction.unknown.blank? && abstractor_abstraction.not_applicable.blank? }
+        when 'reviewed'
+          abstractor_abstractions.select { |abstractor_abstraction| !abstractor_abstraction.value.blank? || !abstractor_abstraction.unknown.blank? || !abstractor_abstraction.not_applicable.blank? }
+        end
       end
 
       def remove_abstractions(only_unreviewed = true)
