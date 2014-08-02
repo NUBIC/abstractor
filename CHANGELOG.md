@@ -5,7 +5,7 @@
 
 Released on July 31, 2014
 
-* Display the user interface the source specified
+* Display in the user interface the source specified
 in the suggestion source.
 See https://github.com/NUBIC/abstractor/issues/20
 
@@ -29,17 +29,18 @@ evidence of an abstraction.
 See https://github.com/NUBIC/abstractor/issues/18
 
 Bumping to version 2.0 because this
-commit includes a migration that
-* adds a column abstractor_abstraction_source_type_id
-to abstractor_abstraction_sources, which is a
+commit includes a migration that:
+
+* adds a column abstractor\_abstraction\_source\_type\_id
+to abstractor\_abstraction\_sources, which is a
 foreign key to a new table
-abstractor_abstraction_source_types.  There
-are kinds of types: 'nlp suggestion',
+abstractor\_abstraction\_source\_types.  Three
+possble types: 'nlp suggestion',
 'custom suggestion' and 'indirect'.
 
-* moves abstractor_rule_type_id from
-abstractor_subjects to
-abstractor_abstraction_sources and now
+* moves abstractor\_rule\_type\_id from
+abstractor\_subjects to
+abstractor\_abstraction\_sources and now
 confines its use to sources of only
 type 'nlp suggestion'
 
