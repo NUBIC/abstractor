@@ -31,6 +31,18 @@ Feature: Editing surgery
     And I go to the last surgery edit page
     And I click on ".edit_link" within the last ".abstractor_abstraction"
     Then ".indirect_source_list" in the first ".indirect_source" should have "123 (2014-01-01)" selected
+    When I go to the last surgery edit page
+    And I follow "Add group"
+    And I wait for the ajax request to finish
+    And I click on ".edit_link" within the last ".abstractor_abstraction"
+    And I select "456 (2014-01-02)" from ".indirect_source_list" in the first ".indirect_source"
+    And I wait for the ajax request to finish
+    Then ".indirect_source_text" in the first ".indirect_source" should contain text "Hello, you look suspicious."
+    When I press "Save"
+    And I go to the last surgery edit page
+    And I click on ".edit_link" within the last ".abstractor_abstraction"
+    Then ".indirect_source_list" in the first ".indirect_source" should have "456 (2014-01-02)" selected
+    And I wait 30 seconds
 
   @javascript
   Scenario: User editing an abstraction with a suggestion against a complex source

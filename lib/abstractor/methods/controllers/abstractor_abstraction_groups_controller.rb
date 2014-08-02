@@ -12,6 +12,10 @@ module Abstractor
           @abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
             abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
             abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: @abstractor_abstraction_group)
+            abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }.each do |abstractor_abstraction_source|
+              source = abstractor_subject.subject_type.constantize.find(params[:about_id]).send(abstractor_abstraction_source.from_method)
+              abstraction.abstractor_indirect_sources.build(abstractor_abstraction_source: abstractor_abstraction_source, source_type: source[:source_type], source_method: source[:source_method])
+            end
             abstraction.save!
           end
 
