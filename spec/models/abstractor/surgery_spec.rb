@@ -40,4 +40,12 @@ describe Surgery do
 
     expect({ source_type: abstractor_indirect_source.source_type, source_id: abstractor_indirect_source.source_id, sourece_method: abstractor_indirect_source.source_method }).to eq(default)
   end
+
+  it "can remove abstractions (with indirect sources)", focus: false do
+    expect(Abstractor::AbstractorIndirectSource.count).to eq(0)
+    @surgery.abstract
+    expect(@surgery.reload.abstractor_abstractions.map { |abstractor_abstraction| abstractor_abstraction.abstractor_indirect_sources }.flatten.compact.size).to eq(2)
+    @surgery.remove_abstractions
+    expect(Abstractor::AbstractorIndirectSource.count).to eq(0)
+  end
 end

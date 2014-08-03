@@ -66,6 +66,11 @@ module Abstractor
         end
       end
 
+      ##
+      # Removes all abstractions, suggestions and indirect sources for the abstractable entity.  Optionally filtred to only 'unreviewd' abstractions.
+      #
+      # @param [Boolean] only_unreviewed Instructs whther to confine removal to only 'unreviewd' abstractions.
+      # @return [void]
       def remove_abstractions(only_unreviewed = true)
         abstractor_abstractions.each do |abstractor_abstraction|
           if !only_unreviewed || (only_unreviewed && abstractor_abstraction.unreviewed?)
@@ -73,6 +78,9 @@ module Abstractor
               abstractor_suggestion.abstractor_suggestion_sources.destroy_all
               abstractor_suggestion.abstractor_suggestion_object_value.destroy if abstractor_suggestion.abstractor_suggestion_object_value
               abstractor_suggestion.destroy
+            end
+            abstractor_abstraction.abstractor_indirect_sources.each do |abstractor_indirect_source|
+              abstractor_indirect_source.destroy
             end
             abstractor_abstraction.destroy
           end

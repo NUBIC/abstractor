@@ -94,7 +94,6 @@ module Abstractor
           # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to make suggestions against.
           # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the rule type and from method to make nlp suggestions.
           # @return [void]
-
           def abstract_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
             case abstractor_abstraction_source.abstractor_rule_type.name
             when 'name/value'

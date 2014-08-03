@@ -66,9 +66,12 @@ module Abstractor
             end
           end
 
+          ##
+          # Determines if the abstraction has been reviewed.
+          #
+          # @return [Boolean]
           def unreviewed?
-            abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first
-            abstractor_suggestions.any? { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_status == abstractor_suggestion_status_needs_review }
+            (value.blank? && unknown.blank? && not_applicable.blank?)
           end
 
           ##
