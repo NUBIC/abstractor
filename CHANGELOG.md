@@ -1,6 +1,50 @@
 # Abstractor Changelog
 =======
 
+## 2.1.0
+Released on August 3, 2014
+
+* Listing abstractions for an abstractable entity
+that 'need review' or are 'reviewed' should be
+based on abstractions that have been answered.
+This change involved replacing the method
+Abstactor::Abstractable#abstractor\_abstractions\_by\_abstractor\_suggestion\_status
+with Abstactor::Abstractable#abstractor\_abstractions\_by\_abstractor\_abstraction\_status.
+See https://github.com/NUBIC/abstractor/issues/23
+* Querying abstractions that 'need review' or are
+'reviewed' should not consider 'blanked'
+abstractions 'reviewed'
+See https://github.com/NUBIC/abstractor/issues/24
+* If a user manually adds a row of grouped
+abstractions, indirect sources don't work.
+See https://github.com/NUBIC/abstractor/issues/25
+* Removal of abstractions from an abstractable
+entity should include removal of indirect sources.
+See https://github.com/NUBIC/abstractor/issues/26
+* Support the storage and display of a
+'explanation' of a 'custom suggestion'.
+See https://github.com/NUBIC/abstractor/issues/27
+* Rename method filtering abstractions on an abstractable entity.
+See https://github.com/NUBIC/abstractor/issues/28
+
+Existing users with abstactions being generated
+by a 'custom suggestion' will need to change the
+implementation of each 'custom\_method' to return
+an array of hashes instead of an array of strings.
+See the documenation for Abstactor::AbstractorSubject#abstract\_custom\_suggestion
+for more details.
+
+Existing users with abstractions generated from
+a 'custom suggestion' source type
+may want to migrate data by setting the
+Abstractor::AbstractorSuggestionSource#custom\_explanation
+to align with what follow for new abstactions.
+
+Existing users will also need to use the
+the renamed method to filter abstactions on
+an abstractable entity.  New method:
+Abstractor::Abstractable#abstractor\_abstractions\_by\_abstractor\_abstraction\_status.
+
 ## 2.0.1
 
 Released on July 31, 2014
@@ -8,7 +52,6 @@ Released on July 31, 2014
 * Display in the user interface the source specified
 in the suggestion source.
 See https://github.com/NUBIC/abstractor/issues/20
-
 * The system should be able to handle a nil
 'from_method' setup for an abstraction source.
 See https://github.com/NUBIC/abstractor/issues/21
