@@ -57,7 +57,7 @@ module Abstractor
       #
       # @param [String] abstractor_abstraction_status Filter abstractions that need review or are reviews.
       # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
-      def abstractor_abstractions_by_abstractor_status(abstractor_abstraction_status)
+      def abstractor_abstractions_by_abstractor_abstraction_status(abstractor_abstraction_status)
         case abstractor_abstraction_status
         when 'needs_review'
           abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.value.blank? && abstractor_abstraction.unknown.blank? && abstractor_abstraction.not_applicable.blank? }
