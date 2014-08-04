@@ -417,10 +417,21 @@ describe EncounterNote do
       before(:each) do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
         @encounter_note.abstract
+        @encounter_note.reload
       end
 
       it "can report what needs to be reviewed", focus: false do
         EncounterNote.by_abstractor_abstraction_status('needs_review').should == [@encounter_note]
+      end
+
+      it "can report what needs to be reviewed (ignoring soft deleted rows)", focus: false do
+        expect(EncounterNote.by_abstractor_abstraction_status('needs_review')).to  eq([@encounter_note])
+
+        @encounter_note.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.soft_delete!
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status('needs_review')).to be_empty
       end
 
       it "can report what needs to be reviewed (including 'blanked' values)", focus: false do
@@ -457,6 +468,22 @@ describe EncounterNote do
         EncounterNote.by_abstractor_abstraction_status('reviewed').should == [@encounter_note]
       end
 
+      it "can report what has been reviewed (ignoring soft deletd rows)", focus: false do
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+          abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+          abstractor_suggestion.save
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status('reviewed')).to eq([@encounter_note])
+
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.soft_delete!
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status('reviewed')).to be_empty
+      end
+
       it "can report what needs to be reviewed for an instance", focus: false do
         @encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('needs_review').size.should == 3
       end
@@ -467,6 +494,27 @@ describe EncounterNote do
         abstractor_suggestion.save
 
         @encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed').size.should == 1
+      end
+
+      it "can report what needs to be reviewed for an instance (ignoring soft deleted rows)", focus: false do
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('needs_review').size).to eq(3)
+        @encounter_note.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.soft_delete!
+        end
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('needs_review').size).to eq(0)
+      end
+
+      it "can report what has been reviewed for an instance (ignoring soft deleted rows)", focus: false do
+        abstractor_suggestion = @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.save
+
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed').size).to eq(1)
+
+        @encounter_note.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.soft_delete!
+        end
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed').size).to eq(0)
       end
     end
 

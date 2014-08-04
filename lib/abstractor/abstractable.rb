@@ -60,9 +60,9 @@ module Abstractor
       def abstractor_abstractions_by_abstractor_abstraction_status(abstractor_abstraction_status)
         case abstractor_abstraction_status
         when 'needs_review'
-          abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.value.blank? && abstractor_abstraction.unknown.blank? && abstractor_abstraction.not_applicable.blank? }
+          abstractor_abstractions.not_deleted.select { |abstractor_abstraction| abstractor_abstraction.value.blank? && abstractor_abstraction.unknown.blank? && abstractor_abstraction.not_applicable.blank? }
         when 'reviewed'
-          abstractor_abstractions.select { |abstractor_abstraction| !abstractor_abstraction.value.blank? || !abstractor_abstraction.unknown.blank? || !abstractor_abstraction.not_applicable.blank? }
+          abstractor_abstractions.not_deleted.select { |abstractor_abstraction| !abstractor_abstraction.value.blank? || !abstractor_abstraction.unknown.blank? || !abstractor_abstraction.not_applicable.blank? }
         end
       end
 
@@ -100,9 +100,9 @@ module Abstractor
       def by_abstractor_abstraction_status(abstractor_abstraction_status)
         case abstractor_abstraction_status
         when 'needs_review'
-          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND (aa.value IS NULL OR aa.value = '') AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
+          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND (aa.value IS NULL OR aa.value = '') AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
         when 'reviewed'
-          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '' AND COALESCE(aa.unknown, ?) != ? AND COALESCE(aa.not_applicable, ?) != ?)", false, true, false, true])
+          where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '' AND COALESCE(aa.unknown, ?) != ? AND COALESCE(aa.not_applicable, ?) != ?)", false, true, false, true])
         else
           where(nil)
         end
