@@ -47,6 +47,12 @@
                             = Abstractor::UserInterface.highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.sentence_match_value.strip)
                           - else
                             = simple_format(abstractable_from_column.clone)
+                    - if abstractor_suggestion_source.custom_explanation
+                      .custom_explanation
+                        %label
+                          Explanation:
+                        .explanation_text
+                          = abstractor_suggestion_source.custom_explanation
             .column-3
               - values = Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id] }
               -  values.each do |value|

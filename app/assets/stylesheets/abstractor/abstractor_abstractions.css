@@ -331,3 +331,11 @@ span.tooltip_img {
 .indirect_source {
   margin-bottom: 1em;
 }
+
+.abstractor_suggestion_values .custom_explanation {
+  margin-top: .5em;
+}
+
+.abstractor_suggestion_values .custom_explanation label {
+  font-weight: bold !important;
+}

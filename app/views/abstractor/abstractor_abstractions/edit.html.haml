@@ -43,7 +43,7 @@
       = f.label :unknown, 'unknown'
     .column-3
       - abstractor_abstraction = f.object
-      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }
+      - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name != 'indirect' }
       - abstraction_sources.each do |abstraction_source|
         - abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|
           - dom_id = "#{abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}"

@@ -186,10 +186,17 @@ describe EncounterNote do
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size.should == 1
     end
 
+    #custom suggestions
     it "creates one 'has_karnofsky_performance_status_date' abstraction suggestion (using a custom rule)", focus: false do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
       @encounter_note.abstract
       @encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2014-06-26'}.size.should == 1
+    end
+
+    it "creates one 'has_karnofsky_performance_status_date' abstraction suggestion source explanation (using a custom rule)", focus: false do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+      @encounter_note.abstract
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date).abstractor_suggestions.find { |suggestion| suggestion.suggested_value == '2014-06-26'}.abstractor_suggestion_sources.map(&:custom_explanation)).to eq(["A bit of custom logic."])
     end
 
     it "does not create another 'has_karnofsky_performance_status_date' abstraction suggestion upon re-abstraction (using a custom rule)", focus: false do

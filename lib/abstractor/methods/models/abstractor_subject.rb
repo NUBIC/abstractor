@@ -64,7 +64,7 @@ module Abstractor
           # method on the abstractable enttiy specified in Abstractor::AbstractorAbstractionSource#from_method.
           # The method should return a hash with the following keys populated:
           #
-          # * [Array<ActiveRecord::Base>] :sources An array of active record objects that constitute the list of indirect sources.
+          # * [Array <ActiveRecord::Base>] :sources An array of active record objects that constitute the list of indirect sources.
           # * [Symbol] :source_id A method specifying the primary key of each member in sources.
           # * [Symbol] :source_method A method specifying the source text of each member in sources.
           #
@@ -106,24 +106,30 @@ module Abstractor
           end
 
           # Creates instances of Abstractor::AbstractorSuggestion and Abstractor::AbstractorSuggestionSource
-          # based on calling the method  configured by the AbstractorAbstractionSource#custom_method attribute.
+          # based on calling the method configured by the AbstractorAbstractionSource#custom_method attribute.
           # The method is called on the abstractable entity passed via the about parameter.
           #
           # Setting up an Abstractor::AbstractorSubject with an AbstractorAbstractionSource
           # with an AbstractorAbstractionSource#abstractor_abstraction_source_type attribute
           # set to 'custom suggestion' obligates the developer to implement an instance
-          # method on the abstractable entitty to make suggestions as
-          # appropriate.  The 'custom suggestion' source type is
-          # intended to faciliate the generation of suggestions in a customizable way.
+          # method on the abstractable entitty to make suggestions as appropriate.
+          # The 'custom suggestion' source type is intended to faciliate the
+          # generation of suggestions in a customizable way.  The method implemented
+          # by the developer should return an array of hashes, each has with 2 keys, like so
           #
+          # [{ suggestion: 'a suggestion', explanation: 'why i made the suggestion}]
+          #
+          # The suggestion will be presented to the user as possible answer for the
+          # abstraction.  The explanation will be displayed to the user to explain
+          # how the sytem arrived at the suggestion.
           # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
           # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to make suggestions against.
           # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the custom method to invoke on the abstractable entity to make custom suggestions.
           # @return [void]
           def abstract_custom_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            suggested_values = about.send(abstractor_abstraction_source.custom_method)
-            suggested_values.each do |suggested_value|
-              suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, suggested_value, nil, nil, abstractor_abstraction_source.custom_method)
+            suggestions = about.send(abstractor_abstraction_source.custom_method)
+            suggestions.each do |suggestion|
+              suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, suggestion[:suggestion], nil, nil, abstractor_abstraction_source.custom_method, suggestion[:explanation])
             end
             create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
           end
@@ -178,7 +184,7 @@ module Abstractor
                                   Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
                                 )
                         if !reject
-                          suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
+                          suggest(abstractor_abstraction, abstractor_abstraction_source, object_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil, nil)
                         end
                       end
                     end
@@ -205,13 +211,13 @@ module Abstractor
                     match_value = "#{Regexp.escape(predicate_variant)}:\s*#{Regexp.escape(object_variant)}"
                     matches = parser.scan(match_value, word_boundary: true).uniq
                     matches.each do |match|
-                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
+                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil, nil)
                     end
 
                     match_value = "#{Regexp.escape(predicate_variant)}#{Regexp.escape(object_variant)}"
                     matches = parser.scan(match_value, word_boundary: true).uniq
                     matches.each do |match|
-                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
+                      suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil, nil)
                     end
                   end
                 end
@@ -241,7 +247,7 @@ module Abstractor
                                        Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
                                      )
                             if !reject
-                              suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil)
+                              suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], abstractor_object_value, nil, nil, nil, nil)
                             end
                           end
                         end
@@ -253,7 +259,7 @@ module Abstractor
             end
           end
 
-          def suggest(abstractor_abstraction, abstractor_abstraction_source, match_value, sentence_match_value, source_id, source_type, source_method, suggested_value, unknown, not_applicable, custom_method)
+          def suggest(abstractor_abstraction, abstractor_abstraction_source, match_value, sentence_match_value, source_id, source_type, source_method, suggested_value, unknown, not_applicable, custom_method, custom_explanation)
             match_value.strip! unless match_value.nil?
             sentence_match_value.strip! unless sentence_match_value.nil?
             if abstractor_object_value?(suggested_value)
@@ -284,7 +290,8 @@ module Abstractor
                                                 source_id: source_id,
                                                 source_type: source_type,
                                                 source_method: source_method,
-                                                custom_method: custom_method
+                                                custom_method: custom_method,
+                                                custom_explanation: custom_explanation
                                                )
             end
             abstractor_suggestion
@@ -312,7 +319,7 @@ module Abstractor
                                   Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant)
                                 )
                         if !reject
-                          suggest(abstractor_abstraction, abstractor_abstraction_source, predicate_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil)
+                          suggest(abstractor_abstraction, abstractor_abstraction_source, predicate_variant.downcase, sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil, nil)
                         end
                       end
                     end
@@ -326,7 +333,7 @@ module Abstractor
             #Create an 'unknown' suggestion based on matching nothing only if we have not made a suggstion
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
               if abstractor_abstraction.abstractor_suggestions(true).empty?
-                suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil)
+                suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil, nil)
               end
             end
           end
