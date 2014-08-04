@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 2.1.01
+Released on August 4, 2014
+
+* Abstraction status should not include deleted abstractions
+See https://github.com/NUBIC/abstractor/issues/29
+
 ## 2.1.0
 Released on August 3, 2014
 
