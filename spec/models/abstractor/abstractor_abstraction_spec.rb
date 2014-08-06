@@ -17,7 +17,7 @@
    end
 
    it "can detect a suggestion from a suggested value", focus: false do
-     @abstractor_abstraction.detect_abstractor_suggestion('bar').should == @abstractor_suggestion_bar
+     @abstractor_abstraction.detect_abstractor_suggestion('bar', nil, nil).should == @abstractor_suggestion_bar
    end
 
    it "knows if an abstraction is unreviewed", focus: false do

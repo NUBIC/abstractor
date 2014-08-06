@@ -212,7 +212,7 @@ Feature: Editing encounter note
       | Note Text                                |
       |Hello, your KPS is something. Have a great day!|
     When I go to the last encounter note edit page
-    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    And I click within first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is something. Have a great day!"

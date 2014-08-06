@@ -59,10 +59,12 @@ module Abstractor
             end
           end
 
-          def detect_abstractor_suggestion(suggested_value)
+          def detect_abstractor_suggestion(suggested_value, unknown, not_applicable)
             abstractor_suggestion = nil
             abstractor_suggestion = abstractor_suggestions(true).detect do |abstractor_suggestion|
-              abstractor_suggestion.suggested_value == suggested_value
+              abstractor_suggestion.suggested_value == suggested_value &&
+              abstractor_suggestion.unknown == unknown &&
+              abstractor_suggestion.not_applicable == not_applicable
             end
           end
 

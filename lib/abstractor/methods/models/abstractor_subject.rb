@@ -266,7 +266,7 @@ module Abstractor
               abstractor_object_value = suggested_value
               suggested_value = suggested_value.value
             end
-            abstractor_suggestion = abstractor_abstraction.detect_abstractor_suggestion(suggested_value) unless suggested_value.nil?
+            abstractor_suggestion = abstractor_abstraction.detect_abstractor_suggestion(suggested_value, unknown, not_applicable)
             if !abstractor_suggestion
               abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first
               abstractor_suggestion = Abstractor::AbstractorSuggestion.create(
@@ -280,7 +280,7 @@ module Abstractor
               abstractor_suggestion.abstractor_suggestion_object_value = Abstractor::AbstractorSuggestionObjectValue.new(abstractor_object_value: abstractor_object_value) if abstractor_object_value
             end
 
-            abstractor_suggestion_source = abstractor_suggestion.detect_abstractor_suggestion_source(abstractor_abstraction_source, sentence_match_value, source_id, source_type)
+            abstractor_suggestion_source = abstractor_suggestion.detect_abstractor_suggestion_source(abstractor_abstraction_source, sentence_match_value, source_id, source_type, source_method)
             if !abstractor_suggestion_source
               Abstractor::AbstractorSuggestionSource.create(
                                                 abstractor_abstraction_source: abstractor_abstraction_source,
@@ -332,7 +332,7 @@ module Abstractor
           def create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
             #Create an 'unknown' suggestion based on matching nothing only if we have not made a suggstion
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              if abstractor_abstraction.abstractor_suggestions(true).empty?
+              if abstractor_abstraction.abstractor_suggestions(true).select { |abstractor_suggestion| abstractor_suggestion.unknown != true }.empty?
                 suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, source[:source_id], source[:source_type].to_s, source[:source_method], nil, true, nil, nil, nil)
               end
             end
