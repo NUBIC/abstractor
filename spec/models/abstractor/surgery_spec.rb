@@ -9,10 +9,13 @@ describe Surgery do
     indirect_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first
     @abstractor_abstraction_source_indirect_imaging_exam = @abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection.abstractor_abstraction_sources.find { |aas| aas.abstractor_abstraction_source_type == indirect_source_type  &&  aas.from_method == 'patient_imaging_exams' }
     @abstractor_abstraction_source_indirect_sugical_procedure_report = @abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection.abstractor_abstraction_sources.find { |aas| aas.abstractor_abstraction_source_type == indirect_source_type  &&  aas.from_method == 'patient_surgical_procedure_reports' }
+
+
   end
 
   before(:each) do
     @surgery = FactoryGirl.create(:surgery)
+
   end
 
   it "creates a 'has_imaging_confirmed_extent_of_resection' abstraction for an abstractor abstracton source type 'indirect'", focus: false do
@@ -47,5 +50,25 @@ describe Surgery do
     expect(@surgery.reload.abstractor_abstractions.map { |abstractor_abstraction| abstractor_abstraction.abstractor_indirect_sources }.flatten.compact.size).to eq(2)
     @surgery.remove_abstractions
     expect(Abstractor::AbstractorIndirectSource.count).to eq(0)
+  end
+
+  describe "updating all abstraction group members (including abstractions without suggestions)" do
+    before(:each) do
+      @surgery.abstract
+      @abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Surgery Anatomical Location').first
+      @abstractor_abstraction_group = @surgery.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == @abstractor_subject_group }.first
+    end
+
+    it "to 'not applicable'", focus: true do
+      @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil,]
+      Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
+      @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true]
+    end
+
+    it "to 'unknown'", focus: true do
+      @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil]
+      Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
+      @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true]
+    end
   end
 end

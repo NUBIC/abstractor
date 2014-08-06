@@ -123,6 +123,12 @@ module Abstractor
                       abstractor_suggestion.save!
                     end
                   end
+
+                  if abstractor_abstraction.abstractor_suggestions.empty?
+                    abstractor_abstraction.unknown = unknown
+                    abstractor_abstraction.not_applicable = not_applicable
+                    abstractor_abstraction.save!
+                  end
                 end
               end
             end
