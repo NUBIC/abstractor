@@ -1,6 +1,18 @@
 # Abstractor Changelog
 =======
 
+## 2.1.2
+Released on August 7, 2014
+
+* An 'unknown' suggestion should be able to display
+multiple sources.
+See https://github.com/NUBIC/abstractor/issues/32
+
+* Marking an entire group of abstractions or all
+abstractions does not seem to effect abstractions
+created with no suggestions.
+See https://github.com/NUBIC/abstractor/issues/31
+
 ## 2.1.01
 Released on August 4, 2014
 
