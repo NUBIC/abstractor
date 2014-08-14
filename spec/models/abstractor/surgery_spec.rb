@@ -59,13 +59,13 @@ describe Surgery do
       @abstractor_abstraction_group = @surgery.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == @abstractor_subject_group }.first
     end
 
-    it "to 'not applicable'", focus: true do
+    it "to 'not applicable'", focus: false do
       @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil,]
       Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
       @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true]
     end
 
-    it "to 'unknown'", focus: true do
+    it "to 'unknown'", focus: false do
       @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil]
       Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
       @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true]
