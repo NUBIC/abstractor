@@ -8,7 +8,7 @@ Then /^the "([^"]*)" radio button within(?: the (first|last))? "([^\"]*)" should
   within_scope(get_scope(position, scope_selector)) {
     field_checked = find_field(label)['checked']
     if field_checked.respond_to? :should
-      field_checked.should be_true
+      field_checked.should be_truthy
     else
       assert field_checked
     end
@@ -221,7 +221,7 @@ Then /^the "([^"]*)" radio button(?: within (.*))? should not be checked$/ do |l
   with_scope(parent) do
     field_checked = find_field(label)['checked']
     if field_checked.respond_to? :should
-      field_checked.should be_false
+      field_checked.should be_falsey
     else
       assert !field_checked
     end
@@ -240,11 +240,11 @@ Then /^(?:|I )should be on (.+)$/ do |page_name|
 end
 
 Then /the element "([^\"]*)" should be hidden$/ do |selector|
-  page.evaluate_script("$('#{selector}').is(':hidden');").should be_true
+  page.evaluate_script("$('#{selector}').is(':hidden');").should be_truthy
 end
 
 Then /the element "([^\"]*)" should not be hidden$/ do |selector|
-  page.evaluate_script("$('#{selector}').is(':not(:hidden)');").should be_true
+  page.evaluate_script("$('#{selector}').is(':not(:hidden)');").should be_truthy
 end
 
 Then /^"([^"]*)" should be selected for "([^"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|

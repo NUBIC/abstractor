@@ -1,7 +1,7 @@
 class Surgery < ActiveRecord::Base
   has_many :surgical_procedures, primary_key: :surg_case_id, foreign_key: :surg_case_id
   include Abstractor::Abstractable
-  attr_accessible :surg_case_id, :surg_case_nbr, :patient_id
+  # attr_accessible :surg_case_id, :surg_case_nbr, :patient_id
 
   def patient_imaging_exams
     { source_type: ImagingExam.to_s, source_method: 'note_text', sources: ImagingExam.where(patient_id: patient_id), source_name_method: 'source_name_method'  }

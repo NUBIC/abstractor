@@ -8,7 +8,8 @@ module Abstractor
           # Associations
           base.send :has_many, :abstractor_abstraction_schema_relations
           base.send :has_many, :subject_relations
-          base.send :attr_accessible, :deleted_at, :name
+
+          # base.send :attr_accessible, :deleted_at, :name
         end
       end
     end

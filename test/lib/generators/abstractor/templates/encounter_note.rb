@@ -1,6 +1,6 @@
 class EncounterNote < ActiveRecord::Base
   include Abstractor::Abstractable
-  attr_accessible :note_text
+  # attr_accessible :note_text
 
   def custom_method
     [{ source_type: nil , source_id: nil , source_method: nil }]

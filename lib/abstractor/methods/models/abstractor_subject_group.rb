@@ -11,7 +11,7 @@ module Abstractor
           base.send :has_many, :abstractor_abstraction_groups
           base.send :has_many, :abstractor_abstractions, :through => :abstractor_abstraction_groups
 
-          base.send :attr_accessible, :deleted_at, :name
+          # base.send :attr_accessible, :deleted_at, :name
         end
       end
     end

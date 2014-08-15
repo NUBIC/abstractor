@@ -20,7 +20,7 @@ describe Surgery do
 
   it "creates a 'has_imaging_confirmed_extent_of_resection' abstraction for an abstractor abstracton source type 'indirect'", focus: false do
     @surgery.abstract
-    @surgery.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection).should_not be_nil
+    expect(@surgery.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection)).to_not be_nil
   end
 
   it "creates an abstractor indirect source for each abstractor abstracton source type 'indirect' setup", focus: false do
@@ -60,15 +60,15 @@ describe Surgery do
     end
 
     it "to 'not applicable'", focus: false do
-      @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil,]
+      expect(@abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable)).to eq([nil, nil])
       Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-      @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true]
+      expect(@abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable)).to eq([true, true])
     end
 
     it "to 'unknown'", focus: false do
-      @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil]
+      expect(@abstractor_abstraction_group.abstractor_abstractions.map(&:unknown)).to eq([nil, nil])
       Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
-      @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true]
+      expect(@abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown)).to eq([true, true])
     end
   end
 end

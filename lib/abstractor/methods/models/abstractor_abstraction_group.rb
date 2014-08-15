@@ -12,7 +12,7 @@ module Abstractor
           base.send :has_many, :abstractor_abstraction_group_members
           base.send :has_many, :abstractor_abstractions, :through => :abstractor_abstraction_group_members
 
-          base.send :attr_accessible, :abstractor_subject_group, :abstractor_subject_group_id, :deleted_at, :about, :about_type, :about_id
+          # base.send :attr_accessible, :abstractor_subject_group, :abstractor_subject_group_id, :deleted_at, :about, :about_type, :about_id
 
           # Hooks
           base.send :after_commit, :update_abstractor_abstraction_group_members, :on => :update, :if => Proc.new { |record| record.previous_changes.include?('deleted_at') }
