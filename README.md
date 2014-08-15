@@ -20,7 +20,9 @@ on [rubydoc.info][] so that the links will be followable.
 Abstractor works with:
 
 * Ruby 1.9.3, 2.0.0 and 2.1.1
-* Rails 3.2 (not Rails 4.0 or later yet)
+* Rails 3.2
+* Rails 4.1 experimental branch now available [here][]
+[here]: https://github.com/NUBIC/abstractor/tree/rails-4
 
 Some key dependencies are:
 
@@ -47,11 +49,16 @@ Add abstractor to your Gemfile:
 ```ruby
 gem 'abstractor'
 ```
+or if using Rails 4.1 or greater
+
+```ruby
+gem 'abstractor', :git => 'https://github.com/NUBIC/abstractor', branch: 'rails-4'
+```
 
 Add the stanford-core-nlp gem to your Gemfile.  Currently need to use the master branch of the official repository until a new version of the gem is released:
 
 ```ruby
-gem 'stanford-core-nlp', :git => 'https://github.com/louismullie/stanford-core-nlp', :branch => 'master',
+gem 'stanford-core-nlp', :git => 'https://github.com/louismullie/stanford-core-nlp', branch: 'master'
 ```
 
 Also add the paper\_trail gem to your Gemfile (if it is not already there):
