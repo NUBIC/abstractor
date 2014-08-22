@@ -11,8 +11,12 @@ FactoryGirl.define do
   end
 
   factory :imaging_exam do
+    report_date Date.today
     note_text ''
     sequence(:patient_id)
+    sequence(:accession_number) do |n|
+      "#{n}"
+    end
   end
 
   factory :surgery do

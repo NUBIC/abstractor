@@ -179,7 +179,7 @@ describe RadiationTherapyPrescription do
       expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size).to eq(3)
     end
 
-    it "does create duplicate abstractor abstraction grup members upon re-abstraction", focus: false do
+    it "does not create duplicate abstractor abstraction grup members upon re-abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       radiation_therapy_prescription.reload.abstract
@@ -242,7 +242,7 @@ describe RadiationTherapyPrescription do
       end
     end
 
-    #pivioting groups
+    #pivoting groups
     it "can pivot grouped abstractions as if regular columns on the abstractable entity", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract

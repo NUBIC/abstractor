@@ -413,7 +413,7 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).value).to be_nil
     end
 
-    describe "querying by abstractor suggestion status" do
+    describe "querying by abstractor abstraction status" do
       before(:each) do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
         @encounter_note.abstract

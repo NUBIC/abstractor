@@ -370,4 +370,5 @@ Given /^abstraction schemas are set$/ do
   Setup.radiation_therapy_prescription
   Setup.pathology_case
   Setup.surgery
+  Setup.imaging_exam
 end
