@@ -41,9 +41,4 @@
         - ungrouped_subject.abstractor_abstractions.not_deleted.where(:about_id => about.id).each do |abstractor_abstraction|
           %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)}" }
             = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
-:javascript
-  $(function () {
-    new Abstractor.AbstractionUI();
-    new Abstractor.AbstractionSuggestionUI();
-    new Abstractor.AbstractionGroupUI();
-  });
+#abstractor_abstraction_dialog_tooltip
