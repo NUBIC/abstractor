@@ -5,7 +5,6 @@ Abstractor.AbstractionUI = ->
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.load $(this).attr("href"), ->
       parent_div.find(".combobox").combobox watermark: "a value"
-      parent_div.find("input[type=\"submit\"], button, a.button").button()
       $(".abstractor_datepicker").datepicker
         altFormat: "yy-mm-dd"
         dateFormat: "yy-mm-dd"
@@ -17,13 +16,10 @@ Abstractor.AbstractionUI = ->
     parent_div.addClass "highlighted"
     return
 
-
-  #parent_div.siblings('.abstractor_abstraction').block({ message: null, overlayCSS: { opacity: .2 }});
   $(document).on "ajax:success", "form.edit_abstractor_abstraction", (e, data, status, xhr) ->
     parent_div = $(this).closest(".abstractor_abstraction")
     parent_div.html xhr.responseText
 
-    #parent_div.siblings('.abstractor_abstraction').unblock();
     parent_div.removeClass "highlighted"
     return
 

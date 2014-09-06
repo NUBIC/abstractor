@@ -2,8 +2,8 @@
 - namespace_type ||= @namespace_type
 - namespace_id ||= @namespace_id
 .abstractor_abstractions
-  = link_to 'Not applicable all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'not applicable')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
-  = link_to 'Unknown all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'unknown')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
+  = link_to 'Not applicable all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'not applicable')), confirm:'Are you sure?', method: :put, class: 'abstractor_not_applicable_all_link'
+  = link_to 'Unknown all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'unknown')), confirm: 'Are you sure?', method: :put,  class: 'abstractor_unknown_all_link'
   - abstractor_subject_groups = about.class.abstractor_subject_groups(namespace_type: namespace_type, namespace_id: namespace_id)
   - abstractor_subject_groups.each do |abstractor_subject_group|
     .abstractor_subject_groups_container

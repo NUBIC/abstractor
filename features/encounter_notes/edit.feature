@@ -271,7 +271,7 @@ Feature: Editing encounter note
     And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
     And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "input#abstractor_abstraction_unknown"
     And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
-    Then ".abstractor_abstraction_edit input.positive" should contain "Save"
+    Then ".abstractor_abstraction_edit input[type='submit']" should contain "Save"
     And I should see "Cancel"
     When I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
     Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"

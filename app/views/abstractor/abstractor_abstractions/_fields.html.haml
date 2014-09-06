@@ -38,7 +38,7 @@
                     - source_about = abstractor_suggestion_source.source_type.constantize.find(abstractor_suggestion_source.source_id)
                     - from_method = abstractor_suggestion_source.source_method
                     - if from_method && source_about.respond_to?(from_method)
-                      %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel => "#abstraction_text_#{abstractor_suggestion_source.id}", :title => "#{source_about.class.to_s} #{from_method}"}
+                      %span{ :class => 'abstractor_abstraction_source_tooltip_img', :rel => "#abstraction_text_#{abstractor_suggestion_source.id}", :title => "#{source_about.class.to_s} #{from_method}"}
                         = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstractor_suggestion_source.id}")
                       %div{ :id => "abstraction_text_#{abstractor_suggestion_source.id}", :class => 'abstractor_abstraction_source_tooltip'}
                         - abstractable_from_column = source_about.send(from_method)
@@ -67,7 +67,7 @@
         - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }.each do |abstractor_abstraction_source|
           - abstractor_abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|
             - dom_id = "#{abstractor_abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}"
-            %span{ :class => 'abstractor_abstraction_source_tooltip_img label', :rel =>"#abstraction_text_#{dom_id}", :title => "#{source[:source_type].to_s} #{source[:source_method]}"}
+            %span{ :class => 'abstractor_abstraction_source_tooltip_img', :rel =>"#abstraction_text_#{dom_id}", :title => "#{source[:source_type].to_s} #{source[:source_method]}"}
               = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{dom_id}")
               %br
             %div{ :id => "abstraction_text_#{dom_id}", :class => 'tooltip'}
