@@ -94,6 +94,10 @@ module Abstractor
       template "views/radiation_therapy_prescriptions/edit.html.haml", "#{dummy_path}/app/views/radiation_therapy_prescriptions/edit.html.haml", :force => true
     end
 
+    def test_dummy_assets
+      template "application.js", "#{dummy_path}/app/assets/javascripts/application.js", :force => true
+    end
+
     def test_dummy_clean
       inside dummy_path do
         remove_file ".gitignore"
@@ -101,7 +105,6 @@ module Abstractor
         remove_file "Gemfile"
         remove_file "lib/tasks"
         remove_file "app/assets/images/rails.png"
-        remove_file "app/assets/javascripts/application.js"
         remove_file "public/index.html"
         remove_file "public/robots.txt"
         remove_file "README"
