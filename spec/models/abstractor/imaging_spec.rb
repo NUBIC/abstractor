@@ -109,12 +109,12 @@ describe ImagingExam do
 
     it "can report abstractions needing to be reviewed (regardless of namespace)", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status('needs_review').size).to eq(6)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(6)
     end
 
     it "can report abstractions needing to be reviewed in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status('needs_review',namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW,namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
     end
 
     it "can report what has been reviewed (regardless of namespace)", focus: false do
@@ -123,7 +123,7 @@ describe ImagingExam do
       abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
       abstractor_suggestion.save
 
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed').size).to eq(1)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED).size).to eq(1)
     end
 
     it "can report what has been reviewed in a namespace", focus: false do
@@ -132,7 +132,7 @@ describe ImagingExam do
       abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
       abstractor_suggestion.save
 
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(1)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(1)
     end
 
     it "does not report what has been reviewed in another namespace", focus: false do
@@ -141,7 +141,7 @@ describe ImagingExam do
       abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
       abstractor_suggestion.save
 
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(0)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(0)
     end
 
     #removing abstractions
@@ -170,33 +170,33 @@ describe ImagingExam do
 
     #querying by abstractor abstraction status
     it "can report what needs to be reviewed in a namespace", focus: false do
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id)).to eq([@imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id)).to eq([@imaging_exam])
     end
 
     it "only reports what needs to be reviewed in a namespace", focus: false do
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([@imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([@imaging_exam])
     end
 
     it "can report what needs to be reviewed in a namespace (ignoring soft deleted rows)", focus: false do
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
       imaging_exam = FactoryGirl.create(:imaging_exam)
       imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_abstraction.soft_delete!
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
     end
 
     it "can report what needs to be reviewed in a namespace (including 'blanked' values)", focus: false do
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
       imaging_exam = FactoryGirl.create(:imaging_exam)
       imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         expect(abstractor_abstraction.value).to be_nil
@@ -204,14 +204,14 @@ describe ImagingExam do
         abstractor_abstraction.save!
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
     end
 
     it "can report what has been reviewed in a namespace (including 'blanked' values)", focus: false do
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
       imaging_exam = FactoryGirl.create(:imaging_exam)
       imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('needs_review', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         expect(abstractor_abstraction.value).to be_nil
@@ -219,13 +219,13 @@ describe ImagingExam do
         abstractor_abstraction.save!
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
     end
 
     it "can report what has been reviewed in a namespace", focus: false do
       imaging_exam = FactoryGirl.create(:imaging_exam)
       imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
@@ -233,13 +233,13 @@ describe ImagingExam do
         abstractor_suggestion.save
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
     end
 
     it "can report what has been reviewed in a namespace (ignoring soft deletd rows)", focus: false do
       imaging_exam = FactoryGirl.create(:imaging_exam)
       imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
@@ -247,13 +247,13 @@ describe ImagingExam do
         abstractor_suggestion.save
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to eq([imaging_exam])
 
       imaging_exam.reload.abstractor_abstractions.each do |abstractor_abstraction|
         abstractor_abstraction.soft_delete!
       end
 
-      expect(ImagingExam.by_abstractor_abstraction_status('reviewed', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
+      expect(ImagingExam.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)).to be_empty
     end
 
     #pivoting groups
