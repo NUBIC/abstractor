@@ -22,9 +22,19 @@
           %br
           %b History:
           - versions.each do |version|
-            %br
-            %i
-              = "#{version.reify.display_value} - #{version.created_at.to_date.to_s(:date)} (#{version.originator})"
+            .version
+              .version_date
+                %i
+                  Date:
+                = "#{version.created_at.to_date.to_s(:date)}"
+              .version_value
+                %i
+                  Value:
+                = "#{version.reify.display_value}"
+              .version_user
+                %i
+                  User:
+                = "#{version.originator}"
     - if abstractor_suggestions.any?
       .column-9
         - abstractor_suggestions.each do |abstractor_suggestion|

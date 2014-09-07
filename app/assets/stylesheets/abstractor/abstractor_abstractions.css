@@ -207,8 +207,27 @@
   margin-bottom: 0.5em;
 }
 
+.abstractor_abstractions fieldset .abstractor_abstraction_value .version {
+  margin-top: .5em;
+  margin-bottom: .5em;
+  border-bottom: 1px #969696 dashed;
+}
+
+.abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_date {
+  margin-bottom: .5em;
+}
+
+.abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_value {
+  margin-bottom: .5em;
+}
+
+.abstractor_abstractions fieldset .abstractor_abstraction_value .version .version_user {
+  margin-bottom: .5em;
+}
+
 .abstractor_abstractions fieldset .editable_abstraction {
   border-bottom: 1px #969696 dashed;
+  margin-right: .5em;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img img {
