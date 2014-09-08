@@ -116,6 +116,15 @@ When /^I confirm link "([^"]*)"(?: in the(?: (first|last)?) "([^\"]*)")?$/ do |s
   }
 end
 
+When /^I do not confirm link "([^"]*)"(?: in the(?: (first|last)?) "([^\"]*)")?$/ do |selector, position, scope_selector|
+  within_scope(get_scope(position, scope_selector)) {
+    page.evaluate_script('window.confirm = function() { return false; }')
+    steps %Q{
+      When I follow "#{selector}"
+    }
+  }
+end
+
 When /^I confirm "([^"]*)"$/ do |selector|
   page.evaluate_script('window.confirm = function() { return true; }')
   steps %Q{

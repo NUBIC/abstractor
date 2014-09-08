@@ -88,17 +88,22 @@ Abstractor.AbstractionSuggestionUI = ->
   return
 
 Abstractor.AbstractionGroupUI = ->
-  $(document).on "ajax:success", ".abstractor_abstraction_group .delete_link", (e, data, status, xhr) ->
+  $(document).on "ajax:success", ".abstractor_abstraction_group .abstractor_group_delete_link", (e, data, status, xhr) ->
     parent_div = $(this).closest(".abstractor_abstraction_group")
     parent_div.html xhr.responseText
     return
 
-  $(document).on "ajax:success", ".abstractor_subject_groups_container .add_link", (e, data, status, xhr) ->
+  $(document).on "ajax:success", ".abstractor_subject_groups_container .abstractor_group_add_link", (e, data, status, xhr) ->
     parent_div = $(this).closest(".abstractor_subject_groups_container")
     parent_div.find(".abstractor_subject_groups").append xhr.responseText
     return
 
-  $(document).on "ajax:success", ".abstractor_abstraction_group .update_link", (e, data, status, xhr) ->
+  $(document).on "ajax:success", ".abstractor_abstraction_group .abstractor_group_not_applicable_all_link", (e, data, status, xhr) ->
+    parent_div = $(this).closest(".abstractor_abstraction_group")
+    parent_div.html xhr.responseText
+    return
+
+  $(document).on "ajax:success", ".abstractor_abstraction_group .abstractor_group_unknown_all_link", (e, data, status, xhr) ->
     parent_div = $(this).closest(".abstractor_abstraction_group")
     parent_div.html xhr.responseText
     return

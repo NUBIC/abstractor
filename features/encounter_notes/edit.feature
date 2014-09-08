@@ -426,6 +426,11 @@ Feature: Editing encounter note
     And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
+    When I do not confirm link "Not applicable all" in the first ".abstractor_abstractions"
+    Then the "Rejected" radio button within ".has_karnofsky_performance_status" should not be checked
+    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should not be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should not contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should not contain text "not applicable"
     When I confirm link "Not applicable all" in the first ".abstractor_abstractions"
     Then the "Rejected" radio button within ".has_karnofsky_performance_status" should be checked
     And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked
@@ -443,6 +448,11 @@ Feature: Editing encounter note
     And the "Needs review" radio button within ".has_karnofsky_performance_status_date" should be checked
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
+    When I do not confirm link "Unknown all" in the first ".abstractor_abstractions"
+    Then the "Accepted" radio button within ".has_karnofsky_performance_status" should not be checked
+    And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should not be checked
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status" should not contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should not contain text "unknown"
     When I confirm link "Unknown all" in the first ".abstractor_abstractions"
     Then the "Accepted" radio button within ".has_karnofsky_performance_status" should be checked
     And the "Rejected" radio button within ".has_karnofsky_performance_status_date" should be checked

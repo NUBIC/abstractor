@@ -34,7 +34,9 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     Then I should not see "Delete group"
     And I should see "Add group"
-    When I follow "Add group"
+    When I do not confirm link "Add group"
+    Then I should not see "Delete group"
+    When I confirm link "Add group"
     And I wait for the ajax request to finish
     And I should see "Delete group"
     And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain text "[Not set]"
@@ -43,8 +45,11 @@ Feature: Editing radiation therapy prescription
     And I should see "Delete group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain selector ".edit_link"
+    When I do not confirm link "Delete group"
+    Then I should see 2 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     When I confirm link "Delete group"
     And I wait for the ajax request to finish
+    Then I should see 1 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     Then I should see "Add group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And I should not see an ".edit_link" element
@@ -86,11 +91,12 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | treat the temporal lobe                 |
     When I go to the last radiation therapy prescription edit page
-    And I follow "Add group"
+    And I confirm link "Add group"
     And I wait for the ajax request to finish
-    And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".delete_link"
-    And ".abstractor_abstraction_actions" in the first ".abstractor_abstraction_group" should not contain selector ".delete_link"
-    And ".abstractor_abstraction_value" in the last ".abstractor_abstraction" should contain selector ".edit_link"
+    And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_delete_link"
+    And ".abstractor_abstraction_actions" in the first ".abstractor_abstraction_group" should not contain selector ".abstractor_group_delete_link"
+    And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_not_applicable_all_link"
+    And ".abstractor_abstraction_actions" in the last ".abstractor_abstraction_group" should contain selector ".abstractor_group_unknown_all_link"
 
   @javascript
   Scenario: User setting the value of an abstraction schema with a date object type in a group
@@ -120,6 +126,13 @@ Feature: Editing radiation therapy prescription
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
+    When I do not confirm link "Not applicable group" in the first ".abstractor_abstraction_group"
+    Then the "Rejected" radio button within ".has_anatomical_location" should not be checked
+    And the "Rejected" radio button within ".has_laterality" should not be checked
+    And the "Rejected" radio button within ".has_radiation_therapy_prescription_date" should not be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should not contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should not contain text "not applicable"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should not contain text "not applicable"
     When I confirm link "Not applicable group" in the first ".abstractor_abstraction_group"
     And I wait for the ajax request to finish
     Then the "Rejected" radio button within the first ".has_anatomical_location" should be checked
@@ -142,6 +155,13 @@ Feature: Editing radiation therapy prescription
     And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_laterality" should contain text "[Not set]"
     And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should contain text "[Not set]"
+    When I do not confirm link "Unknown group" in the first ".abstractor_abstraction_group"
+    Then the "Accepted" radio button within ".has_anatomical_location" should not be checked
+    And the "Accepted" radio button within ".has_laterality" should not be checked
+    And the "Accepted" radio button within ".has_radiation_therapy_prescription_date" should not be checked
+    And ".abstractor_abstraction_value" in the first ".has_anatomical_location" should not contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_laterality" should not contain text "unknown"
+    And ".abstractor_abstraction_value" in the first ".has_radiation_therapy_prescription_date" should not contain text "unknown"
     When I confirm link "Unknown group" in the first ".abstractor_abstraction_group"
     And I wait for the ajax request to finish
     Then the "Accepted" radio button within the first ".has_anatomical_location" should be checked
