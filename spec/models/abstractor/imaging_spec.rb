@@ -97,14 +97,20 @@ describe ImagingExam do
     end
 
     #reporting namespaced grouped abstractions
-    it 'can return abstractor abstractions in a namespace', focus: false do
+    it 'can return abstractor abstraction groups in a namespace', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(1)
     end
 
-    it 'can return abstractor abstractions (regardless of namespace)', focus: false do
+    it 'can return abstractor abstraction groups (regardless of namespace)', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(2)
+    end
+
+    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: true do
+      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
+      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(1)
     end
 
     it "can report abstractions needing to be reviewed (regardless of namespace)", focus: false do

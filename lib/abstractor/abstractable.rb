@@ -42,7 +42,7 @@ module Abstractor
         if options[:namespace_type] || options[:namespace_id]
           abstractor_abstractions_by_namespace(options).map(&:abstractor_abstraction_group).compact.uniq
         else
-          abstractor_abstraction_groups
+          abstractor_abstraction_groups.not_deleted
         end
       end
 
