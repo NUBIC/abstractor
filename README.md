@@ -16,9 +16,9 @@ confirmation/revision by a curator.
 Abstractor works with:
 
 * Ruby 1.9.3, 2.0.0 and 2.1.1
-* Rails 3.2
-* Rails 4.1 experimental branch now available [here][]
-[here]: https://github.com/NUBIC/abstractor/tree/rails-4
+* >= Rails 4.1
+* Rails 3.2 branch now available [here][]
+[here]: https://github.com/NUBIC/abstractor/tree/rails-3
 
 Some key dependencies are:
 
@@ -45,10 +45,10 @@ Add abstractor to your Gemfile:
 ```ruby
 gem 'abstractor'
 ```
-or if using Rails 4.1 or greater
+or if using Rails 3
 
 ```ruby
-gem 'abstractor', :git => 'https://github.com/NUBIC/abstractor', branch: 'rails-4'
+gem 'abstractor', :git => 'https://github.com/NUBIC/abstractor', branch: 'rails-3'
 ```
 
 Add the stanford-core-nlp gem to your Gemfile.  Currently need to use the master branch of the official repository until a new version of the gem is released:

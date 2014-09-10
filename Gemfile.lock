@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    abstractor (2.1.2)
+    abstractor (4.0.0)
       coffee-rails (~> 4.0.1, >= 4.0.1)
       haml (~> 4.0.5, >= 4.0.5)
       jquery-rails (~> 3.1, >= 3.1.0)
