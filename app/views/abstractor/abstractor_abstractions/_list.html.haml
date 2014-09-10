@@ -1,8 +1,10 @@
 - about ||= @about
+- namespace_type ||= @namespace_type
+- namespace_id ||= @namespace_id
 .abstractor_abstractions
-  = link_to 'Not applicable all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'not applicable')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
-  = link_to 'Unknown all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'unknown')), :confirm => 'Are you sure?', :method => :put, :class => "icon_link update_link"
-  - abstractor_subject_groups = Abstractor::AbstractorSubjectGroup.joins(:abstractor_subjects).where(:abstractor_subjects => {:subject_type => about.class}).order('abstractor_subject_groups.id').not_deleted.to_a.uniq
+  = link_to 'Not applicable all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'not applicable')), data: { confirm: 'Are you sure?'}, method: :put, class: 'abstractor_not_applicable_all_link'
+  = link_to 'Unknown all', Abstractor::UserInterface.abstractor_relative_path(abstractor.update_all_abstractor_abstractions_path(about_type: about.class, about_id: about.id, abstractor_abstraction_value: 'unknown')), data: { confirm: 'Are you sure?'}, method: :put,  class: 'abstractor_unknown_all_link'
+  - abstractor_subject_groups = about.class.abstractor_subject_groups(namespace_type: namespace_type, namespace_id: namespace_id)
   - abstractor_subject_groups.each do |abstractor_subject_group|
     .abstractor_subject_groups_container
       %b= abstractor_subject_group.name
@@ -17,13 +19,12 @@
           %b Status
         %hr
         .abstractor_subject_groups
-          - abstractor_abstraction_groups = abstractor_subject_group.abstractor_abstraction_groups.not_deleted.joins(:abstractor_abstractions).where(:abstractor_abstractions => {:about_id => about.id}).order('abstractor_abstraction_groups.id').to_a.uniq
+          - abstractor_abstraction_groups = about.abstractor_abstraction_groups_by_namespace(namespace_type: namespace_type, namespace_id: namespace_id)
           - abstractor_abstraction_groups.each_with_index do |abstractor_abstraction_group, index|
             = render partial: 'abstractor/abstractor_abstraction_groups/form', locals: {abstractor_abstraction_group: abstractor_abstraction_group}
-        = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)), method: :post, class: "icon_link add_link", remote: true
-
+        = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)),  data: { confirm: 'Are you sure?'}, method: :post, class: 'abstractor_group_add_link', remote: true
   .clear
-  - ungrouped_subjects = Abstractor::AbstractorSubject.not_deleted.includes(:abstractor_subject_group_member).where(:subject_type => about.class.to_s, :abstractor_subject_group_members => {:id => nil})
+  - ungrouped_subjects = about.class.abstractor_subjects(grouped: false, namespace_type: namespace_type, namespace_id: namespace_id)
   - if ungrouped_subjects.any?
     %fieldset
       .column-3
@@ -39,9 +40,4 @@
         - ungrouped_subject.abstractor_abstractions.not_deleted.where(:about_id => about.id).each do |abstractor_abstraction|
           %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)}" }
             = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
-:javascript
-  $(function () {
-    new Abstractor.AbstractionUI();
-    new Abstractor.AbstractionSuggestionUI();
-    new Abstractor.AbstractionGroupUI();
-  });
+#abstractor_abstraction_dialog_tooltip

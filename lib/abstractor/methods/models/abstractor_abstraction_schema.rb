@@ -14,7 +14,7 @@ module Abstractor
           base.send :has_many, :object_relations,   :class_name => "Abstractor::AbstractorAbstractionSchemaRelation", :foreign_key => "object_id"
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::AbstractorAbstractionSchemaRelation", :foreign_key => "subject_id"
 
-          base.send :attr_accessible, :abstractor_object_type, :abstractor_object_type_id, :display_name, :predicate, :preferred_name, :deleted_at
+          # base.send :attr_accessible, :abstractor_object_type, :abstractor_object_type_id, :display_name, :predicate, :preferred_name, :deleted_at
         end
 
         # Instance Methods

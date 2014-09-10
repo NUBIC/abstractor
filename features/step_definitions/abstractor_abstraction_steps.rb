@@ -7,9 +7,9 @@ Then /^"([^\"]*)"(?: in the(?: (first|last)?) "([^\"]*)")? should(?: (not))? equ
       match = true if e.text == value
     end
     if negation.blank?
-      match.should be_true
+      match.should be_truthy
     else
-      match.should be_false
+      match.should be_falsey
     end
   }
 end

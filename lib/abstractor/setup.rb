@@ -2,32 +2,32 @@ module Abstractor
   module Setup
     def self.system
       puts 'Setting up Abstractor::AbstractorObjectType'
-      Abstractor::AbstractorObjectType.find_or_create_by_value('list')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('number')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('boolean')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('string')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('radio button list')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('date')
-      Abstractor::AbstractorObjectType.find_or_create_by_value('dynamic list')
+      Abstractor::AbstractorObjectType.where(value: 'list').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'number').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'boolean').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'string').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'radio button list').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'date').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'dynamic list').first_or_create
 
       puts 'Setting up Abstractor::AbstractorRuleType'
-      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name: 'name/value', description:'search for value associated with name')
-      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name:'value', description: 'search for value match')
-      Abstractor::AbstractorRuleType.find_or_create_by_name_and_description(name: 'unknown', description: 'do not try to abstract, always assign "unknown"')
+      Abstractor::AbstractorRuleType.where(name: 'name/value', description:'search for value associated with name').first_or_create
+      Abstractor::AbstractorRuleType.where(name:'value', description: 'search for value match').first_or_create
+      Abstractor::AbstractorRuleType.where(name: 'unknown', description: 'do not try to abstract, always assign "unknown"').first_or_create
 
       puts 'Setting up Abstractor::AbstractorSuggestionStatus'
-      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Needs review')
-      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Accepted')
-      Abstractor::AbstractorSuggestionStatus.find_or_create_by_name('Rejected')
+      Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first_or_create
+      Abstractor::AbstractorSuggestionStatus.where(name: 'Accepted').first_or_create
+      Abstractor::AbstractorSuggestionStatus.where(name: 'Rejected').first_or_create
 
       puts 'Setting up Abstractor::AbstractorRelationType'
-      Abstractor::AbstractorRelationType.find_or_create_by_name('member_of')
-      Abstractor::AbstractorRelationType.find_or_create_by_name('preceded_by')
+      Abstractor::AbstractorRelationType.where(name: 'member_of').first_or_create
+      Abstractor::AbstractorRelationType.where(name: 'preceded_by').first_or_create
 
       puts 'Setting up Abstractor::AbstractorAbstractionSourceType'
-      Abstractor::AbstractorAbstractionSourceType.find_or_create_by_name('nlp suggestion')
-      Abstractor::AbstractorAbstractionSourceType.find_or_create_by_name('custom suggestion')
-      Abstractor::AbstractorAbstractionSourceType.find_or_create_by_name('indirect')
+      Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first_or_create
+      Abstractor::AbstractorAbstractionSourceType.where(name: 'custom suggestion').first_or_create
+      Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first_or_create
     end
   end
 end

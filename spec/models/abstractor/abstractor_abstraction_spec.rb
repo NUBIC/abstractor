@@ -17,18 +17,18 @@
    end
 
    it "can detect a suggestion from a suggested value", focus: false do
-     @abstractor_abstraction.detect_abstractor_suggestion('bar', nil, nil).should == @abstractor_suggestion_bar
+     expect(@abstractor_abstraction.detect_abstractor_suggestion('bar', nil, nil)).to eq(@abstractor_suggestion_bar)
    end
 
    it "knows if an abstraction is unreviewed", focus: false do
-     expect(@abstractor_abstraction.unreviewed?).to be_true
+     expect(@abstractor_abstraction.unreviewed?).to be_truthy
    end
 
    it "knows if an abstraction is not unreviewed", focus: false do
      @abstractor_suggestion_bar.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
      @abstractor_suggestion_bar.save
 
-     expect(@abstractor_abstraction.reload.unreviewed?).to be_false
+     expect(@abstractor_abstraction.reload.unreviewed?).to be_falsey
    end
 
    it "can detect an indirect source", focus: false do
