@@ -22,7 +22,7 @@ module Abstractor
 
           base.send :belongs_to, :about, polymorphic: true
 
-          base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
+          # base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
 
           # Hooks
           base.send :after_save, :review_matching_suggestions

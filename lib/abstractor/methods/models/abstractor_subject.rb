@@ -18,7 +18,7 @@ module Abstractor
           base.send :has_many, :subject_relations,  :class_name => "Abstractor::AbstractorSubjectRelation", :foreign_key => "subject_id"
 
 
-          base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :subject_type, :dynamic_list_method
+          # base.send :attr_accessible, :abstractor_abstraction_schema, :abstractor_abstraction_schema_id, :subject_type, :dynamic_list_method
           base.send(:include, InstanceMethods)
         end
 
@@ -151,7 +151,7 @@ module Abstractor
               abstractor_object_values = []
               abstractor_object_value_variants = []
               target_abstractor_object_values =[]
-              target_abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?)", abstractor_object_value_ids)
+              target_abstractor_object_value_variants = Abstractor::AbstractorObjectValueVariant.where("abstractor_object_value_id in (?)", abstractor_object_value_ids).to_a
 
               at = nil
               at = abstractor_text.downcase unless abstractor_text.blank?

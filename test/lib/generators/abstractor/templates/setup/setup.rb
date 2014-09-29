@@ -62,38 +62,51 @@ module Setup
     end
   end
 
+  def self.abstractor_abstraction_schema_anatomical_location
+    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(:predicate => 'has_anatomical_location').first
+    if anatomical_location_abstractor_abstraction_schema.blank?
+      anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
+      Site.where(:synonym => false).each do |site|
+        object_value = Abstractor::AbstractorObjectValue.create(:value => site.name)
+        Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, :abstractor_object_value => object_value)
+        Site.where(:icdo3_code => site.icdo3_code, :synonym => true).each do |site_synonym|
+          Abstractor::AbstractorObjectValueVariant.create(:abstractor_object_value => object_value, :value => site_synonym.name)
+        end
+      end
+    end
+    anatomical_location_abstractor_abstraction_schema
+  end
+
+  def self.abstractor_abstraction_schema_laterality
+    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
+    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(:predicate => 'has_laterality').first
+    if laterality_abstractor_abstraction_schema.blank?
+      laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => radio_button_list_object_type, preferred_name: 'Laterality')
+      left_ov       = Abstractor::AbstractorObjectValue.create(:value => 'left')
+      right_ov      = Abstractor::AbstractorObjectValue.create(:value => 'right')
+      bilateral_ov = Abstractor::AbstractorObjectValue.create(:value => 'bilateral')
+
+      laterals = [left_ov, right_ov, bilateral_ov]
+
+      laterals.each do |object_value|
+        Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_object_value => object_value)
+      end
+    end
+    laterality_abstractor_abstraction_schema
+  end
+
   def self.radiation_therapy_prescription
     list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
-
-    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
-    Site.where(:synonym => false).each do |site|
-      object_value = Abstractor::AbstractorObjectValue.create(:value => site.name)
-      Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, :abstractor_object_value => object_value)
-      Site.where(:icdo3_code => site.icdo3_code, :synonym => true).each do |site_synonym|
-        Abstractor::AbstractorObjectValueVariant.create(:abstractor_object_value => object_value, :value => site_synonym.name)
-      end
-    end
-
+    anatomical_location_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_anatomical_location
     location_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'Anatomical Location')
-
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 1)
-
-    laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(:predicate => 'has_laterality', :display_name => 'Laterality', :abstractor_object_type => radio_button_list_object_type, preferred_name: 'Laterality')
-    left_ov       = Abstractor::AbstractorObjectValue.create(:value => 'left')
-    right_ov      = Abstractor::AbstractorObjectValue.create(:value => 'right')
-    bilateral_ov = Abstractor::AbstractorObjectValue.create(:value => 'bilateral')
-
-    laterals = [left_ov, right_ov, bilateral_ov]
-
-    laterals.each do |object_value|
-      Abstractor::AbstractorAbstractionSchemaObjectValue.create(:abstractor_abstraction_schema => laterality_abstractor_abstraction_schema, :abstractor_object_value => object_value)
-    end
-
+    laterality_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_laterality
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => laterality_abstractor_abstraction_schema)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => location_group, :display_order => 2)
@@ -207,7 +220,7 @@ module Setup
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     surgery_anatomical_location_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'Surgery Anatomical Location')
 
-    anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(:predicate => 'has_anatomical_location').first
+    anatomical_location_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_anatomical_location
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'Surgery', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'surgical_procedure_notes', :abstractor_rule_type => value_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => surgery_anatomical_location_group, :display_order => 1)
@@ -223,5 +236,104 @@ module Setup
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, abstractor_abstraction_source_type: indirect_source_type, from_method: 'patient_imaging_exams')
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, abstractor_abstraction_source_type: indirect_source_type, from_method: 'patient_surgical_procedure_reports')
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => surgery_anatomical_location_group, :display_order => 2)
+  end
+
+  def self.imaging_exam
+    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
+    v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
+    source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
+
+    moomin_major_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_major_moomin_character', display_name: 'Favorite major Moomin character', abstractor_object_type: list_object_type, preferred_name: 'Favorite major Moomin character')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => moomin_major_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1)
+    abstractor_object_values = []
+    abstractor_object_value = nil
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moomin')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'moominpapa')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'little my')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_major_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+
+    dat_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'Dopamine Transporter Level')
+    dat_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_dopamine_transporter_level', display_name: 'Dopamine transporter level', abstractor_object_type: list_object_type, preferred_name: 'Dopamine transporter level')
+    Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, value: 'DaT')
+    Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, value: 'DaT scan')
+    Abstractor::AbstractorAbstractionSchemaPredicateVariant.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, value: 'DaTscan')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => dat_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1)
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => dat_group, :display_order => 1)
+    abstractor_object_values = []
+    abstractor_object_value = nil
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Normal')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'Abnormal')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: dat_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => n_v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+
+    anatomical_location_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_anatomical_location
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1)
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => dat_group, :display_order => 2)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+
+    moomin_minor_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_minor_moomin_character', display_name: 'Favorite minor Moomin character', abstractor_object_type: list_object_type, preferred_name: 'Favorite minor Moomin character')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => moomin_minor_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
+    abstractor_object_values = []
+    abstractor_object_value = nil
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'fillyjonk')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'hemulen')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'the groke')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: moomin_minor_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+
+
+    recist_response_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'RECIST response criteria')
+    recist_response_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_recist_response_criteria', display_name: 'RECIST response criteria', abstractor_object_type: list_object_type, preferred_name: 'RECIST response criteria')
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => recist_response_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => recist_response_group, :display_order => 1)
+    abstractor_object_values = []
+    abstractor_object_value = nil
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'CR (complete response) = disappearance of all target lesions')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'CR')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'complete response')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PR (partial response) = 30% decrease in the sum of the longest diameter of target lesions')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PR')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'partial response')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'PD (progressive disease) = 20% increase in the sum of the longest diameter of target lesions')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PD')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'progressive disease')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    abstractor_object_values << abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'SD (stable disease) = small changes that do not meet above criteria')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'PD')
+    abstractor_object_value.abstractor_object_value_variants << Abstractor::AbstractorObjectValueVariant.create(value: 'progressive disease')
+    abstractor_object_value.save
+    Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: recist_response_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+    abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
+    Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => recist_response_group, :display_order => 2)
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
   end
 end

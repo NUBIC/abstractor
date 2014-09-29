@@ -40,6 +40,9 @@ module Abstractor
       directory 'setup', "#{dummy_path}/lib/setup"
       copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :imaging_exams, :only => :edit\n}
+      end
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  resources :surgeries, :only => :edit\n}
       end
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
@@ -76,6 +79,7 @@ module Abstractor
     end
 
     def test_dummy_controllers
+      template "imaging_exams_controller.rb", "#{dummy_path}/app/controllers/imaging_exams_controller.rb", :force => true
       template "surgeries_controller.rb", "#{dummy_path}/app/controllers/surgeries_controller.rb", :force => true
       template "pathology_cases_controller.rb", "#{dummy_path}/app/controllers/pathology_cases_controller.rb", :force => true
       template "encounter_notes_controller.rb", "#{dummy_path}/app/controllers/encounter_notes_controller.rb", :force => true
@@ -83,10 +87,15 @@ module Abstractor
     end
 
     def test_dummy_views
+      template "views/imaging_exams/edit.html.haml", "#{dummy_path}/app/views/imaging_exams/edit.html.haml", :force => true
       template "views/surgeries/edit.html.haml", "#{dummy_path}/app/views/surgeries/edit.html.haml", :force => true
       template "views/pathology_cases/edit.html.haml", "#{dummy_path}/app/views/pathology_cases/edit.html.haml", :force => true
       template "views/encounter_notes/edit.html.haml", "#{dummy_path}/app/views/encounter_notes/edit.html.haml", :force => true
       template "views/radiation_therapy_prescriptions/edit.html.haml", "#{dummy_path}/app/views/radiation_therapy_prescriptions/edit.html.haml", :force => true
+    end
+
+    def test_dummy_assets
+      template "application.js", "#{dummy_path}/app/assets/javascripts/application.js", :force => true
     end
 
     def test_dummy_clean
@@ -96,7 +105,6 @@ module Abstractor
         remove_file "Gemfile"
         remove_file "lib/tasks"
         remove_file "app/assets/images/rails.png"
-        remove_file "app/assets/javascripts/application.js"
         remove_file "public/index.html"
         remove_file "public/robots.txt"
         remove_file "README"

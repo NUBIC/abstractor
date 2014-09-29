@@ -26,105 +26,105 @@ describe RadiationTherapyPrescription do
   describe "abstracting" do
     it "can report its abstractor subject groups" do
       abstractor_subject_groups = Abstractor::AbstractorSubjectGroup.where(name:'Anatomical Location')
-      RadiationTherapyPrescription.abstractor_subject_groups.should_not be_empty
-      Set.new(RadiationTherapyPrescription.abstractor_subject_groups).should == Set.new(abstractor_subject_groups)
+      expect(RadiationTherapyPrescription.abstractor_subject_groups).to_not be_empty
+      expect(Set.new(RadiationTherapyPrescription.abstractor_subject_groups)).to eq(Set.new(abstractor_subject_groups))
     end
 
     #abstractions
     it "creates a 'has_anatomical_location' abstraction'" do
       @radiation_therapy_prescription.abstract
-      @radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).should_not be_nil
+      expect(@radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location)).to_not be_nil
     end
 
     it "does not create another 'has_anatomical_location' abstraction upon re-abstraction" do
       @radiation_therapy_prescription.abstract
-      @radiation_therapy_prescription.reload.abstractor_abstractions.select { |abstraction| abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_anatomical_location' }.size.should == 1
+      expect(@radiation_therapy_prescription.reload.abstractor_abstractions.select { |abstraction| abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_anatomical_location' }.size).to eq(1)
     end
 
     it "creates a 'has_laterality' abstraction'" do
       @radiation_therapy_prescription.abstract
-      @radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_laterality).should_not be_nil
+      expect(@radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_laterality)).to_not be_nil
     end
 
     it "does not create another 'has_laterality' abstraction upon re-abstraction" do
       @radiation_therapy_prescription.abstract
-      @radiation_therapy_prescription.reload.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_laterality' }.size.should == 1
+      expect(@radiation_therapy_prescription.reload.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_laterality' }.size).to eq(1)
     end
 
     #suggestion suggested value
     it "creates a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value.should == 'parietal lobe'
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value).to eq('parietal lobe')
     end
 
     it "creates a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value.should == 'parietal lobe'
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value).to eq('parietal lobe')
     end
 
     #suggestion match value
     it "creates a 'has_anatomical_location' abstraction suggestion match value from a from an abstractor object value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should == 'left parietal lobe'
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('left parietal lobe')
     end
 
     it "creates a 'has_anatomical_location' abstraction suggestion match value from a from an abstractor object value variant" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should == 'left parietal'
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('left parietal')
     end
 
     it "creates multiple 'has_anatomical_location' abstraction suggestion match values given multiple different matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Left parietal lobe.  Let me remind you that it is the left parietal.')
       radiation_therapy_prescription.abstract
-      Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.map(&:sentence_match_value)).should  == Set.new(["left parietal lobe.", "let me remind you that it is the left parietal."])
+      expect(Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.map(&:sentence_match_value))).to eq(Set.new(["left parietal lobe.", "let me remind you that it is the left parietal."]))
     end
 
     #suggestions
     it "does not create another 'has_anatomical_location' abstraction suggestion upon re-abstraction" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.size).to eq(1)
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.size).to eq(1)
     end
 
     it "creates multiple 'has_anatomical_location' abstraction suggestions given multiple different matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe and bilateral cerebral meninges')
       radiation_therapy_prescription.abstract
 
-      Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.map(&:suggested_value)).should == Set.new(['cerebral meninges', 'parietal lobe', 'meninges'])
+      expect(Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['cerebral meninges', 'parietal lobe', 'meninges']))
     end
 
     it "creates one 'has_anatomical_location' abstraction suggestion given multiple identical matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Left parietal lobe.  Let me remend you that it is the left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.suggested_value == 'parietal lobe'}.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.suggested_value == 'parietal lobe'}.size).to eq(1)
     end
 
     #negation
     it "does not create a 'has_anatomical_location' abstraction suggestion match value from a negated value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Not the left parietal lobe.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value.should be_nil
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
     end
 
     #suggestion sources
     it "creates one 'has_anatomical_location' abstraction suggestion source given multiple identical matches" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Left parietal lobe.  Talk about some other stuff.  Left parietal lobe.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources.first.sentence_match_value == 'left parietal lobe.'}.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_sources.first.sentence_match_value == 'left parietal lobe.'}.size).to eq(1)
     end
 
     it "does not create another 'has_anatomical_location' abstraction suggestion source upon re-abstraction (using the canonical name/value format)" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.size).to eq(1)
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_suggestion_sources.size).to eq(1)
     end
 
     #abstractor object value
@@ -132,28 +132,28 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'parietal lobe').first
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_object_value.should == abstractor_object_value
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_object_value).to eq(abstractor_object_value)
     end
 
     #unknowns
     it "creates a 'has_anatomical_location' unknown abstraction suggestion" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Forgot to mention an anatomical location.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.unknown.should be_true
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.unknown).to be_truthy
     end
 
     it "does not create a 'has_anatomical_location' abstraction suggestion object value for a unknown abstraction suggestion " do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Forgot to mention an anatomical location.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_object_value.should be_nil
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.abstractor_object_value).to be_nil
     end
 
     it "does not creates another 'has_anatomical_location' unknown abstraction suggestion upon re-abstraction" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Forgot to mention an anatomical location.')
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.unknown }.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.unknown }.size).to eq(1)
       radiation_therapy_prescription.abstract
-      radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.unknown }.size.should == 1
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.unknown }.size).to eq(1)
     end
 
     #groups
@@ -161,7 +161,7 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size.should == 1
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size).to eq(1)
     end
 
     it "does not creates another abstractor abstraction group upon re-abstraction" do
@@ -169,29 +169,29 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
       radiation_therapy_prescription.reload.abstract
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size.should == 1
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size).to eq(1)
     end
 
     it "creates a abstractor abstraction group member for each abstractor abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 3
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size).to eq(3)
     end
 
-    it "does create duplicate abstractor abstraction grup members upon re-abstraction", focus: false do
+    it "does not create duplicate abstractor abstraction grup members upon re-abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       radiation_therapy_prescription.reload.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size.should == 3
+      expect(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.size).to eq(3)
     end
 
     it "creates a abstractor abstraction group member of the right kind for each abstractor abstraction", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
-      Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema)).should == Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality, @abstractor_abstraction_schema_has_radiation_therapy_prescription_date])
+      expect(Set.new(radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first.abstractor_abstractions.map(&:abstractor_abstraction_schema))).to eq(Set.new([@abstractor_abstraction_schema_has_anatomical_location, @abstractor_abstraction_schema_has_laterality, @abstractor_abstraction_schema_has_radiation_therapy_prescription_date]))
     end
 
     describe "updating all abstraction group members" do
@@ -203,15 +203,15 @@ describe RadiationTherapyPrescription do
       end
 
       it "to 'not applicable'", focus: false do
-        @abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable).should == [nil, nil, nil]
+        expect(@abstractor_abstraction_group.abstractor_abstractions.map(&:not_applicable)).to eq([nil, nil, nil])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-        @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable).should == [true, true, true]
+        expect(@abstractor_abstraction_group.reload.abstractor_abstractions.map(&:not_applicable)).to eq([true, true, true])
       end
 
       it "to 'unknown'", focus: false do
-        @abstractor_abstraction_group.abstractor_abstractions.map(&:unknown).should == [nil, nil, nil]
+        expect(@abstractor_abstraction_group.abstractor_abstractions.map(&:unknown)).to eq([nil, nil, nil])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
-        @abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown).should == [true, true, true]
+        expect(@abstractor_abstraction_group.reload.abstractor_abstractions.map(&:unknown)).to eq([true, true, true])
       end
 
       it "does not update more than necessary", focus: false do
@@ -221,10 +221,10 @@ describe RadiationTherapyPrescription do
         abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: 'Anatomical Location').first
         abstractor_abstraction_group = radiation_therapy_prescription.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.first
 
-        abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [1,1,1]
+        expect(abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }).to eq([1,1,1])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_UNKNOWN)
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(abstractor_abstraction_group.reload.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-        abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }.should == [3,3,3]
+        expect(abstractor_abstraction_group.abstractor_abstractions.map{ |aa| aa.versions.size }).to eq([3,3,3])
         PaperTrail.enabled = false
       end
 
@@ -232,9 +232,9 @@ describe RadiationTherapyPrescription do
         rejected_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
         needs_review_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
         abstractor_suggestions = @abstractor_abstraction_group.abstractor_abstractions.map(&:abstractor_suggestions).flatten
-        abstractor_suggestions.map(&:abstractor_suggestion_status).should == [needs_review_status, needs_review_status, needs_review_status]
+        expect(abstractor_suggestions.map(&:abstractor_suggestion_status)).to eq([needs_review_status, needs_review_status, needs_review_status])
         Abstractor::AbstractorAbstraction.update_abstractor_abstraction_other_value(@abstractor_abstraction_group.abstractor_abstractions, Abstractor::Enum::ABSTRACTION_OTHER_VALUE_TYPE_NOT_APPLICABLE)
-        abstractor_suggestions.each(&:reload).map(&:abstractor_suggestion_status).should == [rejected_status, rejected_status, rejected_status]
+        expect(abstractor_suggestions.each(&:reload).map(&:abstractor_suggestion_status)).to eq([rejected_status, rejected_status, rejected_status])
       end
 
       it "raises an error if passed an invalid argument", focus: false do
@@ -242,7 +242,7 @@ describe RadiationTherapyPrescription do
       end
     end
 
-    #pivioting groups
+    #pivoting groups
     it "can pivot grouped abstractions as if regular columns on the abstractable entity", focus: false do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
       radiation_therapy_prescription.abstract

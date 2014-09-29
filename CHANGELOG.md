@@ -1,6 +1,43 @@
 # Abstractor Changelog
 =======
 
+## 4.0.0
+Released on September 10 , 2014
+
+* Soft deleted rows should not be included in
+abstraction groups.
+See https://github.com/NUBIC/abstractor/issues/45
+
+* Replace hard coded values with enum values.
+See https://github.com/NUBIC/abstractor/issues/43
+
+* Improve the display of version history for an
+abstraction.
+See https://github.com/NUBIC/abstractor/issues/42
+
+* Force the loading of all dependent JavaScript
+into the host application.
+See https://github.com/NUBIC/abstractor/issues/40
+
+* Make the abstractor:install generator smarter
+about inserting default configuration.
+See https://github.com/NUBIC/abstractor/issues/38
+
+* Remove cruft left over from the extraction of
+the gem from original application: CSS, JavaScript.
+See https://github.com/NUBIC/abstractor/issues/39
+
+* Remove all inline JavaScript
+(and convert to CoffeeScript).
+See https://github.com/NUBIC/abstractor/issues/37
+
+* Allow the setup of abstraction schemas to be
+namespaced.
+See https://github.com/NUBIC/abstractor/issues/35
+
+* Upgrade to Rails 4.
+See https://github.com/NUBIC/abstractor/issues/34
+
 ## 2.1.2
 Released on August 7, 2014
 

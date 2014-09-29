@@ -4,6 +4,8 @@ module NavigationHelpers
 
     when /the home page/
       root_path
+    when /the namespace_type "(.*?)" and namespace_id (\d+) sent to the last imaging exam edit page/
+      edit_imaging_exam_path(ImagingExam.last, namespace_type: $1, namespace_id: $2)
     when /the last surgery edit page/
       edit_surgery_path(Surgery.last)
     when /the last pathology case edit page/

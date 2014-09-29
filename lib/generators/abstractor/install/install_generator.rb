@@ -60,7 +60,7 @@ module Abstractor
         puts 'Please be patient...this could take a while.'
         `rake abstractor:setup:stanford_core_nlp`
 
-        insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /::Application.configure do\n/) do
+        insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /(::Application.configure do\n|application.configure do\n)/) do
 '  StanfordCoreNLP.use :english
   StanfordCoreNLP.model_files = {}
   StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/"

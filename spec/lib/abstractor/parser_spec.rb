@@ -4,20 +4,20 @@ describe Abstractor::Parser do
     text = "Test: 80
             Test2: 90"
     parser = Abstractor::Parser.new(text)
-    parser.sentences.size.should == 2
+    expect(parser.sentences.size).to eq(2)
   end
 
   it "can be instructed to parse each new line as a new sentence", focus: false do
     text = "Test: 80
             Test2: 90"
     parser = Abstractor::Parser.new(text, new_line_is_sentence_break: true)
-    parser.sentences.size.should == 2
+    expect(parser.sentences.size).to eq(2)
   end
 
   it "can be instructed to not parse each new line as a new sentence", focus: false do
     text = "Test: 80
             Test2: 90"
     parser = Abstractor::Parser.new(text, new_line_is_sentence_break: false)
-    parser.sentences.size.should == 1
+    expect(parser.sentences.size).to eq(1)
   end
 end

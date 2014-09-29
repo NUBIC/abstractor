@@ -23,7 +23,7 @@ module Abstractor
 
         def update
           respond_to do |format|
-            if @abstractor_abstraction.update_attributes(params[:abstractor_abstraction])
+            if @abstractor_abstraction.update_attributes(abstractor_abstraction_params)
               format.html { redirect_to(abstractor_abstraction_path(@abstractor_abstraction)) }
             else
               format.html { render :action => "edit" }
@@ -44,6 +44,12 @@ module Abstractor
           def set_abstractor_abstraction
             @abstractor_abstraction = Abstractor::AbstractorAbstraction.find(params[:id])
             @about = @abstractor_abstraction.about
+          end
+
+          def abstractor_abstraction_params
+            params.require(:abstractor_abstraction).permit(:id, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :_destroy,
+            abstractor_indirect_sources_attributes: [:id, :abstractor_abstraction_id, :abstractor_abstraction_source_id, :source_type, :source_id, :source_method, :deleted_at, :_destroy]
+            )
           end
       end
     end

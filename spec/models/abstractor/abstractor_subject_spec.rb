@@ -20,12 +20,12 @@ describe  Abstractor::AbstractorSubject do
 
     it "knows if it is a member of abstractor subject group", focus: false do
       abstractor_subject = Abstractor::AbstractorSubject.find(@abstractor_subject_1)
-      abstractor_subject.groupable?.should be_true
+      expect(abstractor_subject.groupable?).to be_truthy
     end
 
     it "knows if it is not a member of abstractor subject group", focus: false do
       subject = Abstractor::AbstractorSubject.find(@abstractor_subject_2)
-      subject.groupable?.should be_false
+      expect(subject.groupable?).to be_falsey
     end
   end
 end

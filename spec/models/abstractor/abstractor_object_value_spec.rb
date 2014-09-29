@@ -10,6 +10,6 @@ describe  Abstractor::AbstractorObjectValue do
     abstractor_abstraction_schema.abstractor_object_values << FactoryGirl.build(:abstractor_object_value, value: 'foo')
     FactoryGirl.create(:abstractor_object_value_variant, abstractor_object_value: abstractor_abstraction_schema.abstractor_object_values.first, value: 'boo')
 
-    Set.new(abstractor_abstraction_schema.abstractor_object_values.first.object_variants).should == Set.new(['foo', 'boo'])
+    expect(Set.new(abstractor_abstraction_schema.abstractor_object_values.first.object_variants)).to eq(Set.new(['foo', 'boo']))
   end
 end
