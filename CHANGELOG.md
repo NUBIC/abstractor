@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.0.1
+Released on September 29 , 2014
+
+* Abstraction groups are not filtered by subject group for display.
+See https://github.com/NUBIC/abstractor/issues/46
+
 ## 4.0.0
 Released on September 10 , 2014
 
