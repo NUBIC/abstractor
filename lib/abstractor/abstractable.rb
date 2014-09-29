@@ -40,9 +40,14 @@ module Abstractor
       def abstractor_abstraction_groups_by_namespace(options = {})
         options = { namespace_type: nil, namespace_id: nil }.merge(options)
         if options[:namespace_type] || options[:namespace_id]
-          abstractor_abstractions_by_namespace(options).map(&:abstractor_abstraction_group).compact.uniq
+          groups = abstractor_abstractions_by_namespace(options).map(&:abstractor_abstraction_group).compact.uniq
         else
-          abstractor_abstraction_groups.not_deleted
+          groups = abstractor_abstraction_groups.not_deleted
+        end
+        if options[:abstractor_subject_group_id]
+          groups.select{|g| g.abstractor_subject_group_id == options[:abstractor_subject_group_id]}
+        else
+          groups
         end
       end
 

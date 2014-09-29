@@ -113,6 +113,19 @@ describe ImagingExam do
       expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(1)
     end
 
+
+    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: true do
+      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
+      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(1)
+    end
+
+    it 'can filter abstractor abstraction groups by subject group', focus: true do
+      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      abstractor_subject_group = @imaging_exam.reload.abstractor_abstraction_groups_by_namespace.first.abstractor_subject_group
+      expect(@imaging_exam.abstractor_abstraction_groups_by_namespace(abstractor_subject_group_id: abstractor_subject_group.id).size).to eq(1)
+    end
+
     it "can report abstractions needing to be reviewed (regardless of namespace)", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(6)
