@@ -1,0 +1,17 @@
+- if versions.any?
+  %br
+  %b History:
+  - versions.each do |version|
+    .version
+      .version_date
+        %i
+          Date:
+        = version.created_at.to_date.to_s(:date)
+      .version_value
+        %i
+          Value:
+        = version.reify.display_value
+      .version_user
+        %i
+          User:
+        = version.originator

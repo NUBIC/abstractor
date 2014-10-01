@@ -6,41 +6,23 @@
   - about = abstractor_abstraction.about
 
   .abstractor_abstraction_display
-    .column-3
-      .abstraction_schema_name
-        = abstractor_abstraction_schema.display_name
-    .column-5
-      .abstractor_abstraction_value
-        - if rejected_suggestions.length == abstractor_suggestions.length
-          %span.editable_abstraction
-            = abstractor_abstraction.display_value
-          = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
-        - else
+    .abstraction_schema_name
+      = abstractor_abstraction_schema.display_name
+    .abstractor_abstraction_value
+      - if rejected_suggestions.length == abstractor_suggestions.length
+        %span.editable_abstraction
           = abstractor_abstraction.display_value
-        - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
-        - if versions.any?
-          %br
-          %b History:
-          - versions.each do |version|
-            .version
-              .version_date
-                %i
-                  Date:
-                = "#{version.created_at.to_date.to_s(:date)}"
-              .version_value
-                %i
-                  Value:
-                = "#{version.reify.display_value}"
-              .version_user
-                %i
-                  User:
-                = "#{version.originator}"
-    - if abstractor_suggestions.any?
-      .column-9
-        - abstractor_suggestions.each do |abstractor_suggestion|
-          = form_for [abstractor_abstraction, abstractor_suggestion], url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_abstractor_suggestion_path(abstractor_abstraction, abstractor_suggestion)), method: :put, remote: true, html: { class: 'edit_abstractor_suggestion' } do |f|
-            = render 'abstractor/shared/error_messages', :object => f.object
-            .column-5
+        = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
+      - else
+        = abstractor_abstraction.display_value
+      - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
+      = render partial: 'abstractor/abstractor_abstractions/abstraction_history', locals: { versions: versions }
+    .abstractor_suggestions
+      - if abstractor_suggestions.any?
+        - abstractor_suggestions.each_with_index do |abstractor_suggestion, index|
+          .abstractor_suggestion{ class: "#{'abstractor_bottom_border' if index < abstractor_suggestions.length - 1}"}
+            = form_for [abstractor_abstraction, abstractor_suggestion], url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_abstractor_suggestion_path(abstractor_abstraction, abstractor_suggestion)), method: :put, remote: true, html: { class: 'edit_abstractor_suggestion' } do |f|
+              = render 'abstractor/shared/error_messages', object: f.object
               .abstractor_suggestion_values
                 = abstractor_suggestion.display_value
                 - if abstractor_suggestion.abstractor_suggestion_sources.any?
@@ -48,38 +30,37 @@
                     - source_about = abstractor_suggestion_source.source_type.constantize.find(abstractor_suggestion_source.source_id)
                     - from_method = abstractor_suggestion_source.source_method
                     - if from_method && source_about.respond_to?(from_method)
-                      %span{ :class => 'abstractor_abstraction_source_tooltip_img', :rel => "#abstraction_text_#{abstractor_suggestion_source.id}", :title => "#{source_about.class.to_s} #{from_method}"}
-                        = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{abstractor_suggestion_source.id}")
-                      %div{ :id => "abstraction_text_#{abstractor_suggestion_source.id}", :class => 'abstractor_abstraction_source_tooltip'}
-                        - abstractable_from_column = source_about.send(from_method)
-                        - unless abstractable_from_column.nil?
-                          - if abstractor_suggestion_source.sentence_match_value
-                            = Abstractor::UserInterface.highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.sentence_match_value.strip)
-                          - else
-                            = simple_format(abstractable_from_column.clone)
+                      - abstractable_from_column = source_about.send(from_method)
+                      - has_text_match = abstractable_from_column && abstractor_suggestion_source.sentence_match_value
+                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{source_about.class.to_s} #{from_method}"}
+                        %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
+                      %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
+                        - if has_text_match
+                          = Abstractor::UserInterface.highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.sentence_match_value.strip)
+                        - else
+                          = simple_format(abstractable_from_column.clone)
                     - if abstractor_suggestion_source.custom_explanation
                       .custom_explanation
                         %label
                           Explanation:
                         .explanation_text
                           = abstractor_suggestion_source.custom_explanation
-            .column-3
-              - values = Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id] }
-              -  values.each do |value|
-                - id = "abstractor_suggestion_abstractor_suggestion_status_id_#{value.last}_#{abstractor_suggestion.id}"
-                = f.radio_button :abstractor_suggestion_status_id, value.last, id: id, class: 'abstractor_suggestion_status_selection'
-                = f.label :abstractor_suggestion_status_id, value.first, value: value.last, for: id
-                %br
-              = f.radio_button :abstractor_suggestion_status_id, '', {:style => 'display:none;' }
-            %hr
-    - else
-      .column-9
+              .abstractor_suggestion_status
+                %ul.abstractor_suggestion_status_group
+                  - values = Abstractor::AbstractorSuggestionStatus.all.sort_by(&:name).map{|s| [s.name, s.id] }
+                  -  values.each do |value|
+                    - id = "abstractor_suggestion_abstractor_suggestion_status_id_#{value.last}_#{abstractor_suggestion.id}"
+                    %li
+                      = f.radio_button :abstractor_suggestion_status_id, value.last, id: id, class: 'abstractor_suggestion_status_selection'
+                      = f.label :abstractor_suggestion_status_id, value.first, value: value.last, for: id, class: "abstractor_suggestion_status_selection_label #{f.object.abstractor_suggestion_status_id == value.last ? 'abstractor_suggestion_status_selection_label_active' : 'abstractor_suggestion_status_selection_label_inactive' }"
+                = f.radio_button :abstractor_suggestion_status_id, '', { style: 'display:none;' }
+      - else
         - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }.each do |abstractor_abstraction_source|
           - abstractor_abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|
             - dom_id = "#{abstractor_abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}"
-            %span{ :class => 'abstractor_abstraction_source_tooltip_img', :rel =>"#abstraction_text_#{dom_id}", :title => "#{source[:source_type].to_s} #{source[:source_method]}"}
-              = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{dom_id}")
+            %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type].to_s} #{source[:source_method]}"}
+              %i{ id: "abstraction_text_link_#{dom_id}" }
               %br
-            %div{ :id => "abstraction_text_#{dom_id}", :class => 'tooltip'}
+            %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
               = simple_format(source[:source_type].find(source[:source_id]).send(source[:source_method]))
     .clear
