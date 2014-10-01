@@ -51,146 +51,53 @@
   margin: 0.1em 0 0.25em !important;
 }
 
-.abstractor_abstractions fieldset .column-1-5 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 62.625px;
-}
-
-* html .abstractor_abstractions fieldset .column-1-5 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-1 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 38.41667px;
-}
-
-* html .abstractor_abstractions fieldset .column-1 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-2 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 86.83333px;
-}
-
-* html .abstractor_abstractions fieldset .column-2 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-3 {
+.abstractor_abstractions fieldset .abstraction_schema_name,
+.abstractor_abstractions fieldset .abstractor_suggestion_status,
+.abstractor_abstractions fieldset .abstractor_suggestion_sources {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 135.25px;
 }
 
-* html .abstractor_abstractions fieldset .column-3 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-4 {
+.abstractor_abstractions fieldset .abstraction_edit_abstraction_actions {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 183.66667px;
 }
 
-* html .abstractor_abstractions fieldset .column-4 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-5 {
+.abstractor_abstractions fieldset .abstractor_abstraction_value,
+.abstractor_abstractions fieldset .abstractor_suggestion_values {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 232.08333px;
 }
 
-* html .abstractor_abstractions fieldset .column-5 {
-  overflow-x: hidden;
-}
 
-.abstractor_abstractions fieldset .column-6 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 280.5px;
-}
-
-* html .abstractor_abstractions fieldset .column-6 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-7 {
+.abstractor_abstractions fieldset .abstraction_edit_abstraction_value {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 328.91667px;
 }
 
-* html .abstractor_abstractions fieldset .column-7 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-8 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 377.33333px;
-}
-
-* html .abstractor_abstractions fieldset .column-8 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-9 {
+.abstractor_abstractions fieldset .abstractor_suggestions {
   display: inline;
   float: left;
   margin-right: 10px;
   width: 425.75px;
 }
 
-* html .abstractor_abstractions fieldset .column-9 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-10 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 474.16667px;
-}
-
-* html .abstractor_abstractions fieldset .column-10 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-11 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 522.58333px;
-}
-
-* html .abstractor_abstractions fieldset .column-11 {
-  overflow-x: hidden;
-}
-
-.abstractor_abstractions fieldset .column-12 {
-  display: inline;
-  float: left;
-  margin-right: 10px;
-  width: 571px;
-}
-
-* html .abstractor_abstractions fieldset .column-12 {
+* html .abstractor_abstractions fieldset .abstraction_schema_name,
+* html .abstractor_abstractions fieldset .abstractor_suggestion_status,
+* html .abstractor_abstractions fieldset .abstractor_suggestion_sources,
+* html .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions,
+* html .abstractor_abstractions fieldset .abstractor_abstraction_value,
+* html .abstractor_abstractions fieldset .abstractor_suggestion_values,
+* html .abstractor_abstractions fieldset .abstraction_edit_abstraction_value,
+* html .abstractor_abstractions fieldset .abstractor_suggestions {
   overflow-x: hidden;
 }
 
@@ -230,8 +137,18 @@
   margin-right: .5em;
 }
 
-.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img img {
+.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img {
+  margin-left: 5px;
+}
+.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i {
+  background: url('page.png') no-repeat;
   vertical-align: text-bottom;
+  padding: 2px 10px;
+  vertical-align: middle;
+}
+
+.abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i.abstraction_text_link_match {
+  background: url('page_green.png') no-repeat;
 }
 
 .abstractor_abstractions fieldset .hidden {
@@ -253,15 +170,9 @@
 ul.ui-autocomplete, .ui-dialog {
   z-index: 1000 !important;
 }
-.abstractor_abstractions hr {
-  background: #dddddd;
-  color: #dddddd;
-  clear: both;
-  float: none;
-  width: 100%;
-  height: 0.1em;
-  margin: 0 0 1.45em;
-  border: none;
+.abstractor_bottom_border {
+  border-bottom: 1px solid #dddddd;
+  overflow: auto;
 }
 
 /* Tooltips */
@@ -357,4 +268,9 @@ span.tooltip_img {
 
 .abstractor_suggestion_values .custom_explanation label {
   font-weight: bold !important;
+}
+ul.abstractor_suggestion_status_group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

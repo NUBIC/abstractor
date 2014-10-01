@@ -3,10 +3,9 @@
 
 .abstractor_abstraction_edit
   = form_for abstractor_abstraction, url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_path(abstractor_abstraction)), method: :put, :remote => true do |f|
-    .column-3
-      .abstraction_schema_name
-        = abstraction_schema.display_name
-    .column-7
+    .abstraction_schema_name
+      = abstraction_schema.display_name
+    .abstraction_edit_abstraction_value
       - case abstraction_schema.abstractor_object_type.value
       - when 'date'
         = f.text_field :value, class: 'abstractor_datepicker'
@@ -41,7 +40,7 @@
       &nbsp;
       = f.check_box :unknown
       = f.label :unknown, 'unknown'
-    .column-3
+    .abstractor_suggestion_sources
       - abstractor_abstraction = f.object
       - abstraction_sources = abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name != 'indirect' }
       - abstraction_sources.each do |abstraction_source|
@@ -53,7 +52,7 @@
               %br
             %div{ :id => "abstraction_text_#{dom_id}", :class => 'tooltip'}
               = simple_format(source[:source_type].find(source[:source_id]).send(source[:source_method]))
-    .column-4
+    .abstraction_edit_abstraction_actions
       = f.submit 'Save'
       = link_to 'Cancel', abstractor_abstraction, :remote => true
     .clear

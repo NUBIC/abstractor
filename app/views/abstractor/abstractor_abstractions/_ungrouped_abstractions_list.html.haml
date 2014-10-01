@@ -1,0 +1,20 @@
+.abstractor_abstractions_ungrouped
+  - ungrouped_subjects = about.class.abstractor_subjects(grouped: false, namespace_type: namespace_type, namespace_id: namespace_id)
+  - if ungrouped_subjects.any?
+    %fieldset
+      .abstraction_schema_name
+        %b Name
+      .abstractor_abstraction_value
+        %b Value
+      .abstractor_suggestions
+        .abstractor_suggestion_values
+          %b Suggestions
+        .abstractor_suggestion_status
+          %b Status
+      %hr
+      - ungrouped_subjects.each_with_index do |ungrouped_subject, index|
+        - abstractor_abstractions = ungrouped_subject.abstractor_abstractions.not_deleted.where(:about_id => about.id)
+        - abstractor_abstractions.each do |abstractor_abstraction|
+          %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)} #{'abstractor_bottom_border' if index < ungrouped_subjects.length - 1}" }
+            = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
+.clear
