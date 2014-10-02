@@ -1,14 +1,13 @@
 - abstractor_abstraction_group ||= @abstractor_abstraction_group
 
 .abstractor_abstraction_group
-  - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member).order('abstractor_subject_group_members.display_order')
-  - abstractor_abstractions.each_with_index do |abstractor_abstraction, index|
-    %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)} #{'abstractor_bottom_border' if index < abstractor_abstractions.length - 1}" }
-      = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
-  %hr
-  .abstractor_abstraction_actions
+  .abstractor_abstraction_group_member
+    - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member).order('abstractor_subject_group_members.display_order')
+    - abstractor_abstractions.each_with_index do |abstractor_abstraction, index|
+      %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)} #{'abstractor_bottom_border' if index < abstractor_abstractions.length - 1}" }
+        = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
+  .abstractor_abstraction_group_actions.abstractor_abstraction_actions
     = link_to 'Not applicable group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'not applicable')), data: { confirm: 'Are you sure?'} , method: :put, class: "abstractor_group_not_applicable_all_link", remote: true
     = link_to 'Unknown group ', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group, abstractor_abstraction_value: 'unknown')), data: { confirm: 'Are you sure?'}, method: :put, class: 'abstractor_group_unknown_all_link', remote: true
     - if abstractor_abstraction_group.removable?
       = link_to 'Delete group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_group_path(abstractor_abstraction_group)), data: { confirm: 'Are you sure?'}, method: :delete, class: "abstractor_group_delete_link", remote: true
-  %hr

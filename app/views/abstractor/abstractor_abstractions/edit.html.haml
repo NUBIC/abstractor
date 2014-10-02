@@ -3,7 +3,7 @@
 
 .abstractor_abstraction_edit
   = form_for abstractor_abstraction, url: Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_path(abstractor_abstraction)), method: :put, :remote => true do |f|
-    .abstraction_schema_name
+    .abstractor_abstraction_schema_name
       = abstraction_schema.display_name
     .abstraction_edit_abstraction_value
       - case abstraction_schema.abstractor_object_type.value
