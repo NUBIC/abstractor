@@ -51,7 +51,7 @@
   margin: 0.1em 0 0.25em !important;
 }
 
-.abstractor_abstractions fieldset .abstraction_schema_name,
+.abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
 .abstractor_abstractions fieldset .abstractor_suggestion_status,
 .abstractor_abstractions fieldset .abstractor_suggestion_sources {
   display: inline;
@@ -90,7 +90,7 @@
   width: 425.75px;
 }
 
-* html .abstractor_abstractions fieldset .abstraction_schema_name,
+* html .abstractor_abstractions fieldset .abstractor_abstraction_schema_name,
 * html .abstractor_abstractions fieldset .abstractor_suggestion_status,
 * html .abstractor_abstractions fieldset .abstractor_suggestion_sources,
 * html .abstractor_abstractions fieldset .abstraction_edit_abstraction_actions,
@@ -105,7 +105,7 @@
   clear: both;
 }
 
-.abstractor_abstractions fieldset .abstraction_schema_name {
+.abstractor_abstractions fieldset .abstractor_abstraction_schema_name {
   font-weight: bold;
   margin-bottom: 0.3em;
 }
@@ -235,7 +235,7 @@ span.tooltip_img {
   font-style:italic
 }
 
-.abstractor_abstraction_actions {
+.abstractor_abstraction_actions  a{
   float: right;
 }
 .abstractor_abstraction_actions a {
@@ -273,4 +273,11 @@ ul.abstractor_suggestion_status_group {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.abstractor_abstractions_header,
+.abstractor_abstraction_group_member,
+.abstractor_abstraction_group_actions {
+  border-bottom: 1px solid #dddddd;
+  overflow: auto;
+  padding-bottom: 0.25em;
 }
