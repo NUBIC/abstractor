@@ -238,14 +238,14 @@ Feature: Editing encounter note
       | Note Text                                                  |
       |Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!|
     And I go to the last encounter note edit page
-    And I click on "img" within the first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    And I click on "i" within the first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is 100%. Have a great day! Yes, KPS is 100%!"
     And ".ui-dialog-content" should equal highlighted text "Hello, your KPS is 100%."
     And ".ui-dialog-content" should not equal highlighted text "Yes, KPS is 100%!"
     When I go to the last encounter note edit page
-    And  I click on "img" within the last ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    And  I click on "i" within the last ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "Hello, your KPS is 100%. Have a great day!"
@@ -406,7 +406,7 @@ Feature: Editing encounter note
     When I go to the last encounter note edit page
     And I choose "Rejected" within the first ".has_karnofsky_performance_status_date .edit_abstractor_suggestion"
     And I go to the last encounter note edit page
-    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date .abstractor_abstraction" should contain text "[Not set]"
+    Then ".abstractor_abstraction_value" in the first ".has_karnofsky_performance_status_date" should contain text "[Not set]"
     And I should see an ".edit_link" element
     When I click on ".edit_link" within the first ".has_karnofsky_performance_status_date"
     And I wait for the ajax request to finish
