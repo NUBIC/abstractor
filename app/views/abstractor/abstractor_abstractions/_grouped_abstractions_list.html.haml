@@ -1,20 +1,23 @@
-- abstractor_subject_groups = about.class.abstractor_subject_groups(namespace_type: namespace_type, namespace_id: namespace_id)
-- abstractor_subject_groups.each do |abstractor_subject_group|
-  .abstractor_subject_groups_container
-    %b= abstractor_subject_group.name
-    %fieldset
-      .abstraction_schema_name
-        %b Name
-      .abstractor_abstraction_value
-        %b Value
-      .abstractor_suggestions
-        .abstractor_suggestion_values
-          %b Suggestions
-        .abstractor_suggestion_status
-          %b Status
-      %hr
-      - abstractor_abstraction_groups = about.abstractor_abstraction_groups_by_namespace(namespace_type: namespace_type, namespace_id: namespace_id, abstractor_subject_group_id: abstractor_subject_group.id)
-      - abstractor_abstraction_groups.each do |abstractor_abstraction_group|
-        = render partial: 'abstractor/abstractor_abstraction_groups/form', locals: {abstractor_abstraction_group: abstractor_abstraction_group}
-      = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)),  data: { confirm: 'Are you sure?'}, method: :post, class: 'abstractor_group_add_link', remote: true
+.abstractor_abstractions_grouped
+  - abstractor_subject_groups = about.class.abstractor_subject_groups(namespace_type: namespace_type, namespace_id: namespace_id)
+  - abstractor_subject_groups.each do |abstractor_subject_group|
+    .abstractor_subject_groups_container
+      %b= abstractor_subject_group.name
+      %fieldset
+        .abstractor_abstractions_header
+          .abstractor_abstraction_schema_name
+            %b Name
+          .abstractor_abstraction_value
+            %b Value
+          .abstractor_suggestions
+            .abstractor_suggestion_values
+              %b Suggestions
+            .abstractor_suggestion_status
+              %b Status
+        .clear
+        .abstractor_abstractions_body.abstractor_subject_groups
+          - abstractor_abstraction_groups = about.abstractor_abstraction_groups_by_namespace(namespace_type: namespace_type, namespace_id: namespace_id, abstractor_subject_group_id: abstractor_subject_group.id)
+          - abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+            = render partial: 'abstractor/abstractor_abstraction_groups/form', locals: {abstractor_abstraction_group: abstractor_abstraction_group}
+        = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)),  data: { confirm: 'Are you sure?'}, method: :post, class: 'abstractor_group_add_link', remote: true
 .clear
