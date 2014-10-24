@@ -1,6 +1,18 @@
 # Abstractor Changelog
 =======
 
+## 4.0.2
+Released on October 24 , 2014
+
+* Abstraction groups are not filtered by subject group for display.
+See https://github.com/NUBIC/abstractor/issues/58
+* Ui finetunung.
+See https://github.com/NUBIC/abstractor/issues/54
+* Use CSS to separate abstractions in place of <hr> elements
+See https://github.com/NUBIC/abstractor/issues/53
+* Group UI: adding group is broken after layout changes
+See https://github.com/NUBIC/abstractor/issues/51
+
 ## 4.0.1
 Released on September 29 , 2014
 
