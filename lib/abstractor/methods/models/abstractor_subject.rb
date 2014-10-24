@@ -156,11 +156,10 @@ module Abstractor
               at = nil
               at = abstractor_text.downcase unless abstractor_text.blank?
               target_abstractor_object_value_variants.each do |abstractor_object_value_variant|
-                re = Regexp.new(Regexp.escape(abstractor_object_value_variant.value.downcase))
+                re = Regexp.new('\b' + Regexp.escape(abstractor_object_value_variant.value.downcase) + '\b')
                 if re =~ at
                   abstractor_object_value_variants << abstractor_object_value_variant
                   abstractor_object_values << abstractor_object_value_variant.abstractor_object_value
-                  target_abstractor_object_value_variants.delete_if { |aovv| aovv.abstractor_object_value.id == abstractor_object_value_variant.abstractor_object_value.id  }
                 end
               end
 
@@ -168,7 +167,7 @@ module Abstractor
               target_abstractor_object_values = target_abstractor_object_values - abstractor_object_values
 
               target_abstractor_object_values.each do |abstractor_object_value|
-                re = Regexp.new(Regexp.escape(abstractor_object_value.value.downcase))
+                re = Regexp.new('\b' + Regexp.escape(abstractor_object_value.value.downcase) + '\b')
                 if re =~ at
                   abstractor_object_values << abstractor_object_value
                 end

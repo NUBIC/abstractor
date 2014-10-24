@@ -64,6 +64,13 @@ describe RadiationTherapyPrescription do
       expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value).to eq('parietal lobe')
     end
 
+    it "creates a 'has_anatomical_location' abstraction suggestion suggested value from an abstractor object value variant even if another synonym for the same term is negated", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'Not in the thalamus.  But I think it is in the basal ganglia.')
+
+      radiation_therapy_prescription.abstract
+      expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.first.suggested_value).to eq('cerebrum')
+    end
+
     #suggestion match value
     it "creates a 'has_anatomical_location' abstraction suggestion match value from a from an abstractor object value" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
