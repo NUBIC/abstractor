@@ -10,15 +10,28 @@ describe ImagingExam do
     Setup.imaging_exam
     @abstractor_abstraction_schema_moomin_major = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_favorite_major_moomin_character').first
     @abstractor_subject_abstraction_schema_moomin_major = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_moomin_major.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+
     @abstractor_abstraction_schema_moomin_minor = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_favorite_minor_moomin_character').first
-    @abstractor_subject_abstraction_schema_moomin_minor = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_moomin_minor.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+    @abstractor_subject_abstraction_schema_moomin_minor = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_moomin_minor.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
+
     @abstractor_abstraction_schema_dat = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_dopamine_transporter_level').first
     @abstractor_subject_abstraction_schema_dat = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_dat.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+
     @abstractor_abstraction_schema_anatomical_location = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location').first
     @abstractor_subject_abstraction_schema_dat_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_anatomical_location.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+
     @abstractor_abstraction_schema_recist_response = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_recist_response_criteria').first
     @abstractor_subject_abstraction_schema_recist_response = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_recist_response.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
-    @abstractor_subject_abstraction_schema_recist_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_recist_response.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
+    @abstractor_subject_abstraction_schema_recist_anatomical_location = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_anatomical_location.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
+
+    @abstractor_abstraction_schema_diagnosis = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_diagnosis').first
+    @abstractor_subject_abstraction_schema_diagnosis_1 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+    @abstractor_subject_abstraction_schema_diagnosis_2 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
+
+    @abstractor_abstraction_schema_diagnosis_duration = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_diagnosis_duration').first
+    @abstractor_subject_abstraction_schema_diagnosis_duration_1 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis_duration.id, namespace_type: 'Discerner::Search', namespace_id: 1).first
+    @abstractor_subject_abstraction_schema_diagnosis_duration_2 = Abstractor::AbstractorSubject.where(subject_type: ImagingExam.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_diagnosis_duration.id, namespace_type: 'Discerner::Search', namespace_id: 2).first
+
     @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
     @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
   end
@@ -28,11 +41,13 @@ describe ImagingExam do
   end
 
   it "can report its abstractor subjects (namespaced)", focus: false do
-    expect(Set.new(ImagingExam.abstractor_subjects(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id ))).to eq(Set.new([@abstractor_subject_abstraction_schema_dat, @abstractor_subject_abstraction_schema_dat_anatomical_location, @abstractor_subject_abstraction_schema_moomin_major]))
+    expect(Set.new(ImagingExam.abstractor_subjects(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id))).to eq Set.new([@abstractor_subject_abstraction_schema_dat, @abstractor_subject_abstraction_schema_dat_anatomical_location, @abstractor_subject_abstraction_schema_moomin_major, @abstractor_subject_abstraction_schema_diagnosis_1, @abstractor_subject_abstraction_schema_diagnosis_duration_1])
+    expect(Set.new(ImagingExam.abstractor_subjects(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id))).to eq Set.new([@abstractor_subject_abstraction_schema_moomin_minor, @abstractor_subject_abstraction_schema_recist_response, @abstractor_subject_abstraction_schema_recist_anatomical_location, @abstractor_subject_abstraction_schema_diagnosis_2, @abstractor_subject_abstraction_schema_diagnosis_duration_2])
   end
 
   it "can report its abstractor abstraction schemas (namespaced)", focus: false do
-    expect(Set.new(ImagingExam.abstractor_abstraction_schemas(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id))).to eq(Set.new([@abstractor_abstraction_schema_dat, @abstractor_abstraction_schema_anatomical_location,@abstractor_abstraction_schema_moomin_major]))
+    expect(Set.new(ImagingExam.abstractor_abstraction_schemas(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id))).to eq(Set.new([@abstractor_abstraction_schema_dat, @abstractor_abstraction_schema_anatomical_location,@abstractor_abstraction_schema_moomin_major, @abstractor_abstraction_schema_diagnosis, @abstractor_abstraction_schema_diagnosis_duration]))
+    expect(Set.new(ImagingExam.abstractor_abstraction_schemas(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id))).to eq Set.new([@abstractor_abstraction_schema_moomin_minor, @abstractor_abstraction_schema_recist_response, @abstractor_abstraction_schema_anatomical_location, @abstractor_abstraction_schema_diagnosis, @abstractor_abstraction_schema_diagnosis_duration])
   end
 
   describe "abstracting (namespaced)" do
@@ -88,36 +103,36 @@ describe ImagingExam do
     #reporting namespaced abstractions
     it 'can return abstractor abstractions in a namespace', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(5)
     end
 
     it 'can return abstractor abstractions (regardless of namespace)', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace.size).to eq(6)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace.size).to eq(10)
     end
 
     #reporting namespaced grouped abstractions
     it 'can return abstractor abstraction groups in a namespace', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(1)
+      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(2)
     end
 
     it 'can return abstractor abstraction groups (regardless of namespace)', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(3)
+    end
+
+    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
+      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
       expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(2)
     end
 
-    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
-      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
-      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(1)
-    end
-
 
     it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
-      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(1)
+      expect(@imaging_exam.reload.abstractor_abstraction_groups.size).to eq(3)
     end
 
     it 'can filter abstractor abstraction groups by subject group', focus: false do
@@ -128,12 +143,12 @@ describe ImagingExam do
 
     it "can report abstractions needing to be reviewed (regardless of namespace)", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(6)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(10)
     end
 
     it "can report abstractions needing to be reviewed in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW,namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW,namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
     end
 
     it "can report what has been reviewed (regardless of namespace)", focus: false do
@@ -167,10 +182,11 @@ describe ImagingExam do
     it "removes abstractions in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
 
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
-      expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
+      expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(5)
+
       @imaging_exam.remove_abstractions(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
       expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(0)
     end
 
@@ -182,9 +198,9 @@ describe ImagingExam do
         abstractor_suggestion.save
       end
 
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
       @imaging_exam.remove_abstractions(only_unreviewed: true, namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
     end
 
     #querying by abstractor abstraction status

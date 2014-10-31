@@ -304,7 +304,6 @@ module Setup
 
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
 
-
     recist_response_group  = Abstractor::AbstractorSubjectGroup.create(:name => 'RECIST response criteria')
     recist_response_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_recist_response_criteria', display_name: 'RECIST response criteria', abstractor_object_type: list_object_type, preferred_name: 'RECIST response criteria')
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => recist_response_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
@@ -335,5 +334,31 @@ module Setup
     abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => anatomical_location_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2)
     Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => recist_response_group, :display_order => 2)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+
+    diagnosis_subject_group = Abstractor::AbstractorSubjectGroup.create(:name => 'Diagnosis')
+    diagnosis_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_diagnosis', display_name: 'Diagnosis', abstractor_object_type: list_object_type, preferred_name: 'Diagnosis')
+    diagnosis_duration_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_diagnosis_duration', display_name: 'Duration', abstractor_object_type: list_object_type, preferred_name: 'Duration')
+
+    ['Tremor', 'PD', 'Ataxia'].each do |diagnosis|
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: diagnosis)
+      abstractor_object_value.save
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: diagnosis_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    end
+
+    ['2008', '2009', '2010'].each do |duration|
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: duration)
+      abstractor_object_value.save
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: diagnosis_duration_abstraction_schema, abstractor_object_value: abstractor_object_value)
+    end
+
+    [1,2].each do |namespace_id|
+      abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => diagnosis_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: namespace_id)
+      Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+      Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => diagnosis_subject_group, :display_order => 1)
+
+      abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'ImagingExam', :abstractor_abstraction_schema => diagnosis_duration_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: namespace_id)
+      Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', :abstractor_rule_type => v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
+      Abstractor::AbstractorSubjectGroupMember.create(:abstractor_subject => abstractor_subject, :abstractor_subject_group => diagnosis_subject_group, :display_order => 2)
+    end
   end
 end
