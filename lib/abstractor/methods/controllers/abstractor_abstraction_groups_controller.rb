@@ -9,7 +9,15 @@ module Abstractor
 
         def create
           @abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group_id: params[:abstractor_subject_group_id], about_type: params[:about_type], about_id: params[:about_id])
-          @abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
+
+          abstractor_subjects = @abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects
+          unless params[:namespace_type].blank? || params[:namespace_id].blank?
+            @namespace_id   = params[:namespace_id]
+            @namespace_type = params[:namespace_type]
+            abstractor_subjects = abstractor_subjects.where(namespace_type: @namespace_type, namespace_id: @namespace_id)
+          end
+
+          abstractor_subjects.each do |abstractor_subject|
             abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
             abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: @abstractor_abstraction_group)
             abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }.each do |abstractor_abstraction_source|

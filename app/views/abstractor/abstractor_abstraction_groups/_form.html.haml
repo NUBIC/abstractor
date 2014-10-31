@@ -1,9 +1,14 @@
+- namespace_type ||= @namespace_type
+- namespace_id ||= @namespace_id
+
 - abstractor_abstraction_group ||= @abstractor_abstraction_group
 
 .abstractor_abstraction_group
   .abstractor_abstraction_group_member
-    - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member).order('abstractor_subject_group_members.display_order')
-    - abstractor_abstractions.each_with_index do |abstractor_abstraction, index|
+    - abstractor_abstractions = abstractor_abstraction_group.abstractor_abstractions.not_deleted.joins(:abstractor_subject => :abstractor_subject_group_member)
+    - unless namespace_type.blank? || namespace_id.blank?
+      - abstractor_abstractions = abstractor_abstractions.where(abstractor_subjects: { namespace_type: namespace_type, namespace_id: namespace_id})
+    - abstractor_abstractions.order('abstractor_subject_group_members.display_order').each_with_index do |abstractor_abstraction, index|
       %div{ class: "abstractor_abstraction #{Abstractor::Utility.dehumanize(abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate)} #{'abstractor_bottom_border' if index < abstractor_abstractions.length - 1}" }
         = render :partial => 'abstractor/abstractor_abstractions/fields', :locals => {:abstractor_abstraction => abstractor_abstraction}
   .abstractor_abstraction_group_actions.abstractor_abstraction_actions
