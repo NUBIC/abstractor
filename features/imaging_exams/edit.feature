@@ -104,3 +104,35 @@ Feature: Editing imaging exam
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
   Then I should see "Ataxia"
 
+
+  @javascript
+  Scenario: Adding groups in UI should respect group cardinality
+  Given abstraction schemas are set
+  And imaging exams with the following information exist
+    | Note Text                           | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
+    | Hello, you look good to me.         |      1     | 1/1/2014 |  123             | Discerner::Search  |     3       |
+  When I go to the namespace_type "Discerner::Search" and namespace_id 3 sent to the last imaging exam edit page
+  Then I should see "Score 1" within ".has_score_1"
+  And I should see "Falls" within ".has_falls"
+  And I wait 20 seconds
+  And "fieldset" in the first ".abstractor_subject_groups_container" should contain text "Add group"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Add group"
+
+  When I confirm link "Add group" in the first ".abstractor_subject_groups_container"
+  And I wait for the ajax request to finish
+  Then I should see 2 ".has_score_1" within the first ".abstractor_subject_groups_container"
+  And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should not be visible
+
+  When I go to the namespace_type "Discerner::Search" and namespace_id 3 sent to the last imaging exam edit page
+  Then I should see 2 ".has_score_1" within the first ".abstractor_subject_groups_container"
+  And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should not be visible
+
+  When I confirm link "Delete group" in the first ".abstractor_subject_groups_container"
+  And I wait for the ajax request to finish
+  Then I should see 1 ".has_score_1" within the first ".abstractor_subject_groups_container"
+  And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should be visible
+
+
+
+
+

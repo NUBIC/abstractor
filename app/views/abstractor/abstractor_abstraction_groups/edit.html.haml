@@ -1,1 +1,4 @@
-= render 'form'
+- if @abstractor_abstraction_group.errors.any?
+  = render 'abstractor/shared/error_messages', object: @abstractor_abstraction_group
+- else
+  = render 'form'

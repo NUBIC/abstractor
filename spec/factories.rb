@@ -65,4 +65,8 @@ FactoryGirl.define do
 
   factory :abstractor_suggestion_source, class: Abstractor::AbstractorSuggestionSource do
   end
+
+  factory :abstractor_subject_group, :class => Abstractor::AbstractorSubjectGroup do
+    cardinality nil
+  end
 end
