@@ -84,18 +84,28 @@ Abstractor.AbstractionSuggestionUI = ->
   $(document).on "ajax:success", "form.edit_abstractor_suggestion", (e, data, status, xhr) ->
     $(this).closest(".abstractor_abstraction").html xhr.responseText
     return
-
   return
 
 Abstractor.AbstractionGroupUI = ->
+  validateCardinality = (group_container) ->
+    group_cardinality = group_container.find('input[name="abstractor_subject_group_cardinality"]')
+    add_group_link    = group_container.find('.abstractor_group_add_link')
+    if (group_cardinality.length > 0) && (group_cardinality.val() == group_container.find('.abstractor_abstraction_group_member').length.toString())
+      $(add_group_link).hide()
+    else
+      $(add_group_link).show()
+
   $(document).on "ajax:success", ".abstractor_abstraction_group .abstractor_group_delete_link", (e, data, status, xhr) ->
-    parent_div = $(this).closest(".abstractor_abstraction_group")
-    parent_div.html xhr.responseText
+    subject_groups_container_div = $(this).closest(".abstractor_subject_groups_container")
+    abstraction_group_div = $(this).closest(".abstractor_abstraction_group")
+    abstraction_group_div.html xhr.responseText
+    validateCardinality(subject_groups_container_div)
     return
 
   $(document).on "ajax:success", ".abstractor_subject_groups_container .abstractor_group_add_link", (e, data, status, xhr) ->
     parent_div = $(this).closest(".abstractor_subject_groups_container")
     parent_div.find(".abstractor_subject_groups").append xhr.responseText
+    validateCardinality(parent_div)
     return
 
   $(document).on "ajax:success", ".abstractor_abstraction_group .abstractor_group_not_applicable_all_link", (e, data, status, xhr) ->
@@ -107,7 +117,6 @@ Abstractor.AbstractionGroupUI = ->
     parent_div = $(this).closest(".abstractor_abstraction_group")
     parent_div.html xhr.responseText
     return
-
   return
 
 new Abstractor.AbstractionUI()

@@ -1,8 +1,13 @@
+- namespace_type ||= @namespace_type
+- namespace_id ||= @namespace_id
+
 .abstractor_abstractions_grouped
   - abstractor_subject_groups = about.class.abstractor_subject_groups(namespace_type: namespace_type, namespace_id: namespace_id)
   - abstractor_subject_groups.each do |abstractor_subject_group|
     .abstractor_subject_groups_container
       %b= abstractor_subject_group.name
+      - if abstractor_subject_group.cardinality
+        = hidden_field_tag :abstractor_subject_group_cardinality, abstractor_subject_group.cardinality, id: "abstractor_subject_group_cardinality_#{abstractor_subject_group.id}"
       %fieldset
         .abstractor_abstractions_header
           .abstractor_abstraction_schema_name
@@ -18,6 +23,7 @@
         .abstractor_abstractions_body.abstractor_subject_groups
           - abstractor_abstraction_groups = about.abstractor_abstraction_groups_by_namespace(namespace_type: namespace_type, namespace_id: namespace_id, abstractor_subject_group_id: abstractor_subject_group.id)
           - abstractor_abstraction_groups.each do |abstractor_abstraction_group|
-            = render partial: 'abstractor/abstractor_abstraction_groups/form', locals: {abstractor_abstraction_group: abstractor_abstraction_group}
-        = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)),  data: { confirm: 'Are you sure?'}, method: :post, class: 'abstractor_group_add_link', remote: true
+            = render partial: 'abstractor/abstractor_abstraction_groups/form', locals: {abstractor_abstraction_group: abstractor_abstraction_group, namespace_type: namespace_type, namespace_id: namespace_id}
+        - unless abstractor_subject_group.cardinality == 1
+          = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id, namespace_type: namespace_type, namespace_id: namespace_id)),  data: { confirm: 'Are you sure?'}, method: :post, class: 'abstractor_group_add_link', remote: true, style: "#{'display: none;' if abstractor_subject_group.group_complete?}"
 .clear

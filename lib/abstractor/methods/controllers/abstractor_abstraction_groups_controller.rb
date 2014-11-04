@@ -8,17 +8,25 @@ module Abstractor
         end
 
         def create
-          @abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group_id: params[:abstractor_subject_group_id], about_type: params[:about_type], about_id: params[:about_id])
-          @abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
-            abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
-            abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: @abstractor_abstraction_group)
-            abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }.each do |abstractor_abstraction_source|
-              source = abstractor_subject.subject_type.constantize.find(params[:about_id]).send(abstractor_abstraction_source.from_method)
-              abstraction.abstractor_indirect_sources.build(abstractor_abstraction_source: abstractor_abstraction_source, source_type: source[:source_type], source_method: source[:source_method])
+          @abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: params[:abstractor_subject_group_id], about_type: params[:about_type], about_id: params[:about_id])
+          if @abstractor_abstraction_group.save
+            abstractor_subjects = @abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects
+            unless params[:namespace_type].blank? || params[:namespace_id].blank?
+              @namespace_id   = params[:namespace_id]
+              @namespace_type = params[:namespace_type]
+              abstractor_subjects = abstractor_subjects.where(namespace_type: @namespace_type, namespace_id: @namespace_id)
             end
-            abstraction.save!
-          end
 
+            abstractor_subjects.each do |abstractor_subject|
+              abstraction = abstractor_subject.abstractor_abstractions.build(about_id: params[:about_id], about_type: params[:about_type])
+              abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: @abstractor_abstraction_group)
+              abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'indirect' }.each do |abstractor_abstraction_source|
+                source = abstractor_subject.subject_type.constantize.find(params[:about_id]).send(abstractor_abstraction_source.from_method)
+                abstraction.abstractor_indirect_sources.build(abstractor_abstraction_source: abstractor_abstraction_source, source_type: source[:source_type], source_method: source[:source_method])
+              end
+              abstraction.save!
+            end
+          end
           respond_to do |format|
             format.html { render action: "edit", layout: false }
           end
