@@ -1,4 +1,8 @@
 FactoryGirl.define do
+  factory :moomin do
+    note_text  ''
+  end
+
   factory :surgical_procedure do
     sequence(:surg_case_id)
     description ''

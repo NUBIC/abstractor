@@ -57,6 +57,8 @@ module Abstractor
     end
 
     def test_dummy_models
+      copy_file "moomin.rb", "#{dummy_path}/app/models/moomin.rb", :force => true
+      copy_file "create_moomins.rb", "#{dummy_path}/db/migrate/#{16.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_moomins.rb", :force => true
       copy_file "surgical_procedure.rb", "#{dummy_path}/app/models/surgical_procedure.rb", :force => true
       copy_file "create_surgical_procedures.rb", "#{dummy_path}/db/migrate/#{15.hours.ago.utc.strftime("%Y%m%d%H%M%S")}_create_surgical_procedures.rb", :force => true
       copy_file "surgical_procedure_report.rb", "#{dummy_path}/app/models/surgical_procedure_report.rb", :force => true

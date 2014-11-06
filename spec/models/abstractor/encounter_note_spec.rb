@@ -122,6 +122,15 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
     end
 
+    it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the sentential format) that is equivalient to a object", focus: false do
+      abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: 'kps')
+      Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: @abstractor_abstraction_schema_kps, abstractor_object_value: abstractor_object_value)
+
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient has a ?kps")
+      @encounter_note.abstract
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('kps')
+    end
     #suggestions
     it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')

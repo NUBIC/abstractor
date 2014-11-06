@@ -1,0 +1,893 @@
+---
+  - :diagnosis: DYT
+    :umls_synonyms:
+      - DQ2
+      - DYT1 GENE
+      - TOR1A
+      - TOR1A gene
+      - TORSIN 1A
+      - torsin family 1, member A (torsin A)
+  - :diagnosis: Glucocerebrosidase
+    :umls_synonyms:
+      - ACID BETA-GLUCOSIDASE
+      - BETA-GLUCOSIDASE, ACID
+      - GBA
+      - GBA gene
+      - GBA1
+      - GLUCOCEREBROSIDASE
+      - glucosidase, beta, acid
+      - GLUCOSYLCERAMIDASE
+  - :diagnosis: SCA
+    :umls_synonyms:
+      - SCA1
+      - SCA2
+      - SCA3
+  - :diagnosis: SNCA
+    :umls_synonyms:
+      - alpha-synuclein
+      - NACP
+      - NON-A-BETA COMPONENT OF ALZHEIMER DISEASE AMYLOID, PRECURSOR OF
+      - NON-A4 COMPONENT OF AMYLOID, PRECURSOR OF
+      - PD1
+      - SYNUCLEIN, ALPHA
+  - :diagnosis: LRRK2
+    :umls_synonyms:
+      - DARDARIN
+      - DKFZp434H2111
+      - FLJ45829
+      - leucine-rich repeat kinase 2
+      - RIPK7
+      - ROCO2
+  - :diagnosis: Parkinson's disease
+    :umls_synonyms:
+      - agitans; paralysis
+      - bodies disease lewy parkinson's
+      - disease disorders parkinson's
+      - disease idiopathic parkinsons
+      - disease parkinson s
+      - Disease Parkinson's
+      - disease parkinsons's
+      - diseases parkinson
+      - diseases parkinson's
+      - diseases parkinsons
+      - IDIOPATHIC PARKINSON DIS
+      - idiopathic parkinson disease
+      - Idiopathic Parkinson's Disease
+      - Idiopathic parkinsonism
+      - IDIOPATHIC PARKINSONS DIS
+      - LEWY BODY PARKINSON DIS
+      - Lewy Body Parkinson Disease
+      - Lewy Body Parkinson's Disease
+      - Palsy shaking
+      - PALSY, SHAKING
+      - palsy; shaking
+      - Paralysis agitans
+      - PARALYSIS AGITANS <PARKINSONISM>
+      - PARALYSIS AGITANS PARKINSONISM
+      - paralysis; agitans
+      - PARKINSON DIS
+      - PARKINSON DIS IDIOPATHIC
+      - Parkinson Disease
+      - Parkinson disease (PD)
+      - parkinson disease lewy body
+      - Parkinson Disease, Idiopathic
+      - parkinson s disease
+      - parkinson's
+      - Parkinson's dis
+      - Parkinson's Disease
+      - Parkinson's disease NOS
+      - Parkinson's Disease, Idiopathic
+      - Parkinson's Disease, Lewy Body
+      - Parkinson's disease, NOS
+      - PARKINSON'S SYNDROME
+      - Parkinsonism, Primary
+      - PARKINSONS DIS
+      - PARKINSONS DIS IDIOPATHIC
+      - PARKINSONS DIS LEWY BODY
+      - Parkinsons disease
+      - PD - Parkinson's disease
+      - Primary Parkinsonism
+      - shaking palsy
+      - shaking; palsy
+      - Syndrome Parkinson's
+    :custom_synonyms:
+      - PD
+      - idiopathic PD
+      - IPD
+  - :diagnosis: Drug-induced parkinsonism
+    :umls_synonyms:
+      - drug induced parkinsonism
+      - drug induced parkinsons
+      - Drug-induced parkinsonism
+      - drugs; parkinsonism
+      - Parkinsonism due to drug
+      - Parkinsonism due to drugs
+      - PARKINSONISM, DRUG-INDUCED
+      - parkinsonism; due to drugs
+  - :diagnosis: Vascular parkinsonism
+  - :diagnosis: Multiple-System Atrophy
+    :umls_synonyms:
+      - Atrophies, Multisystem
+      - Atrophies, Multisystemic
+      - atrophy multiple system
+      - atrophy multiple systems
+      - Atrophy, Multiple System
+      - Atrophy, Multisystem
+      - Atrophy, Multisystemic
+      - MSA
+      - MSA - Multiple system atrophy
+      - Multiple System Atrophies
+      - Multiple System Atrophy
+      - Multiple system atrophy (disorder)
+      - Multiple System Atrophy Syndrome
+      - Multiple system atrophy, cerebellar variant
+      - Multiple system atrophy, Parkinson variant
+      - Multiple system atrophy, Parkinson's variant
+      - Multisystem Atrophies
+      - Multisystem Atrophy
+      - Multisystemic Atrophies
+      - Multisystemic Atrophy
+    :custom_synonyms:
+      - MSA
+  - :diagnosis: Progressive Supranuclear Palsy
+    :umls_synonyms:
+      - Atypical PSP
+      - Familial progressive supranuclear palsy
+      - NUCHAL DYSTONIA DEMENTIA SYNDROME
+      - Nuchal dystonia-dementia syndrome
+      - Ophthalmoplegia, Progressive Supranuclear
+      - Ophthalmoplegias, Progressive Supranuclear
+      - palsy progressive supranuclear
+      - Palsy, Progressive Supranuclear
+      - PALSY, SUPRANUCLEAR, PROGRESSIVE
+      - PARKINSON-DEMENTIA SYNDROME
+      - Progressive supranuclear ophth
+      - Progressive Supranuclear Ophthalmoplegia
+      - Progressive Supranuclear Ophthalmoplegias
+      - Progressive Supranuclear Palsies
+      - Progressive Supranuclear Palsy
+      - Progressive supranuclear palsy atypical
+      - PSNP1
+      - PSNP2
+      - PSNP3
+      - PSP
+      - PSP - Prog supranuclear palsy
+      - PSP - Progressive supranuclear palsy
+      - Richardson-Steele-Olszewski syndrome
+      - STEELE RICHARDSON OLSZEWSKI DIS
+      - Steele Richardson Olszewski Disease
+      - Steele Richardson Olszewski Syndrome
+      - Steele-Richardson-Olszew syndr
+      - Steele-Richardson-Olszewski
+      - Steele-Richardson-Olszewski Disease
+      - STEELE-RICHARDSON-OLSZEWSKI SYNDROME
+      - Steele-Richardson-Olszewski Syndrome, Atypical
+      - Supranuclear Ophthalmoplegia, Progressive
+      - Supranuclear Ophthalmoplegias, Progressive
+      - Supranuclear Palsies, Progressive
+      - Supranuclear Palsy, Progressive
+      - Supranuclear Palsy, Progressive Atypical
+      - supranuclear progressive palsy
+      - Syndrome, Steele-Richardson-Olszewski
+    :custom_synonyms:
+      - PSP
+  - :diagnosis: Corticobasal degeneration
+    :umls_synonyms:
+      - Corticobasal degeneration
+      - Corticobasal degneration
+      - Corticodentatonigral degeneration with neuronal achromasia
+      - degeneration corticobasal
+    :custom_synonyms:
+      - CBD
+  - :diagnosis: Cortiobasal syndrome
+  - :diagnosis: Dementia with Lewy Bodies
+    :umls_synonyms:
+      - bodies dementia lewy
+      - bodies dementias lewy
+      - bodies disease lewy
+      - body dementia lewi
+      - body dementia lewis
+      - body dementia lewy
+      - body disease lewi
+      - body disease lewis
+      - body disease lewy
+      - body diseases lewy
+      - body lewy dementia
+      - CLBD - Cortical Lewy body dis
+      - CLBD - Cortical Lewy body disease
+      - CORTICAL LEWY BODY DIS
+      - Cortical Lewy Body Disease
+      - dementia lewy bodies
+      - Dementia of the Lewy body type
+      - Dementia w Lewy bodies
+      - Dementia with Lewy bodies
+      - Dementia, Lewy Body
+      - DIFFUSE LEWY BODY DIS
+      - Diffuse Lewy body disease
+      - DLB
+      - DLBD - Diffuse Lewy body dis
+      - DLBD - Diffuse Lewy body disease
+      - LBD - Lewy body disease
+      - lewy bodies dementia
+      - lewy body dementia
+      - LEWY BODY DIS
+      - LEWY BODY DIS CORTICAL
+      - LEWY BODY DIS DIFFUSE
+      - Lewy Body Disease
+      - Lewy Body Disease, Cortical
+      - Lewy Body Disease, Diffuse
+      - Lewy Body Type Senile Dementia
+      - Lewy body variant of Alzheimer's disease
+      - SDLT - Sen dement Lewy bdy typ
+      - SDLT - Senile dementia of the Lewy body type
+      - Senile dement of Lewy bdy type
+      - Senile dementia of the Lewy body type
+    :custom_synonyms:
+      - Lewy Body Dementia
+      - DLB
+      - LBD
+  - :diagnosis: Parkinsonism, NOS
+    :custom_synonyms:
+      - Parkinsonism
+  - :diagnosis: Essential Tremor
+    :umls_synonyms:
+      - Benign essential tremor
+      - BENIGN ESSENTIAL TREMOR SYNDROME
+      - benign essential tremors
+      - essential benign tremor
+      - essential benign tremors
+      - Essential Tremor
+      - Essential Tremor, Benign
+      - Essential Tremors
+      - Essential Tremors, Benign
+      - essential; tremor
+      - physiological tremor
+      - PRESENILE TREMOR SYNDROME
+      - tremor essential
+      - Tremor, Benign Essential
+      - Tremor, Essential
+      - tremor; essential
+      - Tremors, Benign Essential
+      - Tremors, Essential
+    :custom_synonyms:
+      - ET
+      - benign essential tremor
+  - :diagnosis: Tremor, NOS
+    :custom_synonyms:
+      - Tremor
+      - Tremors
+  - :diagnosis: Generalized dystonia
+    :umls_synonyms:
+      - Begins as focal dystonia, later becomes segmental or generalized
+      - Dystonia 1, Torsion, Autosomal Dominant
+      - Dystonia may become generalized
+      - Dystonia Musculorum Deformans 1
+      - Dystonia musculorum deformans type 1
+      - Dystonia, generalized, dopa-unresponsive
+      - DYT1
+      - Early onset torsion dystonia
+      - Early-Onset Torsion Dystonia
+      - EOTD
+      - Torsion dystonia 1, autosomal dominant
+  - :diagnosis: Focal or segmental dystonia
+  - :diagnosis: Hemifacial spasm
+    :umls_synonyms:
+      - Chemodenervation of muscle(s); muscle(s) innervated by facial nerve, unilateral (eg, for blepharospasm, hemifacial spasm)
+      - CHEMODNRVTJ MUSC MUSC INNERVATED FACIAL NRV UNIL
+      - Clonic hemifacial spasm
+      - DESTROY NERVE FACE MUSCLE
+      - Facial hemispasm
+      - Facial Spasm, Unilateral
+      - Facial Spasms, Unilateral
+      - Hemifacial Spasm
+      - HEMIFACIAL SPASM, FAMILIAL
+      - hemifacial spasms
+      - hemifacial; spasm
+      - Spasm, Hemifacial
+      - Spasm, Unilateral Facial
+      - spasm; hemifacial
+      - Spasms, Hemifacial
+      - Spasms, Unilateral Facial
+      - Unilateral Facial Spasm
+      - Unilateral Facial Spasms
+    :custom_synonyms:
+      - HFS
+  - :diagnosis: Blepharospasm
+    :umls_synonyms:
+      - Benign essential blepharospasm
+      - blepharospasm
+      - Blepharospasm - oromandibular dystonia
+      - Blepharospasm due to drugs
+      - Blepharospasm ICD10CM:G24.5 ICD9CM:333.81
+      - Blepharospasm may occur
+      - Blepharospasm Oromandibular Dyskinesia
+      - Blepharospasm Oromandibular Dystonia
+      - Blepharospasm Oromandibular Dystonia Syndrome
+      - Blepharospasm Oromandibular Dystonia Syndrome, Idiopathic
+      - BLEPHAROSPASM, BENIGN ESSENTIAL
+      - Blepharospasm-Oromandibular Dyskinesia
+      - Blepharospasm-Oromandibular Dyskinesias
+      - Blepharospasm-Oromandibular Dystonia
+      - Blepharospasm-Oromandibular Dystonia Syndrome
+      - Blepharospasm-Oromandibular Dystonia Syndrome, Idiopathic
+      - Blepharospasm-Oromandibular Dystonia Syndromes
+      - Blepharospasm-Oromandibular Dystonias
+      - blepharospasms
+      - Blepharospsm-oromandibu dyston
+      - Brueghel syndrome
+      - DESTROY NERVE FACE MUSCLE
+      - Drug induced blepharospasm
+      - Dyskinesia, Blepharospasm-Oromandibular
+      - Dyskinesia, Idiopathic Orofacial
+      - Dyskinesias, Blepharospasm-Oromandibular
+      - Dyskinesias, Idiopathic Orofacial
+      - Dystonia Syndrome, Blepharospasm-Oromandibular
+      - Dystonia Syndromes, Blepharospasm-Oromandibular
+      - Dystonia, Blepharospasm-Oromandibular
+      - Dystonia, focal, limited to orbicularis oculi muscle (blepharospasm)
+      - Dystonias, Blepharospasm-Oromandibular
+      - Essential blepharospasm
+      - eyelid spasm
+      - eyelid spasms
+      - eyelid twitch
+      - Eyelid twitching
+      - eyelids twitching
+      - Idiopathic Blepharospasm Oromandibular Dystonia Syndrome
+      - Idiopathic Blepharospasm-Oromandibular Dystonia Syndrome
+      - Idiopathic Orofacial Dyskinesia
+      - Idiopathic Orofacial Dyskinesias
+      - Involuntary spasms of eyelid closure (blepharospasm)
+      - Isolated blepharospasm
+      - Meige syndrome
+      - meige's syndrome
+      - meiges syndrome
+      - Orofacial Dyskinesia, Idiopathic
+      - Orofacial Dyskinesias, Idiopathic
+      - Reflex blepharospasm
+      - spasm eyelid
+      - Spasm of eyelids
+      - Syndrome, Blepharospasm-Oromandibular Dystonia
+      - twitch eyelid
+      - twitching eyelid
+  - :diagnosis: Cervical dystonia
+    :umls_synonyms:
+      - Cervical Dystonia
+      - CERVICAL DYSTONIA, PRIMARY
+      - cervical dystonias
+      - dystonia cervical
+      - DYSTONIA, PRIMARY CERVICAL
+      - Isolated cervical dystonia
+  - :diagnosis: Limb dystonia
+    :umls_synonyms:
+      - Dystonia, Limb
+      - Dystonia, limb, exercise-induced
+      - Focal dystonia, upper limb
+      - Limb dystonia
+      - Lower limb dystonia
+      - Upper limb dystonia
+  - :diagnosis: Writers cramp
+    :umls_synonyms:
+      - cramp writer's
+      - cramp(s); writer
+      - cramp(s); writer, organic
+      - cramps writer
+      - cramps writer's
+      - cramps writers
+      - graphospasm
+      - graphospasm; organic
+      - Occupational neurosis, including writer's cramp
+      - Occupational neurosis, including writers' cramp
+      - Organic writer's cramp
+      - Organic writers' cramp
+      - organic; graphospasm
+      - palsy scriveners
+      - Paralysis notariorum
+      - Scriveners' palsy
+      - Writer Cramp
+      - writer's cramp
+      - Writer's cramp -organic
+      - Writer's cramp neurosis
+      - Writer's cramp-organic
+      - writer; cramp(s)
+      - writer; cramp(s), organic
+      - writers cramp
+      - Writers cramp, psychogenic
+      - Writers' cramp
+      - Writers' paralysis
+      - Writers' spasm
+      - Writing block, psychogenic
+  - :diagnosis: Craniofacial dystonia
+  - :diagnosis: DYT1
+    :umls_synonyms:
+      - DYSTONIA 1, TORSION, AUTOSOMAL DOMINANT
+      - Dystonia Musculorum Deformans 1
+      - Dystonia musculorum deformans type 1
+      - DYT1
+      - Early onset torsion dystonia
+      - EARLY-ONSET TORSION DYSTONIA
+      - EOTD
+      - Torsion dystonia 1, autosomal dominant
+  - :diagnosis: Myoclonus-dystonia
+    :umls_synonyms:
+      - DYSTONIA 11
+      - Dystonia, Alcohol-Responsive
+      - DYT11
+      - Hereditary essential myoclonus
+      - Myoclonic dystonia
+      - MYOCLONUS, HEREDITARY ESSENTIAL
+      - MYOCLONUS-DYSTONIA SYNDROME
+  - :diagnosis: Dopa-responsive dystonia
+    :umls_synonyms:
+      - Diurnal dystonia
+      - DOPA-RESPONSIVE DYSTONIA, AUTOSOMAL DOMINANT
+      - DRD
+      - DYSTONIA 5
+      - Dystonia, Diurnal
+      - DYSTONIA, DOPA-RESPONSIVE
+      - Dystonia, Dopa-responsive, autosomal dominant
+      - DYSTONIA, PROGRESSIVE, WITH DIURNAL VARIATION
+      - Dystonia-Parkinsonism with diurnal fluctuation
+      - DYT5
+      - Levodopa-responsive dystonia
+      - Segawa dystonia
+      - Segawa syndrome, autosomal dominant
+  - :diagnosis: Dystonia, NOS
+    :custom_synonyms:
+      - Dystonia
+  - :diagnosis: Huntington's disease
+    :umls_synonyms:
+      - CHOREA, CHRONIC PROGRESSIVE HEREDITARY
+      - Chorea, Chronic Progressive Hereditary (Huntington)
+      - Chorea, Huntington
+      - Chorea, Huntington's
+      - chorea; Huntington
+      - Chronic progressive chorea
+      - Chronic progressive hereditary chorea
+      - Chronic Progressive Hereditary Chorea (Huntington)
+      - HC - Huntington chorea
+      - HD
+      - HD - Huntington chorea
+      - Huntington
+      - huntington chorea
+      - Huntington Chronic Progressive Hereditary Chorea
+      - HUNTINGTON DIS
+      - HUNTINGTON DISEASE
+      - Huntington's chorea
+      - Huntington's disease
+      - Huntington; chorea
+      - Huntingtons Chorea
+      - HUNTINGTONS DIS
+      - huntingtons disease
+      - Progressive Chorea, Chronic Hereditary (Huntington)
+      - Progressive Chorea, Hereditary, Chronic (Huntington)
+    :custom_synonyms:
+      - HD
+  - :diagnosis: Chorea, NOS
+    :custom_synonyms:
+      - Chorea
+  - :diagnosis: Tardive
+  - :diagnosis: Tourette syndrome
+    :umls_synonyms:
+      - (Psychogenic tics) or (Gilles de la Tourette's syndrome)
+      - Brissaud's II
+      - Combined Multiple Motor and Vocal Tic Disorder
+      - COMBINED MULTIPLE MOTOR VOCAL TIC DIS
+      - Combined vocal and multiple motor tic disorder
+      - COMBINED VOCAL MULTIPLE MOTOR TIC DIS
+      - Combined vocal+multip tic dis
+      - combined; tic, vocal and multiple motor
+      - de gilles la tourette
+      - de gilles la tourettes
+      - de la Tourette
+      - de la Tourette; tic
+      - disorder tourette
+      - Gilles de la Tourette
+      - GILLES DE LA TOURETTE DIS
+      - gilles de la tourette disorder
+      - Gilles de la Tourette syndrome
+      - Gilles de la Tourette's
+      - Gilles de la Tourette's Disease
+      - Gilles de la Tourette's disorder
+      - Gilles de la Tourette's syndr.
+      - gilles de la tourette's syndrome
+      - Gilles de la Tourettes syndrome
+      - GTS
+      - Guinon's myospasia impulsiva
+      - Motor-verbal tic disorder
+      - motor-verbal tic disorders
+      - Multiple Motor and Vocal Tic Disorder, Combined
+      - MULTIPLE MOTOR VOCAL TIC DIS COMBINED
+      - Psychogenic tics
+      - Syndrome Gilles de la Tourette
+      - Syndrome Tourette
+      - syndrome tourette's
+      - syndrome tourettes
+      - syndrome tourettes's
+      - Syndrome, Tourette's
+      - syndromes tourette
+      - syndromes tourettes
+      - TIC DIS COMBINED VOCAL MULTIPLE MOTOR
+      - Tic Disorder, Combined Vocal and Multiple Motor
+      - tic; combined vocal and multiple motor
+      - tic; de la Tourette
+      - Tourette
+      - TOURETTE DIS
+      - Tourette Disease
+      - tourette disorder
+      - Tourette Syndrome
+      - Tourette's Disease
+      - tourette's disorder
+      - Tourette's Syndrome
+      - Tourette's syndrome aggravated
+      - tourette's syndrome gilles de la
+      - TOURETTES DIS
+      - Tourettes Disease
+      - tourettes disorder
+      - Tourettes Syndrome
+      - TS
+  - :diagnosis: Tics
+    :umls_synonyms:
+      - disorders habit
+      - habit disorder
+      - spasm; tic
+      - tic
+      - Tic (finding)
+      - TIC DIS
+      - TIC DISORDER
+      - Tic disorder NOS
+      - Tic disorder unspecified
+      - Tic disorder, NOS
+      - Tic disorder, unspecified
+      - Tic disorders
+      - Tic NOS
+      - Tic, NOS
+      - tic; spasm
+      - Tics
+  - :diagnosis: Wilson's disease
+    :umls_synonyms:
+      - Cerebral Pseudoscleroses
+      - Cerebral Pseudosclerosis
+      - Cerebral pseudosclerosis (disorder)
+      - Copper storage disease
+      - Degeneration, Hepatocerebral
+      - Degeneration, Hepatolenticular
+      - Degeneration, Neurohepatic
+      - Degeneration, Progressive Lenticular
+      - degeneration; hepatolenticular
+      - Degenerations, Hepatocerebral
+      - Degenerations, Neurohepatic
+      - disease wilson
+      - disease wilson's
+      - disease wilsons
+      - diseases wilson
+      - Diseases, Hepato-Neurologic Wilson
+      - Diseases, Kinnier-Wilson
+      - HEPATIC WILSONS DISEASE
+      - Hepato Neurologic Wilson Disease
+      - Hepato-lenticular degeneration
+      - Hepato-Neurologic Wilson Disease
+      - Hepato-Neurologic Wilson Diseases
+      - Hepatocerebral degeneration
+      - Hepatocerebral Degenerations
+      - Hepatolenticular Degeneration
+      - Hepatolenticular Degeneration [Disease/Finding]
+      - Hepatolenticular degeneration syndrome
+      - hepatolenticular; degeneration
+      - HEPATONEUROLOGIC WILSON DIS
+      - KINNIER WILSON DIS
+      - Kinnier Wilson Disease
+      - Kinnier-Wilson Disease
+      - Kinnier-Wilson Diseases
+      - LENTICULAR DEGENERATION, PROGRESSIVE
+      - lenticular degeneration; progressive
+      - Neurohepatic degeneration
+      - Neurohepatic Degenerations
+      - Progressive lenticular degener
+      - Progressive lenticular degeneration
+      - Pseudoscleroses, Cerebral
+      - Pseudosclerosis
+      - Pseudosclerosis, Cerebral
+      - StrÃ¼mpell-Westphal
+      - Strumpell-Westphal
+      - WD
+      - WD - Wilson's disease
+      - Westphal Strumpell Syndrome
+      - Westphal-StrÃ¼mpell
+      - Westphal-StrÃ¼mpell syndrome
+      - WESTPHAL-STRUEMPELL PSEUDOSCLEROSIS
+      - Westphal-Strumpell
+      - Westphal-Strumpell syndrome
+      - Westphal-Strumpell syndrome (disorder)
+      - Westphal-Strumpell Syndromes
+      - WILSON DIS
+      - Wilson Disease
+      - Wilson Disease, Hepato-Neurologic
+      - Wilson Diseases, Hepato-Neurologic
+      - Wilson's disease
+      - Wilson's disease (disorder)
+      - Wilson's disease *
+      - Wilson's disease * (disorder)
+      - Wilson; disease or syndrome
+      - WILSONS DIS
+      - Wilsons Disease
+      - wilsons disease liver
+      - WND
+  - :diagnosis: Stiff-person syndrome
+    :umls_synonyms:
+      - Gamma neuron overactivity syndrome
+      - mans stiff syndrome
+      - moersch woltman syndrome
+      - Moersch Woltmann Syndrome
+      - Moersch-Woltman syndrome
+      - Moersch-Woltmann syndrome
+      - MUSCULAR RIGIDITY AND SPASM, PROGRESSIVE
+      - person stiff syndrome
+      - persons stiff syndrome
+      - SPS
+      - Stiff man syndrome
+      - stiff mans syndrome
+      - Stiff Person Syndrome
+      - Stiff-man syndrome
+      - Stiff-Person Syndrome
+      - STIFF-TRUNK SYNDROME
+      - stiffman syndrome
+      - Syndrome, Moersch-Woltmann
+      - Syndrome, Stiff-Man
+      - Syndrome, Stiff-Person
+      - Syndrome, Stiffman
+      - syndrome; stiff man
+  - :diagnosis: Hereditary spastic paraplegia
+    :umls_synonyms:
+      - CMT with Pyramidal Features
+      - Complicat hered spast parapleg
+      - Complicated hereditary spastic paraplegia
+      - congenital; paraplegia, spastic
+      - Familial spastic paraplegia syndrome
+      - familial; paralysis, spastic
+      - Hered mtr/sen neurop & pyr sgn
+      - Hered spastic paraplegia
+      - Heredit motr/sens neuropathy V
+      - Hereditary Motor and Sensory Neuropathy 5
+      - Hereditary motor and sensory neuropathy type V
+      - HEREDITARY MOTOR AND SENSORY NEUROPATHY V
+      - Hereditary motor and sensory neuropathy, type V
+      - Hereditary Motor Sensory Neuropathy with Pyramidal Signs
+      - Hereditary motor-sensory neuropathy with pyramidal signs
+      - Hereditary sensory-motor neuropathy, type V
+      - hereditary spastic paraplegia
+      - hereditary spastic paraplegias
+      - HMSN 5
+      - HMSN Type V
+      - HMSN V
+      - HMSN V (Hereditary Motor and Sensory Neuropathy Type V)
+      - HMSN5
+      - HSMN V
+      - HSP - Heredit spast paraplegia
+      - HSP - Hereditary spastic paraplegia
+      - Hypertrophic Motor Sensory Neuropathy Spastic Paraplegia
+      - Hypertrophic Motor-Sensory Neuropathy-Spastic Paraplegia
+      - PARALYSIS, SPASTIC SPINAL FAMILIAL
+      - paralysis; familial, spastic
+      - paralysis; spastic, familial
+      - paralysis; spastic, hereditary
+      - Paraplegia, Hereditary Spastic
+      - PARAPLEGIA, SPASMODIC INFANTILE
+      - PARAPLEGIA, SPASTIC CONGENITAL
+      - PARAPLEGIA, SPASTIC HEREDITARY
+      - Paraplegia, Spastic, Hereditary
+      - paraplegia; spastic, hereditary
+      - Paraplegias, Hereditary Spastic
+      - Pure heredit spast paraplegia
+      - Pure hereditary spastic paraplegia
+      - Spastic congenital paraplegia
+      - spastic paraplegia hereditary
+      - Spastic Paraplegia Hypertrophic Motor Sensory Neuropathy
+      - Spastic paraplegia with hypertrophic sensory-motor neuropathy, type V
+      - Spastic Paraplegia, Hereditary
+      - Spastic Paraplegia-Hypertrophic Motor-Sensory Neuropathy
+      - Spastic Paraplegias, Hereditary
+      - spastic; paralysis, familial
+      - spastic; paralysis, hereditary
+      - spastic; paraplegia, hereditary
+      - Strumpell disease
+      - strumpell's disease
+      - Strumpell-Lorrain disease
+      - Type V Hereditary Motor and Sensory Neuropathy
+      - Type V, HMSN
+    :custom_synonyms:
+      - HSP
+  - :diagnosis: Restless legs syndrome
+    :umls_synonyms:
+      - Autosomal dominant restless legs syndrome
+      - Ekbom
+      - ekbom syndrome
+      - Ekbom's Syndrome
+      - Ekboms Syndrome
+      - Legs restless
+      - restless leg
+      - restless leg disorder
+      - restless leg syndrome
+      - restless leg syndrome (RLS)
+      - restless legs
+      - Restless legs (disorder)
+      - Restless legs syndrome
+      - Restless legs syndrome (RLS)
+      - Restless legs syndrome 2
+      - Restless legs syndrome, autosomal dominant
+      - restless legs; syndrome
+      - RLS
+      - Secondary restless legs syndrome
+      - Syndrome restless legs
+      - Syndrome, Ekbom
+      - Syndrome, Ekbom's
+      - syndrome; restless legs
+    :custom_synonyms:
+      - RLS
+  - :diagnosis: Spinocerebellar ataxia
+    :umls_synonyms:
+      - 3, Spinocerebellar Ataxia
+      - 3s, Spinocerebellar Ataxia
+      - Ataxia 3, Spinocerebellar
+      - Ataxia 3s, Spinocerebellar
+      - ataxia friedreich
+      - ataxia friedrich's
+      - Ataxia, Dominantly-Inherited Spinocerebellar
+      - ATAXIA, FRIEDREICH
+      - Ataxia, Friedreich Familial
+      - Ataxia, Friedreich Hereditary
+      - Ataxia, Friedreich Spinocerebellar
+      - Ataxia, Friedreich's
+      - Ataxia, Friedreich's Familial
+      - Ataxia, Friedreich's Hereditary
+      - Ataxia, Spinocerebellar
+      - ataxia; Friedreich
+      - ataxia; hereditary, spinal (Friedreich)
+      - ataxia; spinal hereditary (Friedreich)
+      - ataxia; spinocerebellar
+      - Ataxias, Dominantly-Inherited Spinocerebellar
+      - Ataxias, Friedreich
+      - Ataxias, Friedreich's Hereditary
+      - Ataxias, Spinocerebellar
+      - Atrophies, Spinocerebellar
+      - Atrophy III, Spinocerebellar
+      - Atrophy IIIs, Spinocerebellar
+      - Atrophy, Spinocerebellar
+      - Autosomal Dominant Striatonigral Degeneration
+      - AZOREAN DIS
+      - AZOREAN DIS MACHADO JOSEPH
+      - AZOREAN DIS NERVOUS SYSTEM
+      - Azorean disease
+      - Azorean Disease (Machado Joseph)
+      - Azorean Disease (Machado-Joseph)
+      - Azorean Disease, Nervous System
+      - Azorean disease, NOS
+      - Azorean Neurologic Disease
+      - combined; systemic disease, Friedreich
+      - Degeneration, Nigrospinodentatal
+      - Degenerations, Nigrospinodentatal
+      - disease joseph machado
+      - disease josephs
+      - disease josephs machado
+      - disease machado joseph
+      - disease machado josephs
+      - Disease, Azorean
+      - Disease, Azorean (Machado-Joseph)
+      - Disease, Azorean Neurologic
+      - Disease, Friedreich
+      - Disease, Friedreich's
+      - Disease, Joseph
+      - Disease, Joseph Azorean
+      - Disease, Machado-Joseph
+      - Disease, Machado-Joseph Azorean
+      - Dominantly Inherited Spinocerebellar Ataxias
+      - Dominantly-Inherited Spinocerebellar Ataxia
+      - Dominantly-Inherited Spinocerebellar Ataxias
+      - FA - Friedreich ataxia
+      - familial ataxia
+      - Familial Ataxia, Friedreich
+      - Familial Ataxia, Friedreich's
+      - Friedreich Ataxia
+      - Friedreich Ataxias
+      - FRIEDREICH DIS
+      - Friedreich Disease
+      - Friedreich Familial Ataxia
+      - Friedreich Hereditary Ataxia
+      - Friedreich Hereditary Spinal Ataxia
+      - Friedreich Spinocerebellar Ataxia
+      - Friedreich's Ataxia
+      - Friedreich's disease
+      - Friedreich's Familial Ataxia
+      - Friedreich's Hereditary Ataxia
+      - Friedreich's Hereditary Ataxias
+      - Friedreich's Hereditary Spinal Ataxia
+      - Friedreich; ataxia
+      - Friedreich; combined systemic disease
+      - FRIEDREICHS ATAXIA
+      - FRIEDREICHS DIS
+      - Friedreichs Familial Ataxia
+      - Friedreichs Hereditary Ataxia
+      - friedrich's ataxia
+      - friedrick's ataxia
+      - Hereditary Ataxia, Friedreich
+      - Hereditary Ataxia, Friedreich's
+      - Hereditary Ataxias, Friedreich's
+      - Hereditary Spinal Ataxia, Friedreich
+      - Hereditary Spinal Ataxia, Friedreich's
+      - Hereditary Spinal Scleroses
+      - Hereditary Spinal Sclerosis
+      - hereditary; ataxia, spinal (Friedreich)
+      - hereditary; sclerosis, spinal (Friedreich's ataxia)
+      - hereditary; spinal ataxia (Friedreich)
+      - hereditary; spinal sclerosis (Friedreich's ataxia)
+      - III, Spinocerebellar Atrophy
+      - IIIs, Spinocerebellar Atrophy
+      - JOSEPH AZOREAN DIS
+      - Joseph Azorean Disease
+      - JOSEPH DIS
+      - Joseph Disease
+      - MACHADO JOSEPH AZOREAN DIS
+      - Machado Joseph Azorean Disease
+      - MACHADO JOSEPH DIS
+      - Machado Joseph Disease
+      - Machado-Joseph Azorean Disease
+      - Machado-Joseph Disease
+      - MJD
+      - MJD - Machado-Joseph disease
+      - NERVOUS SYSTEM AZOREAN DIS
+      - Nervous System Azorean Disease
+      - Neurologic Disease, Azorean
+      - Nigrospinodentatal Degeneration
+      - Nigrospinodentatal Degenerations
+      - Portuguese-Azorean disease
+      - SCA3
+      - Scleroses, Hereditary Spinal
+      - Sclerosis, Hereditary Spinal
+      - sclerosis; hereditary, spinal (Friedreich's ataxia)
+      - sclerosis; spinal, hereditary (Friedreich's ataxia)
+      - Spinal Scleroses, Hereditary
+      - Spinal Sclerosis, Hereditary
+      - spinal; ataxia, hereditary (Friedreich)
+      - spinal; hereditary sclerosis (Friedreich's ataxia)
+      - spinal; sclerosis, hereditary (Friedreich's ataxia)
+      - Spinocerebellar Ataxia
+      - Spinocerebellar ataxia (disorder)
+      - Spinocerebellar ataxia (finding)
+      - spinocerebellar ataxia 3
+      - Spinocerebellar Ataxia 3s
+      - SPINOCEREBELLAR ATAXIA TYPE 003
+      - spinocerebellar ataxia type 3
+      - Spinocerebellar Ataxia, Dominantly-Inherited
+      - Spinocerebellar Ataxia, Friedreich
+      - Spinocerebellar Ataxia-3
+      - Spinocerebellar Ataxias
+      - Spinocerebellar Ataxias, Dominantly Inherited
+      - Spinocerebellar Ataxias, Dominantly-Inherited
+      - Spinocerebellar Atrophies
+      - Spinocerebellar Atrophy
+      - Spinocerebellar Atrophy III
+      - Spinocerebellar Atrophy IIIs
+      - Spinocerebellar Atrophy Type 3
+      - Spinocerebellar Degeneration
+      - spinocerebellar; ataxia
+      - SPINOPONTINE ATROPHY
+      - Striatonigral Degeneration, Autosomal Dominant
+      - Type 3 Spinocerebellar Ataxia
+    :custom_synonyms:
+      - SCA
+  - :diagnosis: Psychogenic/functional movement disorder
+    :umls_synonyms:
+      - Abn involun movement NEC
+      - Abnorm.involunt.movemnt.NOS
+      - Abnorm.involuntary movement
+      - abnormal involuntary movement
+      - Abnormal involuntary movement NOS
+      - Abnormal involuntary movements
+      - abnormal; involuntary movement
+      - involuntary movement; abnormal
+      - movement; abnormal, involuntary
+      - Psychogenic movement disorder
+      - Unspecified abnormal involuntary movements
+    :custom_synonyms:
+      - Abnormal involuntary movements
+
+
