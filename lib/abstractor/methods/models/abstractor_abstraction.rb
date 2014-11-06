@@ -22,6 +22,8 @@ module Abstractor
 
           base.send :belongs_to, :about, polymorphic: true
 
+          base.send :validates_associated, :abstractor_subject
+
           # base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
 
           # Hooks

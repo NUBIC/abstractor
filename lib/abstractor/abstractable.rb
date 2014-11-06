@@ -84,8 +84,9 @@ module Abstractor
         else
           abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_subject, about: self)
           if abstractor_subject.groupable?
-            abstractor_abstraction_group = find_or_create_abstractor_abstraction_group(abstractor_subject.abstractor_subject_group)
+            abstractor_abstraction_group = find_or_initialize_abstractor_abstraction_group(abstractor_subject.abstractor_subject_group)
             abstractor_abstraction_group.abstractor_abstractions << abstractor_abstraction
+            abstractor_abstraction_group.save!
           end
         end
         abstractor_abstraction
@@ -95,12 +96,30 @@ module Abstractor
         abstractor_abstraction_groups(true).detect { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group ==  abstractor_subject_group }
       end
 
-      def find_or_create_abstractor_abstraction_group(abstractor_subject_group)
+      def find_or_initialize_abstractor_abstraction_group(abstractor_subject_group)
         if abstractor_abstraction_group = detect_abstractor_abstraction_group(abstractor_subject_group)
         else
-          abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group: abstractor_subject_group, about: self)
+          abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group: abstractor_subject_group, about: self)
         end
         abstractor_abstraction_group
+      end
+
+      ##
+      # Determines if provided abstractor_subject_group reached number of abstractor_abstraction_groups defined by abstractor_subject_group cardinality
+      #
+      # @param [Integer] abstractor_subject_group_id the id of abstractor_subject_group of interest.
+      # @option options [String]  :namespace_type the type parameter of the namespace.
+      # @option options [Integer] :namespace_id the instance parameter of the namespace.
+      # @return [boolean]
+      def abstractor_subject_group_complete?(abstractor_subject_group_id, options = {})
+        abstractor_subject_group = Abstractor::AbstractorSubjectGroup.find(abstractor_subject_group_id)
+        if abstractor_subject_group.cardinality.blank?
+          false
+        else
+          options = { namespace_type: nil, namespace_id: nil, abstractor_subject_group_id: abstractor_subject_group_id }.merge(options)
+          abstractor_abstraction_groups = abstractor_abstraction_groups_by_namespace(options)
+          abstractor_abstraction_groups.length == abstractor_subject_group.cardinality
+        end
       end
 
       ##
