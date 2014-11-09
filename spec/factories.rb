@@ -53,6 +53,7 @@ FactoryGirl.define do
   end
 
   factory :abstractor_abstraction_source, class: Abstractor::AbstractorAbstractionSource do
+    abstractor_abstraction_source_section_type_id { Abstractor::AbstractorAbstractionSourceSectionType.where(name: Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_FULL_NOTE).first }
   end
 
   factory :abstractor_object_value, class: Abstractor::AbstractorObjectValue do

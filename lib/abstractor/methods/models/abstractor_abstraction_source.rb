@@ -9,11 +9,11 @@ module Abstractor
           base.send :belongs_to, :abstractor_subject
           base.send :belongs_to, :abstractor_rule_type
           base.send :belongs_to, :abstractor_abstraction_source_type
+          base.send :belongs_to, :abstractor_abstraction_source_section_type
           base.send :has_many, :abstractor_suggestion_sources
           base.send :has_many, :abstractor_abstractions, :through => :abstractor_suggestion_sources
           base.send :has_many, :abstractor_indirect_sources
-
-          # base.send :attr_accessible, :abstractor_subject, :abstractor_subject_id, :deleted_at, :from_method, :custom_method, :abstractor_rule_type, :abstractor_rule_type_id, :abstractor_abstraction_source_type, :abstractor_abstraction_source_type_id
+          base.send :has_many, :abstractor_abstraction_source_section_name_variants
         end
 
         def normalize_from_method_to_sources(about)
@@ -26,6 +26,35 @@ module Abstractor
             sources = fm
           end
           sources
+        end
+
+        def abstractor_text(source)
+          text = nil
+          case abstractor_abstraction_source_section_type
+          when nil, Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_FULL_NOTE
+            text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+          when Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_NAME_VALUE, Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_CUSTOM
+            if text =~ prepare_section_regular_expression
+              text = $2
+            else
+              ''
+            end
+          end
+          text
+        end
+
+        def prepare_section_regular_expression
+          regular_expression = nil
+          if abstractor_abstraction_source_section_type == Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_CUSTOM
+            regular_expression = custom_section_regular_expression
+          else
+            regular_expression = abstractor_abstraction_source_section_type.regular_expression
+          end
+          Regexp.new(regular_expression.sub('section_name_variants', prepare_section_name_variants))
+        end
+
+        def prepare_section_name_variants
+          abstractor_abstraction_source_section_name_variants.map(&:name).join('|')
         end
       end
     end

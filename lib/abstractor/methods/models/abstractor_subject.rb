@@ -145,7 +145,7 @@ module Abstractor
 
           def abstract_sentential_value(about, abstractor_abstraction, abstractor_abstraction_source)
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_text = abstractor_abstraction_source.abstractor_text(source)
               abstractor_object_value_ids = abstractor_abstraction_schema.abstractor_object_values.map(&:id)
 
               abstractor_object_values = []
@@ -206,7 +206,7 @@ module Abstractor
 
           def abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_text = abstractor_abstraction_source.abstractor_text(source)
               parser = Abstractor::Parser.new(abstractor_text)
               abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
                 abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
@@ -230,7 +230,7 @@ module Abstractor
 
           def abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source)
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_text = abstractor_abstraction_source.abstractor_text(source)
               parser = Abstractor::Parser.new(abstractor_text)
               abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
                 ranges = parser.range_all(Regexp.escape(predicate_variant))
@@ -306,7 +306,7 @@ module Abstractor
 
           def create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction, abstractor_abstraction_source)
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              abstractor_text = source[:source_type].find(source[:source_id]).send(source[:source_method])
+              abstractor_text = abstractor_abstraction_source.abstractor_text(source)
               parser = Abstractor::Parser.new(abstractor_text)
               #Create an 'unknown' suggestion based on match name only if we have not made a suggstion
               if abstractor_abstraction.abstractor_suggestions(true).empty?
