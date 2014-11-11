@@ -14,14 +14,6 @@ module Abstractor
           # base.send :attr_accessible, :deleted_at, :name
           # Validations
           base.send :validates, :cardinality, numericality: { only_integer: true, greater_than: 0 }, unless: Proc.new { |a| a.cardinality.blank? }
-          base.send(:include, InstanceMethods)
-        end
-
-        module InstanceMethods
-          def group_complete?
-            return false if self.cardinality.blank?
-            abstractor_abstraction_groups.not_deleted.size == self.cardinality
-          end
         end
       end
     end

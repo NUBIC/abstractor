@@ -82,7 +82,7 @@ describe ImagingExam do
       expect(@imaging_exam.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == abstractor_subject_group }.size).to eq(0)
     end
 
-    it "does not creates another abstractor abstraction group in a namespace upon re-abstraction", focus: false do
+    it "does not create another abstractor abstraction group in a namespace upon re-abstraction", focus: false do
       @imaging_exam.reload.abstract
       expect(@imaging_exam.reload.abstractor_abstraction_groups.select { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group == @abstractor_subject_group }.size).to eq(1)
     end
@@ -303,13 +303,13 @@ describe ImagingExam do
       end
 
       abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name:'Dopamine Transporter Level').first
+      abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group_id: abstractor_subject_group.id, about_type: ImagingExam.to_s, about_id: imaging_exam.id)
 
-      abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.create(abstractor_subject_group_id: abstractor_subject_group.id, about_type: ImagingExam.to_s, about_id: imaging_exam.id)
-      abstractor_abstraction_group.abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
+      abstractor_subject_group.abstractor_subjects.each do |abstractor_subject|
         abstraction = abstractor_subject.abstractor_abstractions.build(about_id: imaging_exam.id, about_type: ImagingExam.to_s)
-        abstraction.build_abstractor_abstraction_group_member(abstractor_abstraction_group: abstractor_abstraction_group)
-        abstraction.save!
+        abstractor_abstraction_group.abstractor_abstractions << abstraction
       end
+      abstractor_abstraction_group.save!
 
       pivots = ImagingExam.pivot_grouped_abstractions('Dopamine Transporter Level', namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).where(id: imaging_exam.id)
       pivots.each do |p|
