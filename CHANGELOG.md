@@ -1,15 +1,33 @@
 # Abstractor Changelog
 =======
 
+## 4.1.0
+Released on November 11 , 2014
+
+* Abstractable: abstractions and abstraction_groups lookup uses ActiveRecord instances.
+See https://github.com/NUBIC/abstractor/issues/65
+
+* Abstraction group cardinality check does not take into account namespace.
+See https://github.com/NUBIC/abstractor/issues/62
+
+* Add support for constraining an abstractor abstraction source to a section.
+See https://github.com/NUBIC/abstractor/issues/57
+
+* Abstraction groups created via UI are not limited by namespace.
+See https://github.com/NUBIC/abstractor/issues/55
+
 ## 4.0.2
 Released on October 24 , 2014
 
 * Abstraction groups are not filtered by subject group for display.
 See https://github.com/NUBIC/abstractor/issues/58
+
 * Ui finetunung.
 See https://github.com/NUBIC/abstractor/issues/54
+
 * Use CSS to separate abstractions in place of <hr> elements
 See https://github.com/NUBIC/abstractor/issues/53
+
 * Group UI: adding group is broken after layout changes
 See https://github.com/NUBIC/abstractor/issues/51
 
