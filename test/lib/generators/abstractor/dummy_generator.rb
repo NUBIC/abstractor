@@ -40,6 +40,9 @@ module Abstractor
       directory 'setup', "#{dummy_path}/lib/setup"
       copy_file "application.html.erb", "#{dummy_path}/app/views/layouts/application.html.erb", :force => true
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
+        %Q{  resources :moomins, :only => :edit\n}
+      end
+      insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
         %Q{  resources :imaging_exams, :only => :edit\n}
       end
       insert_into_file("#{dummy_path}/config/routes.rb", :after => /routes.draw.do\n/) do
@@ -81,6 +84,7 @@ module Abstractor
     end
 
     def test_dummy_controllers
+      template "moomins_controller.rb", "#{dummy_path}/app/controllers/moomins_controller.rb", :force => true
       template "imaging_exams_controller.rb", "#{dummy_path}/app/controllers/imaging_exams_controller.rb", :force => true
       template "surgeries_controller.rb", "#{dummy_path}/app/controllers/surgeries_controller.rb", :force => true
       template "pathology_cases_controller.rb", "#{dummy_path}/app/controllers/pathology_cases_controller.rb", :force => true
@@ -89,6 +93,7 @@ module Abstractor
     end
 
     def test_dummy_views
+      template "views/moomins/edit.html.haml", "#{dummy_path}/app/views/moomins/edit.html.haml", :force => true
       template "views/imaging_exams/edit.html.haml", "#{dummy_path}/app/views/imaging_exams/edit.html.haml", :force => true
       template "views/surgeries/edit.html.haml", "#{dummy_path}/app/views/surgeries/edit.html.haml", :force => true
       template "views/pathology_cases/edit.html.haml", "#{dummy_path}/app/views/pathology_cases/edit.html.haml", :force => true

@@ -1,12 +1,12 @@
 module Abstractor
   module Methods
     module Models
-      module AbstractorAbstractionSourceSectionType
+      module AbstractorSectionNameVariant
         def self.included(base)
           base.send :include, SoftDelete
 
           # Associations
-          base.send :has_many, :abstractor_abstraction_sources
+          base.send :belongs_to, :abstractor_section
         end
       end
     end

@@ -27,18 +27,17 @@
                 = abstractor_suggestion.display_value
                 - if abstractor_suggestion.abstractor_suggestion_sources.any?
                   - abstractor_suggestion.abstractor_suggestion_sources.each do |abstractor_suggestion_source|
-                    - source_about = abstractor_suggestion_source.source_type.constantize.find(abstractor_suggestion_source.source_id)
-                    - from_method = abstractor_suggestion_source.source_method
-                    - if from_method && source_about.respond_to?(from_method)
-                      - abstractable_from_column = source_about.send(from_method)
-                      - has_text_match = abstractable_from_column && abstractor_suggestion_source.sentence_match_value
-                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{source_about.class.to_s} #{from_method}"}
+                    - source = { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name }
+                    - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
+                    - if abstractor_text
+                      - has_text_match = abstractor_text && abstractor_suggestion_source.sentence_match_value
+                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{abstractor_suggestion_source.source_type} #{abstractor_suggestion_source.source_method}"}
                         %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
                       %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
                         - if has_text_match
-                          = Abstractor::UserInterface.highlight(simple_format(abstractable_from_column.clone), abstractor_suggestion_source.sentence_match_value.strip)
+                          = Abstractor::UserInterface.highlight(simple_format(abstractor_text), abstractor_suggestion_source.sentence_match_value.strip)
                         - else
-                          = simple_format(abstractable_from_column.clone)
+                          = simple_format(abstractor_text)
                     - if abstractor_suggestion_source.custom_explanation
                       .custom_explanation
                         %label
@@ -62,5 +61,6 @@
               %i{ id: "abstraction_text_link_#{dom_id}" }
               %br
             %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
-              = simple_format(source[:source_type].find(source[:source_id]).send(source[:source_method]))
+              - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
+              = simple_format(abstractor_text)
     .clear

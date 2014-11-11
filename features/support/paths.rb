@@ -8,6 +8,8 @@ module NavigationHelpers
       edit_imaging_exam_path(ImagingExam.last, namespace_type: $1, namespace_id: $2)
     when /the last surgery edit page/
       edit_surgery_path(Surgery.last)
+    when /the last moomin edit page/
+      edit_moomin_path(Moomin.last)
     when /the last pathology case edit page/
       edit_pathology_case_path(PathologyCase.last)
     when /the last encounter note edit page/

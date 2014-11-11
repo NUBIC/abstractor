@@ -29,10 +29,9 @@ module Abstractor
       Abstractor::AbstractorAbstractionSourceType.where(name: 'custom suggestion').first_or_create
       Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first_or_create
 
-      puts 'Setting up Abstractor::AbstractorAbstractionSourceSectionType'
-      Abstractor::AbstractorAbstractionSourceSectionType.where(name: Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_FULL_NOTE).first_or_create
-      Abstractor::AbstractorAbstractionSourceSectionType.where(name: Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_CUSTOM).first_or_create
-      Abstractor::AbstractorAbstractionSourceSectionType.where(name: Abstractor::Enum::ABSTRACTOR_ABSTRACTION_SOURCE_SECTION_TYPE_NAME_VALUE, regular_expression: "/(?<=^|[\r\n])(section_name_variants[\s:]*):([^\r\n]*(?:[\r\n]+(?![A-Z].*:).*)*)/i").first_or_create
+      puts 'Setting up Abstractor::AbstractorSectionType'
+      Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_CUSTOM).first_or_create
+      Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE, regular_expression: "(?<=^|[\r\n])(section_name_variants)[\s]*delimiter([^\r\n]*(?:[\r\n]+(?![A-Z].*delimiter).*)*)").first_or_create
     end
   end
 end

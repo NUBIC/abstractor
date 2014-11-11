@@ -144,6 +144,10 @@ When /^(?:|I )click within first "([^"]*)"$/ do |selector|
   first(selector).click
 end
 
+When /^(?:|I )click within last "([^"]*)"$/ do |selector|
+  all(selector).last.click
+end
+
 When /^(?:|I )click within "([^"]*)"$/ do |selector|
   find(selector).click
 end
@@ -380,4 +384,14 @@ Given /^abstraction schemas are set$/ do
   Setup.pathology_case
   Setup.surgery
   Setup.imaging_exam
+end
+
+Then(/^I should see "(.*?)" anywhere within "(.*?)"$/) do |text, selector|
+  elements = all(selector).select {|element| element.text.scan(text).any? }.compact
+  expect(elements.any?).to be_truthy
+end
+
+Then(/^I should not see "(.*?)" anywhere within "(.*?)"$/) do |text, selector|
+  elements = all(selector).select {|element| element.text.scan(text).any? }.compact
+  expect(elements.any?).to be_falsy
 end

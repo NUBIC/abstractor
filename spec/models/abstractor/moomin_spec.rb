@@ -26,7 +26,7 @@ describe Moomin do
     @abstractor_subject = Abstractor::AbstractorSubject.where(
       subject_type: 'Moomin',
       abstractor_abstraction_schema: @abstractor_abstraction_schema,
-      namespace_type: "Discener::Seearch",
+      namespace_type: "Discener::Search",
       namespace_id: 1).first_or_create
 
     Abstractor::AbstractorSubjectGroupMember.where(
@@ -41,7 +41,7 @@ describe Moomin do
       abstractor_abstraction_source_type: source_type_nlp_suggestion).first_or_create
   end
 
-  it "works", focus: true do
+  it "works", focus: false do
     note_text=<<EOS
   Lives alone.
   Mother - age 88, stroke; no tremors
@@ -56,7 +56,6 @@ EOS
     moomin = FactoryGirl.create(:moomin, note_text: note_text)
     moomin.abstract
     expect(moomin.reload.detect_abstractor_abstraction(@abstractor_subject).abstractor_suggestions.first.suggested_value).to be_nil
-    # expect(moomin.reload.detect_abstractor_abstraction(@abstractor_subject).abstractor_suggestions.size).to eq(0)
   end
 end
 
