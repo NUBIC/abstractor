@@ -76,7 +76,7 @@ module Abstractor
       end
 
       def detect_abstractor_abstraction(abstractor_subject)
-        abstractor_abstractions(true).not_deleted.detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject == abstractor_subject }
+        abstractor_abstractions(true).not_deleted.detect { |abstractor_abstraction| abstractor_abstraction.abstractor_subject_id == abstractor_subject.id }
       end
 
       def find_or_create_abstractor_abstraction(abstractor_abstraction_schema, abstractor_subject)
@@ -93,7 +93,7 @@ module Abstractor
       end
 
       def detect_abstractor_abstraction_group(abstractor_subject_group)
-        abstractor_abstraction_groups(true).detect { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group ==  abstractor_subject_group }
+        abstractor_abstraction_groups(true).detect { |abstractor_abstraction_group| abstractor_abstraction_group.abstractor_subject_group_id ==  abstractor_subject_group.id }
       end
 
       def find_or_initialize_abstractor_abstraction_group(abstractor_subject_group)
