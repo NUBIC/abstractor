@@ -59,14 +59,14 @@ table.ui-datepicker-calendar td {
 }
 .accordion_box h3 a,
 .accordion_box h3 a.visible {
-  background: #DDDDDD url(../../images/switch_minus.gif) 1% 50% no-repeat;
+  background: #DDDDDD asset_url('abstractor/switch_minus.gif') 1% 50% no-repeat;
   padding-left: 3%;
   display:block;
   border:none;
 }
 .accordion_box h3 a.hidden,
 .accordion_box h3 a.hidden:hover {
-  background-image: url(../../images/switch_plus.gif);
+  background-image: asset_url('abstractor/switch_plus.gif');
 }
 .accordion_box h3 a:hover {
   color: black;
