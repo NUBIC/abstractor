@@ -141,14 +141,14 @@
   margin-left: 5px;
 }
 .abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i {
-  background: url('page.png') no-repeat;
+  background: asset_url('abstractor/page.png') no-repeat;
   vertical-align: text-bottom;
   padding: 2px 10px;
   vertical-align: middle;
 }
 
 .abstractor_abstractions fieldset .abstractor_abstraction_source_tooltip_img i.abstraction_text_link_match {
-  background: url('page_green.png') no-repeat;
+  background: asset_url('abstractor/page_green.png') no-repeat;
 }
 
 .abstractor_abstractions fieldset .hidden {
