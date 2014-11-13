@@ -31,7 +31,7 @@
                     - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
                     - if abstractor_text
                       - has_text_match = abstractor_text && abstractor_suggestion_source.sentence_match_value
-                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{abstractor_suggestion_source.source_type} #{abstractor_suggestion_source.source_method}"}
+                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{abstractor_suggestion_source.source_type} #{abstractor_suggestion_source.source_method} #{abstractor_suggestion_source.section_name}"}
                         %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
                       %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
                         - if has_text_match
