@@ -31,7 +31,8 @@ module Abstractor
 
       puts 'Setting up Abstractor::AbstractorSectionType'
       Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_CUSTOM).first_or_create
-      Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE, regular_expression: "(?<=^|[\r\n])(section_name_variants)[\s]*delimiter([^\r\n]*(?:[\r\n]+(?![A-Z].*delimiter).*)*)").first_or_create
+      Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE, regular_expression: '(?<=^|[\r\n])(section_name_variants)[\s]*delimiter([^\r\n]*(?:[\r\n]+(?![A-Z][\.]*delimiter).*)*)').first_or_create
     end
   end
 end
+

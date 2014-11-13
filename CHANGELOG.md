@@ -1,8 +1,14 @@
 # Abstractor Changelog
 =======
 
+## 4.1.1
+Released on November 11, 2014
+
+* Display of sections on pop up showing wrong sections.
+See https://github.com/NUBIC/abstractor/issues/66
+
 ## 4.1.0
-Released on November 11 , 2014
+Released on November 11, 2014
 
 * Abstractable: abstractions and abstraction_groups lookup uses ActiveRecord instances.
 See https://github.com/NUBIC/abstractor/issues/65

@@ -38,12 +38,14 @@ Feature: Editing moomin
     And ".ui-dialog-content" should equal highlighted text "The groke is the bomb!"
 
   @javascript
+  @wip
   Scenario: editing a moomin with a section setup and more than one section name variant is mentioned
     Given moomin abstraction schemas are set with a section
     And moomins with the following information exist
       | Note Text                                                             |
       | I like little my the best!\nfavorite moomin:\nThe groke is the bomb!\nbeloved moomin:\nMoomintroll is the bomb!  |
     When I go to the last moomin edit page
+    And I wait 15 seconds
     Then I should not see "Little My" anywhere within ".abstractor_suggestion_values"
     And I should see "The Groke" anywhere within ".abstractor_suggestion_values"
     When I click within first ".has_favorite_moomin span.abstractor_abstraction_source_tooltip_img"

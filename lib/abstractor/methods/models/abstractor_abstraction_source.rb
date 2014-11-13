@@ -40,8 +40,8 @@ module Abstractor
             else
               regular_expression = abstractor_section.abstractor_section_type.regular_expression
             end
-            regular_expression.gsub!('section_name_variants', abstractor_section.prepare_section_name_variants)
-            regular_expression.gsub!('delimiter', abstractor_section.delimiter)
+            regular_expression = regular_expression.gsub('section_name_variants', abstractor_section.prepare_section_name_variants)
+            regular_expression = regular_expression.gsub('delimiter', abstractor_section.delimiter)
             Regexp.new(regular_expression, Regexp::IGNORECASE)
           end
         end
