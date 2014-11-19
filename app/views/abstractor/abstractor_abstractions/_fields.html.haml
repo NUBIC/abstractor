@@ -56,11 +56,10 @@
       - else
         - abstractor_abstraction.abstractor_subject.abstractor_abstraction_sources.select { |s| s.abstractor_abstraction_source_type.name == 'nlp suggestion' }.each do |abstractor_abstraction_source|
           - abstractor_abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|
-            - dom_id = "#{abstractor_abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}"
-            %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type].to_s} #{source[:source_method]}"}
+            - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
+            - dom_id = "#{abstractor_abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}#{'_'+ source[:section_name].parameterize.underscore if source[:section_name]}"
+            %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type].to_s} #{source[:source_method]} #{source[:section_name]}"}
               %i{ id: "abstraction_text_link_#{dom_id}" }
-              %br
             %div{ id: "abstraction_text_#{dom_id}", class: 'tooltip'}
-              - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
               = simple_format(abstractor_text)
     .clear

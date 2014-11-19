@@ -114,7 +114,6 @@ Feature: Editing imaging exam
   When I go to the namespace_type "Discerner::Search" and namespace_id 3 sent to the last imaging exam edit page
   Then I should see "Score 1" within ".has_score_1"
   And I should see "Falls" within ".has_falls"
-  And I wait 20 seconds
   And "fieldset" in the first ".abstractor_subject_groups_container" should contain text "Add group"
   And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Add group"
 
@@ -132,7 +131,21 @@ Feature: Editing imaging exam
   Then I should see 1 ".has_score_1" within the first ".abstractor_subject_groups_container"
   And the element ".abstractor_group_add_link" in the first ".abstractor_subject_groups_container" should be visible
 
+  @javascript
+  Scenario: New group of abstractions displays valid sources
+  Given abstraction schemas are set
+  And imaging exams with the following information exist
+    | Note Text                                                             | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
+    | I like little my the best!\nfavorite moomin:\nThe groke is the bomb!  |      1     | 1/1/2014 |  123             | Discerner::Search  |     1       |
+  When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
+  And I confirm link "Add group" in the last ".abstractor_subject_groups_container"
+  And I wait for the ajax request to finish
+  Then I should see 2 ".abstractor_abstraction_source_tooltip_img" within the last ".has_diagnosis"
 
+  When I click within last ".has_diagnosis span.abstractor_abstraction_source_tooltip_img"
+  Then I should see an ".ui-dialog_abstractor" element
+  And ".ui-dialog-titlebar" should contain text "ImagingExam note_text favorite moomin"
+  And ".ui-dialog-content" should contain text "The groke is the bomb!"
 
 
 
