@@ -148,4 +148,19 @@ Feature: Editing imaging exam
   And ".ui-dialog-content" should contain text "The groke is the bomb!"
 
 
+  Scenario: Edited abstraction with section sources displays valid sources
+  Given abstraction schemas are set
+  And imaging exams with the following information exist
+    | Note Text                                                             | Patient ID | Date     | Accession Number | Namespace          |Namespace ID |
+    | I like little my the best!\nfavorite moomin:\nThe groke is the bomb!  |      1     | 1/1/2014 |  123             | Discerner::Search  |     1       |
+  When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
+  When I choose "Rejected" within the last ".has_diagnosis"
+  And I wait for the ajax request to finish
+  When I click on ".edit_link" within the last ".has_diagnosis"
+  And I wait for the ajax request to finish
+  Then I should see 2 ".abstractor_abstraction_source_tooltip_img" within the last ".has_diagnosis .edit_abstractor_abstraction"
+  When I click within last ".has_diagnosis .edit_abstractor_abstraction span.abstractor_abstraction_source_tooltip_img"
+  Then I should see an ".ui-dialog_abstractor" element
+  And ".ui-dialog-titlebar" should contain text "ImagingExam note_text favorite moomin"
+  And ".ui-dialog-content" should contain text "The groke is the bomb!"
 
