@@ -84,6 +84,7 @@ Feature: Editing imaging exam
   And I confirm link "Add group" in the last ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish
   Then I should see 2 ".has_diagnosis" within the last ".abstractor_subject_groups_container"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should contain text "Delete group"
 
   @javascript
   Scenario: Editing groups in UI should edit only abstractions related to selected namespace
@@ -104,7 +105,6 @@ Feature: Editing imaging exam
   When I go to the namespace_type "Discerner::Search" and namespace_id 1 sent to the last imaging exam edit page
   Then I should see "Ataxia"
 
-
   @javascript
   Scenario: Adding groups in UI should respect group cardinality
   Given abstraction schemas are set
@@ -115,7 +115,9 @@ Feature: Editing imaging exam
   Then I should see "Score 1" within ".has_score_1"
   And I should see "Falls" within ".has_falls"
   And "fieldset" in the first ".abstractor_subject_groups_container" should contain text "Add group"
+  And "fieldset" in the first ".abstractor_subject_groups_container" should not contain text "Delete group"
   And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Add group"
+  And "fieldset" in the last ".abstractor_subject_groups_container" should not contain text "Delete group"
 
   When I confirm link "Add group" in the first ".abstractor_subject_groups_container"
   And I wait for the ajax request to finish

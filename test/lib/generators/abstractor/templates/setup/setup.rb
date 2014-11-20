@@ -347,7 +347,6 @@ module Setup
 
     abstractor_section_type_custom = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_CUSTOM).first
     abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_custom, source_type: 'ImagingExam', source_method: 'note_text', name: 'favorite moomin', custom_regular_expression: "(?<=^|[\r\n])([A-Z][^delimiter]*)delimiter([^\r\n]*(?:[\r\n]+(?![A-Z].*delimiter).*)*)", delimiter: ':')
-    abstractor_section_name_varaint = Abstractor::AbstractorSectionNameVariant.create(abstractor_section: abstractor_section, name: 'beloved moomin')
 
     ['2008', '2009', '2010'].each do |duration|
       abstractor_object_value = Abstractor::AbstractorObjectValue.create(value: duration)
@@ -378,11 +377,9 @@ module Setup
     end
 
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'ImagingExam', abstractor_abstraction_schema: score_1_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 3)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: scoring_subject_group, display_order: 1)
 
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'ImagingExam', abstractor_abstraction_schema: score_2_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 3)
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: scoring_subject_group, display_order: 2)
 
     motor_ros_subject_group = Abstractor::AbstractorSubjectGroup.create(name: 'Motor ROS', cardinality: 1)
