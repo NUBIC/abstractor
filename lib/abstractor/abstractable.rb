@@ -24,11 +24,11 @@ module Abstractor
       # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
       def abstractor_abstractions_by_namespace(options = {})
         options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        abstractions = abstractor_abstractions.not_deleted
         if options[:namespace_type] || options[:namespace_id]
-          abstractor_abstractions.not_deleted.where(abstractor_subject_id: self.class.abstractor_subjects(options).map(&:id))
-        else
-          abstractor_abstractions.not_deleted
+          abstractions = abstractions.where(abstractor_subject_id: self.class.abstractor_subjects(options).map(&:id))
         end
+        abstractions
       end
       ##
       # Returns all abstraction groups for the abstractable entity by a namespace.
@@ -40,7 +40,7 @@ module Abstractor
       def abstractor_abstraction_groups_by_namespace(options = {})
         options = { namespace_type: nil, namespace_id: nil }.merge(options)
         if options[:namespace_type] || options[:namespace_id]
-          groups = abstractor_abstractions_by_namespace(options).map(&:abstractor_abstraction_group).compact.uniq
+          groups = abstractor_abstraction_groups.find(abstractor_abstractions_by_namespace(options).joins(:abstractor_abstraction_group).includes(:abstractor_abstraction_group).map{|s| s.abstractor_abstraction_group.id})
         else
           groups = abstractor_abstraction_groups.not_deleted
         end
@@ -219,13 +219,13 @@ module Abstractor
         options = { grouped: nil, namespace_type: nil, namespace_id: nil }.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
         if options[:namespace_type] || options[:namespace_id]
-          subjects = subjects.select { |subject| subject.namespace_type == options[:namespace_type] && subject.namespace_id == options[:namespace_id] }
+          subjects = subjects.where(namespace_type: options[:namespace_type], namespace_id: options[:namespace_id])
         end
         subjects = case options[:grouped]
         when true
-          subjects.select{ |s| s.abstractor_subject_group_member }
+          subjects.joins(:abstractor_subject_group).includes(:abstractor_subject_group)
         when false
-          subjects.reject{ |s| s.abstractor_subject_group_member }
+          subjects.where("not exists (select 'a' from abstractor_subject_group_members where abstractor_subject_id = abstractor_subjects.id)")
         when nil
           subjects
         end
@@ -248,7 +248,7 @@ module Abstractor
 
       def abstractor_subject_groups(options = {})
         options = { grouped: true, namespace_type: nil, namespace_id: nil }.merge(options)
-        abstractor_subjects(options).map(&:abstractor_subject_group).compact.uniq
+        Abstractor::AbstractorSubjectGroup.find(abstractor_subjects(options).map{|s| s.abstractor_subject_group.id})
       end
 
       ##
