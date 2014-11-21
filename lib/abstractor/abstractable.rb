@@ -99,7 +99,7 @@ module Abstractor
       def find_or_initialize_abstractor_abstraction_group(abstractor_subject_group)
         if abstractor_abstraction_group = detect_abstractor_abstraction_group(abstractor_subject_group)
         else
-          abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group: abstractor_subject_group, about: self)
+          abstractor_abstraction_group = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group: abstractor_subject_group, about: self, system_generated: true)
         end
         abstractor_abstraction_group
       end

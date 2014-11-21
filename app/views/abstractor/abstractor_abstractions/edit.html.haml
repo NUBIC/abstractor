@@ -46,13 +46,11 @@
       - abstraction_sources.each do |abstraction_source|
         - abstraction_source.normalize_from_method_to_sources(abstractor_abstraction.about).each do |source|
           - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
-          - if abstractor_text
-            - dom_id = "#{abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}"
-            %span{ :class => 'abstractor_abstraction_source_tooltip_img', :rel =>"#abstraction_text_#{dom_id}", :title => "#{source[:source_type].to_s} #{source[:source_method]}"}
-              = image_tag('abstractor/page.png', :id => "abstraction_text_link_#{dom_id}")
-              %br
-            %div{ :id => "abstraction_text_#{dom_id}", :class => 'tooltip'}
-              = simple_format(abstractor_text)
+          - dom_id = "#{abstraction_source.id}_#{source[:source_type]}_#{source[:source_id]}_#{source[:source_method]}#{'_'+ source[:section_name].parameterize.underscore if source[:section_name]}"
+          %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type]} #{source[:source_method]} #{source[:section_name]}"}
+            %i{ id: "abstraction_text_link_#{dom_id}" }
+          %div{ id: "abstraction_text_#{dom_id}", class: 'abstractor_abstraction_source_tooltip'}
+            = simple_format(abstractor_text)
     .abstraction_edit_abstraction_actions
       = f.submit 'Save'
       = link_to 'Cancel', abstractor_abstraction, :remote => true

@@ -29,7 +29,7 @@ module Abstractor
           #
           # @return [Boolean]
           def removable?
-            abstractor_abstractions.map(&:abstractor_suggestions).flatten.empty?
+            !system_generated
           end
 
           private
