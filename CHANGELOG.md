@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.1.2
+Released on January 11, 2015
+
+* Add indexes to improve performance.
+See https://github.com/NUBIC/abstractor/issues/78
+
 ## 4.1.1
 Released on November 11, 2014
 
