@@ -1,10 +1,16 @@
 # Abstractor Changelog
 =======
 
+## 4.1.4
+Released on January 20, 2015
+
+* The setup script should update default AbstractorSectionType regular expressions.
+See https://github.com/NUBIC/abstractor/issues/80
+
 ## 4.1.3
 Released on January 20, 2015
 
-* Parsing document sections: regex does not correctly identify end of section
+* Parsing document sections: regex does not correctly identify end of section.
 See https://github.com/NUBIC/abstractor/issues/77
 
 ## 4.1.2
