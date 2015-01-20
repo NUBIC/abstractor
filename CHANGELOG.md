@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.1.3
+Released on January 20, 2015
+
+* Parsing document sections: regex does not correctly identify end of section
+See https://github.com/NUBIC/abstractor/issues/77
+
 ## 4.1.2
 Released on January 11, 2015
 
