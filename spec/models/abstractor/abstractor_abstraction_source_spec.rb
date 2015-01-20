@@ -79,6 +79,147 @@ EOS
       expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
     end
 
+    it 'across a section of the source note based on a name/value section type across multiple sections', focus: false do
+    note_text=<<EOS
+I like little my the best!
+favorite moomin:
+The groke is the bomb!
+
+my other section:
+Section two is better
+
+yet another section: no more tears
+
+Last section :
+the end
+of story
+goes here
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'my other section', delimiter: ':')
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'yet another section', delimiter: ':')
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'last section', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      abstractor_abstraction_source_2 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'my other section')
+      abstractor_abstraction_source_3 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'yet another section')
+      abstractor_abstraction_source_4 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'last section')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      source_2 = abstractor_abstraction_source_2.normalize_from_method_to_sources(encounter_note).last
+      source_3 = abstractor_abstraction_source_3.normalize_from_method_to_sources(encounter_note).last
+      source_4 = abstractor_abstraction_source_4.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq("\nThe groke is the bomb!\n")
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_2)).to eq("\nSection two is better\n")
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_3)).to eq(" no more tears\n")
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_4)).to eq("\nthe end\nof story\ngoes here\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
+    it 'across a section of the source note based on a name/value section type with section value on the same line as the section name (ignoring trailing spaces in the section name)', focus: false do
+    note_text=<<EOS
+I like little my the best!
+favorite moomin : The groke is the bomb!
+
+delicious cusine: italian
+
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq(" The groke is the bomb!\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
+    it 'across a section of the source note based on a name/value section type with section value on the same line as the section name', focus: false do
+    note_text=<<EOS
+I like little my the best!
+favorite moomin: The groke is the bomb!
+
+delicious cusine: italian
+
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq(" The groke is the bomb!\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
+    it 'across a section of the source note based on a name/value section type with a section value on subsequent lines from the section name', focus: false do
+    note_text=<<EOS
+I like little my the best!
+favorite moomin:
+
+The groke is the bomb!
+Though he is very scary.
+
+delicious cusine: italian
+
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq("\n\nThe groke is the bomb!\nThough he is very scary.\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
+    it 'across a section of the source note based on a name/value section type with a section value on the same and subsequent lines of the section name', focus: false do
+    note_text=<<EOS
+I like little my the best!
+favorite moomin: The groke is the bomb!
+Though he is very scary.
+
+delicious cusine: italian
+
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq(" The groke is the bomb!\nThough he is very scary.\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
+    it 'across a section of the source note based on a name/value section type with a section value on multiple lines (recognizing non-delimiiting use of delimiters)', focus: true do
+    puts "Expected to fail: Need to figure out a way to disambiguate non-delimiting uses of section delimitiers."
+    note_text=<<EOS
+I like little my the best!
+favorite moomin: The groke is the bomb!
+Though he is very scary.
+I discovered him at 3:00 in the afternoon.
+
+delicious cusine: italian
+
+EOS
+
+      abstractor_section_type_name_value = Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_NAME_VALUE).first
+      abstractor_section = Abstractor::AbstractorSection.create(abstractor_section_type: abstractor_section_type_name_value, source_type: 'EncounterNote', source_method: 'note_text', name: 'favorite moomin', delimiter: ':')
+      abstractor_abstraction_source_1 = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_moomin, from_method: 'note_text', abstractor_rule_type: @value_rule_type, abstractor_abstraction_source_type: @source_type_nlp_suggestion, section_name: 'favorite moomin')
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+      source_1 = abstractor_abstraction_source_1.normalize_from_method_to_sources(encounter_note).last
+      encounter_note.abstract
+      expect(Abstractor::AbstractorAbstractionSource.abstractor_text(source_1)).to eq(" The groke is the bomb!\nThough he is very scary.\nI discovered him at 3:00 in the afternoon.\n")
+      expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
+    end
+
     it 'across the complete source note based on a name/value section type if a section cannot be found and is instructed to return the whole note upon no match', focus: false do
     note_text=<<EOS
 I like little my the best!
@@ -131,7 +272,7 @@ EOS
       expect(Set.new(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_moomin).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(["The Groke"]))
     end
 
-    it 'across a section of the source note based on a custom section type', focus: true do
+    it 'across a section of the source note based on a custom section type', focus: false do
     note_text=<<EOS
 I like little my the best!
 Bad ass moomin--
