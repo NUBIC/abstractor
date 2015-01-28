@@ -199,7 +199,7 @@ EOS
     end
 
     it 'across a section of the source note based on a name/value section type with a section value on multiple lines (recognizing non-delimiiting use of delimiters)', focus: true do
-    puts "Expected to fail: Need to figure out a way to disambiguate non-delimiting uses of section delimitiers."
+    pending "Expected to fail: Need to figure out a way to disambiguate non-delimiting uses of section delimitiers."
     note_text=<<EOS
 I like little my the best!
 favorite moomin: The groke is the bomb!
