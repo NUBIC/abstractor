@@ -30,6 +30,23 @@ module Abstractor
         end
         abstractions
       end
+
+      ##
+      # Returns all abstractions for the abstractable entity by abstraction schemas.
+      #
+      # @param [Hash] options the options to filter the list of abstractions to a namespace.
+      # @option options [Array] :abstractor_abstraction_schema_ids List of [Abstractor::AbstractorAbstractionSchema] ids
+      # @option options [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
+      # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorAbstraction].
+      def abstractor_abstractions_by_abstraction_schemas(options = {})
+        options = { abstractor_abstraction_schema_ids: [], abstractor_abstractions: abstractor_abstractions.not_deleted }.merge(options)
+        if options[:abstractor_abstraction_schema_ids].any?
+          options[:abstractor_abstractions].joins(:abstractor_subject).where(abstractor_subjects: { abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids]})
+        else
+          options[:abstractor_abstractions]
+        end
+      end
+
       ##
       # Returns all abstraction groups for the abstractable entity by a namespace.
       #
@@ -67,9 +84,10 @@ module Abstractor
       # @param [Hash] options the options to filter the generation of abstractions to a namespace.
       # @option options [String] :namespace_type The type parameter of the namespace.
       # @option options [Integer] :namespace_id The instance parameter of the namespace.
+      # @option options [List of integers] :abstractor_abstraction_schema_ids List of abstractor_abstraction_schema_ids to limit abstraction.
       # @return [void]
       def abstract(options = {})
-        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        options = { namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
         self.class.abstractor_subjects(options).each do |abstractor_subject|
           abstractor_subject.abstract(self)
         end
@@ -150,10 +168,16 @@ module Abstractor
       # @option options [Booelan] :only_unreviewed Instructs whether to confine removal to only 'unreviewed' abstractions.
       # @option options [String] :namespace_type The type parameter of the namespace to remove.
       # @option options [Integer] :namespace_id The instance parameter of the namespace to remove.
+      # @option options [List of integers] :abstractor_abstraction_schema_ids List of abstractor_abstraction_schema_ids to limit abstraction removal.
       # @return [void]
       def remove_abstractions(options = {})
-        options = { only_unreviewed: true, namespace_type: nil, namespace_id: nil }.merge(options)
-        abstractor_abstractions_by_namespace(options).each do |abstractor_abstraction|
+        options = { only_unreviewed: true, namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
+        abstractor_abstractions = abstractor_abstractions_by_namespace(options)
+        if options[:abstractor_abstraction_schema_ids].any?
+          options = { abstractor_abstractions: abstractor_abstractions }.merge(options)
+          abstractor_abstractions = abstractor_abstractions_by_abstraction_schemas(options)
+        end
+        abstractor_abstractions.each do |abstractor_abstraction|
           if !options[:only_unreviewed] || (options[:only_unreviewed] && abstractor_abstraction.unreviewed?)
             abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
               abstractor_suggestion.abstractor_suggestion_sources.destroy_all
@@ -216,11 +240,16 @@ module Abstractor
       # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the subjects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
       def abstractor_subjects(options = {})
-        options = { grouped: nil, namespace_type: nil, namespace_id: nil }.merge(options)
+        options = { grouped: nil, namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
         if options[:namespace_type] || options[:namespace_id]
           subjects = subjects.where(namespace_type: options[:namespace_type], namespace_id: options[:namespace_id])
         end
+
+        if options[:abstractor_abstraction_schema_ids].any?
+          subjects = subjects.where(abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids])
+        end
+
         subjects = case options[:grouped]
         when true
           subjects.joins(:abstractor_subject_group).includes(:abstractor_subject_group)

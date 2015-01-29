@@ -25,6 +25,10 @@ describe EncounterNote do
       expect(Set.new(EncounterNote.abstractor_subjects)).to eq(Set.new(abstractor_subjects))
     end
 
+    it "can report its abstractor subjects by schemas", focus: false do
+      expect(Set.new(EncounterNote.abstractor_subjects(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_kps.id, @abstractor_abstraction_schema_kps_date.id]))).to eq Set.new([@abstractor_subject_abstraction_schema_kps, @abstractor_subject_abstraction_schema_kps_date])
+    end
+
     it "can report its abstractor abstraction schemas", focus: false do
       expect(Set.new(EncounterNote.abstractor_abstraction_schemas)).to eq(Set.new([@abstractor_abstraction_schema_kps, @abstractor_abstraction_always_unknown, @abstractor_abstraction_schema_kps_date]))
     end
@@ -57,6 +61,20 @@ describe EncounterNote do
       expect(@encounter_note.reload.abstractor_abstractions.select { |abstractor_abstraction| abstractor_abstraction.abstractor_subject.abstractor_abstraction_schema.predicate == 'has_karnofsky_performance_status' }.size).to eq(1)
     end
 
+    it "if abstractor_abstraction_schema_ids parameter is set creates abstraction only for selected schemas" do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 90.')
+      @encounter_note.abstract(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_kps.id, @abstractor_abstraction_schema_kps_date.id])
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date)).to_not be_nil
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown)).to be_nil
+
+      @encounter_note.abstract
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date)).to_not be_nil
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown)).not_to be_nil
+    end
+
     #removing abstractions
     it "can remove abstractions", focus: false do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
@@ -80,6 +98,18 @@ describe EncounterNote do
       expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
       encounter_note.remove_abstractions
       expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
+    end
+
+    it "can remove abstractions for specified abstraction schemas", focus: false do
+      encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  kps: 20.')
+      encounter_note.abstract
+
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to_not be_nil
+      encounter_note.remove_abstractions(abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_kps.id, @abstractor_abstraction_schema_kps_date.id])
+
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps)).to be_nil
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps_date)).to be_nil
+      expect(encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_always_unknown)).not_to be_nil
     end
 
     #suggestion suggested value
