@@ -1,5 +1,10 @@
 # Abstractor Changelog
 =======
+## 4.1.5
+Released on February 3, 2015
+
+* Allow to specify abstraction schemas while adding/removing abstractions.
+See https://github.com/NUBIC/abstractor/issues/81
 
 ## 4.1.4
 Released on January 20, 2015
