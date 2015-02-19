@@ -1,5 +1,12 @@
 # Abstractor Changelog
 =======
+
+## 4.2.0
+Released on February 18, 2015
+
+* Make sure the gem and its test suite are compatible with Rails 4.2
+See https://github.com/NUBIC/abstractor/issues/83
+
 ## 4.1.5
 Released on February 3, 2015
 
