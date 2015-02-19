@@ -1,6 +1,13 @@
 # Abstractor Changelog
 =======
 
+## 4.2.1
+Released on February 18, 2015
+
+* Require at jquery-rails 4.0.0 or greater.
+See https://github.com/NUBIC/abstractor/issues/83
+
+
 ## 4.2.0
 Released on February 18, 2015
 
