@@ -22,11 +22,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'jquery-rails', '~> 4.0.0', '>= 4.0.0'
   s.add_dependency 'jquery-ui-rails', '~> 4.2', '>= 4.2.0'
   s.add_dependency 'haml', '~> 4.0.5', '>= 4.0.5'
-  s.add_dependency 'sass-rails', '~> 4.0.0', '>= 4.0.0'
+  s.add_dependency 'sass-rails', '>= 4.0.0'
   s.add_dependency 'paper_trail', '~> 3.0.0', '>= 3.0.0'
   s.add_dependency 'stanford-core-nlp', '~> 0.5.1', '>= 0.5.1'
   s.add_dependency 'rubyzip', '~> 1.1.0', '>= 1.1.0'
-  s.add_dependency 'coffee-rails', '~> 4.0.1', '>= 4.0.1'
+  s.add_dependency 'coffee-rails', '~> 4.0', '>= 4.0.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.9', '>= 1.3.9'
   s.add_development_dependency 'rspec-rails', '~> 3.0.0', '>= 3.0.0'
