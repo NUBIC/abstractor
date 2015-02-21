@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.2.2
+Released on February 18, 2015
+
+* Lighten up gemspec requirements for coffee-rails gem.
+See https://github.com/NUBIC/abstractor/issues/83
+
 ## 4.2.1
 Released on February 18, 2015
 

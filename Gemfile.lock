@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    abstractor (4.2.1)
+    abstractor (4.2.2)
       coffee-rails (~> 4.0, >= 4.0.0)
       haml (~> 4.0.5, >= 4.0.5)
       jquery-rails (~> 4.0.0, >= 4.0.0)
@@ -17,7 +17,7 @@ PATH
       paper_trail (~> 3.0.0, >= 3.0.0)
       rails (~> 4.1)
       rubyzip (~> 1.1.0, >= 1.1.0)
-      sass-rails (~> 4.0.0, >= 4.0.0)
+      sass-rails (>= 4.0.0)
       stanford-core-nlp (~> 0.5.1, >= 0.5.1)
 
 GEM
@@ -176,12 +176,13 @@ GEM
       rspec-support (~> 3.0.0)
     rspec-support (3.0.4)
     rubyzip (1.1.7)
-    sass (3.2.19)
-    sass-rails (4.0.5)
+    sass (3.4.12)
+    sass-rails (5.0.1)
       railties (>= 4.0.0, < 5.0)
-      sass (~> 3.2.2)
-      sprockets (~> 2.8, < 3.0)
-      sprockets-rails (~> 2.0)
+      sass (~> 3.1)
+      sprockets (>= 2.8, < 4.0)
+      sprockets-rails (>= 2.0, < 4.0)
+      tilt (~> 1.1)
     selenium-webdriver (2.42.0)
       childprocess (>= 0.5.0)
       multi_json (~> 1.0)
