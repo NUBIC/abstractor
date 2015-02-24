@@ -14,11 +14,11 @@ class EncounterNote < ActiveRecord::Base
     []
   end
 
-  def encounter_date
+  def encounter_date(abstractor_abstraction)
     [{ suggestion: '2014-06-26', explanation: 'A bit of custom logic.' }]
   end
 
-  def empty_encounter_date
+  def empty_encounter_date(abstractor_abstraction)
     []
   end
 end
