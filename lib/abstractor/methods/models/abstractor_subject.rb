@@ -127,7 +127,7 @@ module Abstractor
           # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the custom method to invoke on the abstractable entity to make custom suggestions.
           # @return [void]
           def abstract_custom_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
-            suggestions = about.send(abstractor_abstraction_source.custom_method)
+            suggestions = about.send(abstractor_abstraction_source.custom_method, abstractor_abstraction)
             suggestions.each do |suggestion|
               suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, abstractor_abstraction_source.section_name, suggestion[:suggestion], nil, nil, abstractor_abstraction_source.custom_method, suggestion[:explanation])
             end

@@ -317,7 +317,7 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
     end
 
-    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated name (using the sentential format) even with a negation cue not immiedatley preceeding the target value", focus: true do
+    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion match value from a negated name (using the sentential format) even with a negation cue not immiedatley preceeding the target value", focus: false do
       pending "Expected to fail: Need to replace the negation library with something better."
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  No evidence of this thing called karnofsky performance status of 90.')
       @encounter_note.abstract

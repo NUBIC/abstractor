@@ -90,6 +90,28 @@ module Abstractor
               ais.abstractor_abstraction_source == abstractor_abstraction_source
             end
           end
+
+          ##
+          # Returns all the suggestions for the abstraction with a suggestion status of 'needs review'
+          #
+          # @return [ActiveRecord::Relation] List of [Abstractor::AbstractorSuggestion].
+          def unreviewed_abstractor_suggestions
+            abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.abstractor_suggestion_status.name == Abstractor::Enum::ABSTRACTOR_SUGGESTION_STATUS_NEEDS_REVIEW }
+          end
+
+          ##
+          # Remove suggestions on the abstraction with a suggestion status of 'needs review' that are not present in the array of hashes representing suggestions passed in.
+          #
+          # @param [Array<Hash>] suggestions
+          # @return [void]
+          def remove_unreviewed_suggestions_not_matching_suggestions(suggestions)
+            unreviewed_abstractor_suggestions.each do |abstractor_suggestion|
+              not_detritus = suggestions.detect { |suggestion| suggestion[:suggestion] == abstractor_suggestion.suggested_value }
+              unless not_detritus
+                abstractor_suggestion.destroy
+              end
+            end
+          end
         end
 
         module ClassMethods
