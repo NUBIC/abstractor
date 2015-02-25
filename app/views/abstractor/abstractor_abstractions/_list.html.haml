@@ -23,7 +23,7 @@
         = link_to 'Add group', Abstractor::UserInterface.abstractor_relative_path(abstractor.abstractor_abstraction_groups_path(about_id: about.id, about_type: about.class.name, abstractor_subject_group_id: abstractor_subject_group.id)), method: :post, class: "icon_link add_link", remote: true
 
   .clear
-  - ungrouped_subjects = Abstractor::AbstractorSubject.not_deleted.includes(:abstractor_subject_group_member).where(:subject_type => about.class.to_s, :abstractor_subject_group_members => {:id => nil})
+  - ungrouped_subjects = Abstractor::AbstractorSubject.not_deleted.includes(:abstractor_subject_group_member).where(:subject_type => about.class.to_s, :abstractor_subject_group_members => {:id => nil}).order('abstractor_subjects.id')
   - if ungrouped_subjects.any?
     %fieldset
       .column-3
