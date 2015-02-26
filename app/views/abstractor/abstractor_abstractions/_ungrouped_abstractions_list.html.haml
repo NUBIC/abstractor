@@ -1,5 +1,5 @@
 .abstractor_abstractions_ungrouped
-  - ungrouped_subjects = about.class.abstractor_subjects(grouped: false, namespace_type: namespace_type, namespace_id: namespace_id)
+  - ungrouped_subjects = about.class.abstractor_subjects(grouped: false, namespace_type: namespace_type, namespace_id: namespace_id).order('abstractor_subjects.id')
   - if ungrouped_subjects.any?
     %fieldset
       .abstractor_abstractions_header
