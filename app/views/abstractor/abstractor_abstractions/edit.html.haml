@@ -9,6 +9,8 @@
       - case abstraction_schema.abstractor_object_type.value
       - when 'date'
         = f.text_field :value, class: 'abstractor_datepicker'
+      - when 'text'
+        = f.text_area :value
       - when 'string'
         = f.text_field :value
       - when 'number'

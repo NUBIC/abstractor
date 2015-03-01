@@ -9,6 +9,7 @@ module Abstractor
       Abstractor::AbstractorObjectType.where(value: 'radio button list').first_or_create
       Abstractor::AbstractorObjectType.where(value: 'date').first_or_create
       Abstractor::AbstractorObjectType.where(value: 'dynamic list').first_or_create
+      Abstractor::AbstractorObjectType.where(value: 'text').first_or_create
 
       puts 'Setting up Abstractor::AbstractorRuleType'
       Abstractor::AbstractorRuleType.where(name: 'name/value', description:'search for value associated with name').first_or_create

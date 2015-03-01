@@ -9,10 +9,10 @@ module Abstractor
           base.send :belongs_to, :abstractor_abstraction
           base.send :belongs_to, :abstractor_suggestion_status
 
-          base.send :has_one, :abstractor_suggestion_object_value
-          base.send :has_one, :abstractor_object_value, :through => :abstractor_suggestion_object_value
+          base.send :has_one, :abstractor_suggestion_object_value, dependent: :destroy
+          base.send :has_one, :abstractor_object_value, through: :abstractor_suggestion_object_value
 
-          base.send :has_many, :abstractor_suggestion_sources
+          base.send :has_many, :abstractor_suggestion_sources, dependent: :destroy
 
           # base.send :attr_accessible, :abstractor_abstraction, :abstractor_abstraction_id, :abstractor_suggestion_sources, :abstractor_suggestion_source_id, :abstractor_suggestion_status, :abstractor_suggestion_status_id, :suggested_value, :deleted_at, :unknown, :not_applicable
 
