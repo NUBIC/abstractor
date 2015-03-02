@@ -13,7 +13,7 @@ require "factory_girl"
 require 'webmock/rspec'
 
 FactoryGirl.find_definitions
-
+WebMock.enable!
 ENGINE_RAILS_ROOT = File.join(File.dirname(__FILE__), "../")
 
 # Requires supporting ruby files with custom matchers and macros, etc,
