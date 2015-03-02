@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/louismullie/stanford-core-nlp
-  revision: bbc73ae3fba004a5a4d1bf8713b908b9b144c83f
-  branch: master
-  specs:
-    stanford-core-nlp (0.5.1)
-      bind-it (~> 0.2.5)
-
 PATH
   remote: .
   specs:
@@ -17,7 +9,7 @@ PATH
       rails (~> 3.2)
       rubyzip (~> 1.1.0, >= 1.1.0)
       sass-rails (~> 3.2.6, >= 3.2.6)
-      stanford-core-nlp (~> 0.5.1, >= 0.5.1)
+      stanford-core-nlp-abstractor (~> 0.5.3, >= 0.5.3)
 
 GEM
   remote: http://rubygems.org/
@@ -84,7 +76,7 @@ GEM
     ffi (1.9.3)
     gherkin (2.12.2)
       multi_json (~> 1.3)
-    haml (4.0.5)
+    haml (4.0.6)
       tilt
     hike (1.2.3)
     i18n (0.6.9)
@@ -148,7 +140,7 @@ GEM
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
     rubyzip (1.1.0)
-    sass (3.3.7)
+    sass (3.4.12)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
@@ -164,6 +156,8 @@ GEM
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.8)
+    stanford-core-nlp-abstractor (0.5.3)
+      bind-it (~> 0.2.7)
     thor (0.18.1)
     tilt (1.4.1)
     treetop (1.4.15)
@@ -193,5 +187,5 @@ DEPENDENCIES
   selenium-webdriver (~> 2.40.0, >= 2.40.0)
   sprockets (~> 2.2.1, >= 2.2.1)
   sqlite3 (~> 1.3.8, >= 1.3.8)
-  stanford-core-nlp!
+  stanford-core-nlp-abstractor
   yard (~> 0.8.7.3, >= 0.8.7.3)
