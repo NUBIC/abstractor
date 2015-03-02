@@ -10,6 +10,7 @@ end
 require "rspec/rails"
 require "database_cleaner"
 require "factory_girl"
+require 'webmock/rspec'
 
 FactoryGirl.find_definitions
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require './test/dummy/lib/setup/setup/'
 describe ImagingExam do
-  before(:all) do
+  before(:each) do
     Setup.sites
     Setup.custom_site_synonyms
     Setup.site_categories

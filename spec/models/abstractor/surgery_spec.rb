@@ -1,7 +1,7 @@
 require 'spec_helper'
 require './test/dummy/lib/setup/setup/'
 describe Surgery do
-  before(:all) do
+  before(:each) do
     Abstractor::Setup.system
     Setup.surgery
     @abstractor_abstraction_schema_imaging_confirmed_extent_of_resection = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_imaging_confirmed_extent_of_resection').first
@@ -9,8 +9,6 @@ describe Surgery do
     indirect_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first
     @abstractor_abstraction_source_indirect_imaging_exam = @abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection.abstractor_abstraction_sources.find { |aas| aas.abstractor_abstraction_source_type == indirect_source_type  &&  aas.from_method == 'patient_imaging_exams' }
     @abstractor_abstraction_source_indirect_sugical_procedure_report = @abstractor_subject_abstraction_schema_imaging_confirmed_extent_of_resection.abstractor_abstraction_sources.find { |aas| aas.abstractor_abstraction_source_type == indirect_source_type  &&  aas.from_method == 'patient_surgical_procedure_reports' }
-
-
   end
 
   before(:each) do

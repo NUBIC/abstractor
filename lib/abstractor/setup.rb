@@ -29,6 +29,7 @@ module Abstractor
       Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first_or_create
       Abstractor::AbstractorAbstractionSourceType.where(name: 'custom suggestion').first_or_create
       Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first_or_create
+      Abstractor::AbstractorAbstractionSourceType.where(name: 'custom nlp suggestion').first_or_create
 
       puts 'Setting up Abstractor::AbstractorSectionType'
       Abstractor::AbstractorSectionType.where(name: Abstractor::Enum::ABSTRACTOR_SECTION_TYPE_CUSTOM).first_or_create

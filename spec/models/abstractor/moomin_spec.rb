@@ -1,7 +1,7 @@
 require 'spec_helper'
 require './test/dummy/lib/setup/setup/'
 describe Moomin do
-  before(:all) do
+  before(:each) do
     Abstractor::Setup.system
     n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
     value_rule = Abstractor::AbstractorRuleType.where(name: 'value').first

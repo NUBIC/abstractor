@@ -21,6 +21,7 @@ namespace :abstractor do
       abstractor_generator_task  = %Q{rails generate abstractor:install}
       migration_task  = %Q{bundle exec rake db:migrate}
       abstractor_setup_system_task  = %Q{bundle exec rake abstractor:setup:system}
+      abstractor_custom_nlp_provider_task  = %Q{bundle exec rake abstractor:setup:custom_nlp_provider}
       task_params = [%Q{ bundle exec rake -f test/dummy/Rakefile db:test:prepare }]
 
       puts "Setting up Abstractor ........."
@@ -32,8 +33,8 @@ namespace :abstractor do
       puts "Setting up Abstractor system ........."
       system abstractor_setup_system_task
 
-      # puts "Setting up dictionaries ........."
-      # system dictionary_generator_task
+      puts "Setting up Abstractor custom nlp provider configuration........."
+      system abstractor_custom_nlp_provider_task
 
       puts "Setting up test database ........."
       system task_params.join(' ')

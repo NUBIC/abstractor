@@ -1,3 +1,4 @@
+require 'rest_client'
 module Abstractor
   module Methods
     module Models
@@ -37,6 +38,7 @@ module Abstractor
           # * 'nlp suggestion': creates instances of Abstractor::AbstractorSuggestion based on natural language processing (nlp) logic searching the text provided by the Abstractor::AbstractorSubject#from_methd attribute.
           # * 'custom suggestion': creates instances of Abstractor::AbstractorSuggestion based on custom logic delegated to the method configured in AbstractorAbstractionSource#custom_method.
           # * 'indirect': creates an instance of Abstractor::AbstractorIndirectSource wih null source_type, source_id, source_method attributes -- all waiting to be set upon selection of an indirect source.
+          # * 'custom nlp suggestion': looks up a suggestion endpoint to submit text, object values and object value variants to an external, custom NLP provider for the delegation of suggestion generation.
           #
           # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
           # @return [void]
@@ -51,6 +53,8 @@ module Abstractor
                 abstract_custom_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
               when 'indirect'
                 abstract_indirect_source(about, abstractor_abstraction, abstractor_abstraction_source)
+              when 'custom nlp suggestion'
+                abstract_custom_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
               end
             end
           end
@@ -132,6 +136,59 @@ module Abstractor
               suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, about.id, about.class.to_s, abstractor_abstraction_source.from_method, abstractor_abstraction_source.section_name, suggestion[:suggestion], nil, nil, abstractor_abstraction_source.custom_method, suggestion[:explanation])
             end
             create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+          end
+
+          # Looks up a suggestion endpoint to submit text, object values and object value variants
+          # to an external, custom NLP provider for the delegation of suggestion generation.
+          #
+          # The method will determine an endpoint by looking in
+          # config/abstractor/custom_nlp_providers.yml based on the current environment
+          # and the value of the AbstractorAbstractionSource#custom_nlp_provider attribute.
+          #
+          # A template configratuon file can be generated in the the host application by
+          # calling the rake task abstractor:custom_nlp_provider.  The configuration
+          # is expected to provide different endpoints per environment, per provider.
+          # Abstractor will format a JSON body to post to the discovered endpoint.
+          # The custom NLP provider will be expected to generate suggestions
+          # and post them back to /abstractor_abstractions/:abstractor_abstraction_id/abstractor_suggestions/
+          # @example Example of body prepared by Abstractor to submit to an custom NLP provider
+          #   {
+          #     "abstractor_abstraction_schema_id":1,
+          #     "abstractor_abstraction_id":1,
+          #     "abstractor_abstraction_source_id":1,
+          #     "source_type":  "PathologyCase",
+          #     "source_method": "note_text",
+          #     "text": "The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma.",
+          #     "object_values": [
+          #       { "value": "glioblastoma, nos",
+          #         "object_value_variants":[
+          #           { "value": "glioblastoma" },
+          #           { "value": "gbm" },
+          #           { "value": "spongioblastoma multiforme"}
+          #         ]
+          #       },
+          #       { "value": "meningioma, nos",
+          #         "object_value_variants":[
+          #           { "value": "meningioma" },
+          #           { "value": "leptomeningioma" },
+          #           { "value": "meningeal fibroblastoma" }
+          #         ]
+          #       }
+          #     ]
+          #   }
+          #
+          # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
+          # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The instance of Abstractor::AbstractorAbstraction to make suggestions against.
+          # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The instance of the Abstractor::AbstractorAbstractionSource that provides the name of the custom NLP provider.
+          # @return [void]
+          def abstract_custom_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
+            suggestion_endpoint = CustomNlpProvider.determine_suggestion_endpoint(abstractor_abstraction_source.custom_nlp_provider)
+            object_values = CustomNlpProvider.abstractor_object_values(self)
+            abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
+              abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
+              body = Abstractor::CustomNlpProvider.format_body_for_suggestion_endpoint(abstractor_abstraction, abstractor_abstraction_source, abstractor_text, source)
+              RestClient.post(suggestion_endpoint, body.to_json, content_type: :json)
+            end
           end
 
           def abstract_unknown(about, abstractor_abstraction, abstractor_abstraction_source)

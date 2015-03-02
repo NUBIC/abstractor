@@ -1,6 +1,6 @@
  require 'spec_helper'
  describe  Abstractor::AbstractorAbstraction do
-   before(:all) do
+   before(:each) do
      Abstractor::Setup.system
      abstractor_object_type = Abstractor::AbstractorObjectType.first
      abstractor_abstraction_schema = FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: abstractor_object_type, preferred_name: 'property')

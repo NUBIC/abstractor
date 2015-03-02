@@ -1,6 +1,6 @@
 require 'spec_helper'
 describe  Abstractor::AbstractorSuggestion do
-  before(:all) do
+  before(:each) do
     Abstractor::Setup.system
   end
 

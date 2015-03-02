@@ -1,7 +1,7 @@
 require 'spec_helper'
 require './test/dummy/lib/setup/setup/'
 describe EncounterNote do
-  before(:all) do
+  before(:each) do
     Abstractor::Setup.system
     Setup.encounter_note
     @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first

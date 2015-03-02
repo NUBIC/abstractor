@@ -1,6 +1,6 @@
 require 'spec_helper'
 describe  Abstractor::AbstractorObjectValue do
-  before(:all) do
+  before(:each) do
     Abstractor::Setup.system
   end
 
