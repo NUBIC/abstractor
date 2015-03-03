@@ -1,6 +1,19 @@
 # Abstractor Changelog
 =======
 
+## 4.2.3
+Released on March 3, 2015
+
+* Empower the removal of unreviewed suggestions not matching current suggestions upon re-abstraction for source type 'custom suggestion'.
+See https://github.com/NUBIC/abstractor/issues/84
+
+* Add support for text abstractor object type.
+See https://github.com/NUBIC/abstractor/issues/85
+
+* Add support for custom NLP suggestion providers.
+See https://github.com/NUBIC/abstractor/issues/82
+
+
 ## 4.2.2
 Released on February 18, 2015
 
