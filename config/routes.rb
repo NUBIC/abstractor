@@ -7,4 +7,7 @@ Abstractor::Engine.routes.draw do
     end
     resources :abstractor_suggestions
   end
+
+  resources :abstractor_abstraction_schemas do
+  end
 end

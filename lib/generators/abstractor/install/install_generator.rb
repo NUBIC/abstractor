@@ -85,6 +85,7 @@ module Abstractor
         copy_file "controllers/abstractor_abstraction_groups_controller.rb", "#{path}/abstractor_abstraction_groups_controller.rb"
         copy_file "controllers/abstractor_abstractions_controller.rb", "#{path}/abstractor_abstractions_controller.rb"
         copy_file "controllers/abstractor_suggestions_controller.rb", "#{path}/abstractor_suggestions_controller.rb"
+        copy_file "controllers/abstractor_abstraction_schemas_controller.rb", "#{path}/abstractor_abstraction_schemas_controller.rb"
       end
 
       if options["customize-all"] || options["customize-helpers"]
