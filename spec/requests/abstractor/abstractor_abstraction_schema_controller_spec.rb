@@ -10,7 +10,7 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
   end
 
   describe "GET /abstractor_abstraction_schemas/:id" do
-    it "returns a requested movie", focus: true do
+    it "returns an abstraction schema", focus: false do
       abstractor_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
       abstractor_abstraction_schema = FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: abstractor_object_type, preferred_name: 'property')
       abstractor_abstraction_schema.abstractor_abstraction_schema_predicate_variants << FactoryGirl.build(:abstractor_abstraction_schema_predicate_variant, value: 'smoperty')

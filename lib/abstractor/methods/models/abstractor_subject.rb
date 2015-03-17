@@ -138,8 +138,8 @@ module Abstractor
             create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
           end
 
-          # Looks up a suggestion endpoint to submit text, object values and object value variants
-          # to an external, custom NLP provider for the delegation of suggestion generation.
+          # Looks up a suggestion endpoint to submit text to an external
+          # custom NLP provider for the delegation of suggestion generation.
           #
           # The method will determine an endpoint by looking in
           # config/abstractor/custom_nlp_providers.yml based on the current environment
@@ -154,27 +154,12 @@ module Abstractor
           # @example Example of body prepared by Abstractor to submit to an custom NLP provider
           #   {
           #     "abstractor_abstraction_schema_id":1,
+          #     "abstractor_abstraction_schema_uri":"https://moomin.com/abstractor_abstraction_schemas/1",
           #     "abstractor_abstraction_id":1,
           #     "abstractor_abstraction_source_id":1,
           #     "source_type":  "PathologyCase",
           #     "source_method": "note_text",
-          #     "text": "The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma.",
-          #     "object_values": [
-          #       { "value": "glioblastoma, nos",
-          #         "object_value_variants":[
-          #           { "value": "glioblastoma" },
-          #           { "value": "gbm" },
-          #           { "value": "spongioblastoma multiforme"}
-          #         ]
-          #       },
-          #       { "value": "meningioma, nos",
-          #         "object_value_variants":[
-          #           { "value": "meningioma" },
-          #           { "value": "leptomeningioma" },
-          #           { "value": "meningeal fibroblastoma" }
-          #         ]
-          #       }
-          #     ]
+          #     "text": "The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma."
           #   }
           #
           # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorSubject#subject_type attribute.
@@ -183,7 +168,6 @@ module Abstractor
           # @return [void]
           def abstract_custom_nlp_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
             suggestion_endpoint = CustomNlpProvider.determine_suggestion_endpoint(abstractor_abstraction_source.custom_nlp_provider)
-            object_values = CustomNlpProvider.abstractor_object_values(self)
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
               abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
               body = Abstractor::CustomNlpProvider.format_body_for_suggestion_endpoint(abstractor_abstraction, abstractor_abstraction_source, abstractor_text, source)

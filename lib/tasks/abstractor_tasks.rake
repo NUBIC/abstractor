@@ -1,6 +1,11 @@
 require 'open-uri'
 require 'zip'
 require 'fileutils'
+require 'thor'
+
+class Hammer < Thor
+  include Thor::Actions
+end
 
 namespace :abstractor do
   namespace :setup do
@@ -47,6 +52,18 @@ EOS
         File.open('config/abstractor/custom_nlp_providers.yml', 'w+'){ |f|
           f << template
         }
+      end
+
+      puts "Warning! Warning! Warning!"
+      puts "Setting Abstractor::Engine.routes.default_url_options[:host] in config/environemnts/development.rb"
+      puts "Change it as appropriate."
+
+      hammer = Hammer.new
+      hammer.insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /(::Application.configure do\n|application.configure do\n)/) do
+"
+  Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
+
+"
       end
     end
   end

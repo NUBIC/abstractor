@@ -34,11 +34,8 @@ describe PathologyCase do
       expect(Abstractor::CustomNlpProvider.determine_suggestion_endpoint('custom_nlp_provider_name')).to eq('http://custom-nlp-provider.test/suggest')
     end
 
-    it 'formats object values for submission to a custom nlp provider', focus: false do
-      expect(Abstractor::CustomNlpProvider.abstractor_object_values(@abstractor_subject_abstraction_schema_has_cancer_histology)).to eq([{:value=>"carcinoma in situ, nos (8010/2)", :object_value_variants=>[{:value=>"carcinoma in situ, nos"}, {:value=>"intraepithelial carcinoma, nos"}, {:value=>"carcinoma in situ"}, {:value=>"intraepithelial carcinoma"}]}, {:value=>"carcinoma, nos (8010/3)", :object_value_variants=>[{:value=>"carcinoma, nos"}, {:value=>"carcinoma"}, {:value=>"malignant epithelial tumor"}, {:value=>"epithelial tumor malignant"}]}, {:value=>"carcinoma, metastatic, nos (8010/6)", :object_value_variants=>[{:value=>"carcinoma, metastatic, nos"}, {:value=>"secondary carcinoma"}, {:value=>"metastatic carcinoma"}, {:value=>"carcinoma metastatic"}]}])
-    end
-
     it 'posts a message to a custom nlp provider to generate suggestions', focus: false do
+      Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
       stub_request(:post, "http://custom-nlp-provider.test/suggest").to_return(:status => 200, :body => "", :headers => {})
       text = 'Looks like metastatic carcinoma to me.'
       @pathology_case = FactoryGirl.create(:pathology_case, note_text: text, patient_id: 1)
@@ -46,8 +43,7 @@ describe PathologyCase do
 
       abstractor_abstraction = @pathology_case.abstractor_abstractions_by_abstraction_schemas({abstractor_abstraction_schema_ids: [@abstractor_abstraction_schema_has_cancer_histology.id] }).first
       abstractor_abstraction_soruce = @abstractor_subject_abstraction_schema_has_cancer_histology.abstractor_abstraction_sources.first
-      object_values = Abstractor::CustomNlpProvider.abstractor_object_values(@abstractor_subject_abstraction_schema_has_cancer_histology).to_json
-      body = %{{"abstractor_abstraction_schema_id":#{@abstractor_abstraction_schema_has_cancer_histology.id},"abstractor_abstraction_id":#{abstractor_abstraction.id},"abstractor_abstraction_source_id":#{abstractor_abstraction_soruce.id},"source_id":#{@pathology_case.id},"source_type":"#{@pathology_case.class.to_s}","source_method":"note_text","text":"#{text}","object_values":#{object_values}}}
+      body = %{{"abstractor_abstraction_schema_id":#{@abstractor_abstraction_schema_has_cancer_histology.id},"abstractor_abstraction_schema_uri":"https://moomin.com/abstractor_abstraction_schemas/#{@abstractor_abstraction_schema_has_cancer_histology.id}","abstractor_abstraction_id":#{abstractor_abstraction.id},"abstractor_abstraction_source_id":#{abstractor_abstraction_soruce.id},"source_id":#{@pathology_case.id},"source_type":"#{@pathology_case.class.to_s}","source_method":"note_text","text":"#{text}"}}
       expect(a_request(:post, "custom-nlp-provider.test/suggest").with(body: body, headers: { 'Content-Type' => 'application/json' })).to have_been_made
     end
   end
