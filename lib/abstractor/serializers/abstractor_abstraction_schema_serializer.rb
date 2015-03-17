@@ -1,3 +1,4 @@
+require 'json'
 module Abstractor
   module Serializers
     class AbstractorAbstractionSchemaSerializer
@@ -15,6 +16,7 @@ module Abstractor
           "object_values" => abstractor_abstraction_schema.abstractor_object_values.map do |abstractor_object_value|
             {
               'value' => abstractor_object_value.value,
+              'properties' => abstractor_object_value.properties.nil? ? nil : JSON.parse(abstractor_object_value.properties),
               'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value } }
             }
           end

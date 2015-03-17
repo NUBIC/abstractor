@@ -14,7 +14,7 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
       abstractor_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
       abstractor_abstraction_schema = FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: abstractor_object_type, preferred_name: 'property')
       abstractor_abstraction_schema.abstractor_abstraction_schema_predicate_variants << FactoryGirl.build(:abstractor_abstraction_schema_predicate_variant, value: 'smoperty')
-      abstractor_abstraction_schema.abstractor_object_values << FactoryGirl.build(:abstractor_object_value, value: 'foo')
+      abstractor_abstraction_schema.abstractor_object_values << FactoryGirl.build(:abstractor_object_value, value: 'foo', properties: '{  "type":"Rpt", "select_for":"Brain, CNS, and Pituitary" }')
       FactoryGirl.create(:abstractor_object_value_variant, abstractor_object_value: abstractor_abstraction_schema.abstractor_object_values.first, value: 'boo')
 
       get "/abstractor_abstraction_schemas/#{abstractor_abstraction_schema.id}", {}, accept_json
@@ -28,7 +28,7 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
       expect(body['abstractor_object_type']).to eq 'list'
       expect(body['preferred_name']).to eq 'property'
       expect(body['predicate_variants']).to eq  [{ 'value' => 'smoperty' }]
-      expect(body['object_values']).to eq  [{"value"=>"foo", "object_value_variants"=>[{"value"=>"boo"}]}]
+      expect(body['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "object_value_variants"=>[{"value"=>"boo"}]}]
     end
   end
 end
