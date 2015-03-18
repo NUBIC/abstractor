@@ -17,6 +17,9 @@ module Abstractor
             {
               'value' => abstractor_object_value.value,
               'properties' => abstractor_object_value.properties.nil? ? nil : JSON.parse(abstractor_object_value.properties),
+              'vocabulary_code' => abstractor_object_value.vocabulary_code,
+              'vocabulary' => abstractor_object_value.vocabulary,
+              'vocabulary_version' => abstractor_object_value.vocabulary_version,
               'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value } }
             }
           end
