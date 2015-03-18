@@ -1,6 +1,21 @@
 # Abstractor Changelog
 =======
 
+## 4.3.0
+Released on March 17, 2015
+
+* Add columns to abstractor object values to store the representation of the value in a standard vocabulary.
+See https://github.com/NUBIC/abstractor/issues/90
+
+* Add a column to abstractor object values to store arbitrary properties.
+See https://github.com/NUBIC/abstractor/issues/89
+
+* Create a resource detailing an abstraction schema.
+See https://github.com/NUBIC/abstractor/issues/88
+
+* Add URI to display the details of an abstraction schema to the message posted to a custom NLP provider.
+See https://github.com/NUBIC/abstractor/issues/87
+
 ## 4.2.3
 Released on March 3, 2015
 

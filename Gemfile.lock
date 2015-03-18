@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    abstractor (4.2.3)
+    abstractor (4.3.0)
       coffee-rails (~> 4.0, >= 4.0.0)
       haml (~> 4.0.5, >= 4.0.5)
       jquery-rails (~> 4.0.0, >= 4.0.0)
