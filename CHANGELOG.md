@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.3.1
+Released on March 24, 2015
+
+* Allow for finer grained querying of abstractable entities by suggestion type and specific abstraction schemas.
+See https://github.com/NUBIC/abstractor/issues/91
+
 ## 4.3.0
 Released on March 17, 2015
 
