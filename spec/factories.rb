@@ -1,4 +1,8 @@
 FactoryGirl.define do
+  factory :article do
+    note_text  ''
+  end
+
   factory :moomin do
     note_text  ''
   end

@@ -32,7 +32,7 @@ module Abstractor
       end
 
       ##
-      # Returns all abstractions for the abstractable entity by abstraction schemas.
+      # Returns all abstractions for the abstractable entity by abstraction options.
       #
       # @param [Hash] options the options to filter the list of abstractions to a namespace.
       # @option options [Array] :abstractor_abstraction_schema_ids List of [Abstractor::AbstractorAbstractionSchema] ids
@@ -194,6 +194,42 @@ module Abstractor
     end
 
     module ClassMethods
+      ##
+      # Returns all abstractable entities filtered by the parameter abstractor_suggestion_type:
+      #
+      # * 'unknown': Filter abstractable entites having at least one suggestion withat a suggested value of 'unknown'
+      # * 'not unknown': Filter abstractable entites having at least one suggestion with an acutal value
+      #
+      # @param [String] abstractor_suggestion_type Filter abstactable entities that have a least one 'unknwon' or at least one 'not unknown' suggestion
+      # @param [Hash] options The options to filter the entities returned.
+      # @option options [String] :namespace_type The type parameter of the namespace to filter the entities.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the entities.
+      # @option options [List of Integer, List of ActiveRecord::Relation] :abstractor_abstraction_schemas The list of abstractor abstraction schemas to filter upon.  Defaults to all abstractor abstraction schemas if not specified.
+      # @return [ActiveRecord::Relation] List of abstractable entities.
+      def by_abstractor_suggestion_type(abstractor_suggestion_type, options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        options = { abstractor_abstraction_schemas: abstractor_abstraction_schemas }.merge(options)
+        if options[:namespace_type] || options[:namespace_id]
+          case abstractor_suggestion_type
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND sug.unknown = ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], true])
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(sug.unknown, ?) = ? AND sug.suggested_value IS NOT NULL AND COALESCE(sug.suggested_value, '') != '' )", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], false, false])
+          else
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas]])
+          end
+        else
+          case abstractor_suggestion_type
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND sug.unknown = ?)", options[:abstractor_abstraction_schemas], true])
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(sug.unknown, ?) = ? AND sug.suggested_value IS NOT NULL AND COALESCE(sug.suggested_value, '') != '' )", options[:abstractor_abstraction_schemas], false, false])
+          else
+            where(nil)
+          end
+        end
+      end
+
       ##
       # Returns all abstractable entities filtered by the parameter abstractor_abstraction_status:
       #

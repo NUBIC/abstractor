@@ -10,7 +10,7 @@ module Abstractor
     class_option "customize-helpers", :type => :boolean
     class_option "customize-layout", :type => :boolean
     class_option "current-user-helper", :type => :string
-    class_option "install-stanford-core-nlp", :type => :boolean
+    class_option "no-install-stanford-core-nlp", :type => :boolean
 
     def self.source_paths
       paths = self.superclass.source_paths
@@ -55,7 +55,7 @@ module Abstractor
     end
 
     def setup_stanford_core_nlp
-      unless options["install-stanford-core-nlp"]
+      unless options["no-install-stanford-core-nlp"]
         puts "Running rake abstractor:setup:stanford_core_nlp"
         puts 'Please be patient...this could take a while.'
         `rake abstractor:setup:stanford_core_nlp`
