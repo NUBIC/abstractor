@@ -38,7 +38,6 @@ Feature: Editing moomin
     And ".ui-dialog-content" should equal highlighted text "The groke is the bomb!"
 
   @javascript
-  @wip
   Scenario: editing a moomin with a section setup and more than one section name variant is mentioned
     Given moomin abstraction schemas are set with a section
     And moomins with the following information exist

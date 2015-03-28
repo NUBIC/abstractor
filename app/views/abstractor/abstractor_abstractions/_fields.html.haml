@@ -35,9 +35,9 @@
                         %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
                       %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
                         - if has_text_match
-                          = Abstractor::UserInterface.highlight(simple_format(abstractor_text), abstractor_suggestion_source.sentence_match_value.strip)
+                          = simple_format(Abstractor::UserInterface.highlight(ERB::Util.html_escape(abstractor_text), ERB::Util.html_escape(abstractor_suggestion_source.sentence_match_value.strip)))
                         - else
-                          = simple_format(abstractor_text)
+                          = simple_format(ERB::Util.html_escape(abstractor_text))
                     - if abstractor_suggestion_source.custom_explanation
                       .custom_explanation
                         %label

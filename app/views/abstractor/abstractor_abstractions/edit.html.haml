@@ -52,7 +52,7 @@
           %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{dom_id}", title: "#{source[:source_type]} #{source[:source_method]} #{source[:section_name]}"}
             %i{ id: "abstraction_text_link_#{dom_id}" }
           %div{ id: "abstraction_text_#{dom_id}", class: 'abstractor_abstraction_source_tooltip'}
-            = simple_format(abstractor_text)
+            = simple_format(ERB::Util.html_escape(abstractor_text))
     .abstraction_edit_abstraction_actions
       = f.submit 'Save'
       = link_to 'Cancel', abstractor_abstraction, :remote => true
@@ -72,4 +72,4 @@
           - sources.each do |source|
             - hidden = abstractor_indirect_source_form.object.source_id == source.id ? '' : 'hidden'
             %div{ class: "indirect_source_text #{hidden} #{source_setup[:source_type]}_#{source.id}"}
-              = simple_format(source.send(source_setup[:source_method]))
+              = simple_format(ERB::Util.html_escape(source.send(source_setup[:source_method])))

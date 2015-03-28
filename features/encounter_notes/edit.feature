@@ -206,6 +206,19 @@ Feature: Editing encounter note
     And ".ui-dialog-content" should equal highlighted text "KPS: 100"
 
   @javascript
+  Scenario: Viewing source for suggestion with source containing characters needing to be escaped and match value
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text                            |
+      |The patient is looking good & fit. Much > than I would have thought.  KPS: 100|
+    And I go to the last encounter note edit page
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    Then I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "The patient is looking good & fit. Much > than I would have thought.  KPS: 100"
+    And ".ui-dialog-content" should equal highlighted text "KPS: 100"
+
+  @javascript
   Scenario: Viewing source for suggestion with source and no match value
     Given abstraction schemas are set
     And encounter notes with the following information exist
@@ -219,6 +232,19 @@ Feature: Editing encounter note
     And ".ui-dialog-content" should equal highlighted text "Hello, your KPS is something."
 
   @javascript
+  Scenario: Viewing source for suggestion with source containing characters needing to be escaped and no match value
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text                                |
+      |The patient is looking good & fit. Much > than I would have thought. The KPS is something. Have a great day!|
+    When I go to the last encounter note edit page
+    And I click within first ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    Then I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "The patient is looking good & fit. Much > than I would have thought. The KPS is something. Have a great day!"
+    And ".ui-dialog-content" should equal highlighted text "Hello, your KPS is something."
+
+  @javascript
   Scenario: Viewing source for unknown suggestion without match value
     Given abstraction schemas are set
     And encounter notes with the following information exist
@@ -226,9 +252,24 @@ Feature: Editing encounter note
       |This is your physical assessment. Have a great day!|
     When I go to the last encounter note edit page
     And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    And I wait 5 seconds
     Then I should see an ".ui-dialog_abstractor" element
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "This is your physical assessment. Have a great day!"
+    And ".ui-dialog-content" should not equal highlighted text "KPS"
+
+  @javascript
+  Scenario: Viewing source for unknown suggestion without match value
+    Given abstraction schemas are set
+    And encounter notes with the following information exist
+      | Note Text                                |
+      |The patient is looking good & fit. Much > than I would have thought. Have a great day!|
+    When I go to the last encounter note edit page
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    And I wait 5 seconds
+    Then I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "The patient is looking good & fit. Much > than I would have thought. Have a great day!"
     And ".ui-dialog-content" should not equal highlighted text "KPS"
 
   @javascript
