@@ -1,6 +1,15 @@
 # Abstractor Changelog
 =======
 
+## 4.3.2
+Released on March 28, 2015
+
+* Add URI to post back suggestions to the message posted to a custom NLP provider.
+See https://github.com/NUBIC/abstractor/issues/93
+
+* Truncated sources in user interface due to not escaping characters like '<' or '>'.
+See https://github.com/NUBIC/abstractor/issues/92
+
 ## 4.3.1
 Released on March 24, 2015
 
