@@ -7,6 +7,7 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
 
   describe "POST /abstractor_abstractions/:abstractor_abstraction_id/abstractor_suggestions" do
     before(:each) do
+      Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
       Abstractor::Setup.system
       list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
       custom_nlp_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'custom nlp suggestion').first
