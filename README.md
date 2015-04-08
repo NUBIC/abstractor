@@ -51,10 +51,10 @@ or if using Rails 3
 gem 'abstractor', :git => 'https://github.com/NUBIC/abstractor', branch: 'rails-3'
 ```
 
-Add the stanford-core-nlp gem to your Gemfile.  Currently need to use the master branch of the official repository until a new version of the gem is released:
+Add our foked and released version of stanford-core-nlp gem to your Gemfile.  Currently we need to use our fork until the official gem rleases a new version:
 
 ```ruby
-gem 'stanford-core-nlp', :git => 'https://github.com/louismullie/stanford-core-nlp', branch: 'master'
+gem 'stanford-core-nlp-abstractor'
 ```
 
 Also add the paper\_trail gem to your Gemfile (if it is not already there):
