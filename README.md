@@ -51,7 +51,7 @@ or if using Rails 3
 gem 'abstractor', :git => 'https://github.com/NUBIC/abstractor', branch: 'rails-3'
 ```
 
-Add our foked and released version of stanford-core-nlp gem to your Gemfile.  Currently we need to use our fork until the official gem rleases a new version:
+Add our foked and released version of stanford-core-nlp gem to your Gemfile.  Currently we need to use our fork until the official gem releases a new version:
 
 ```ruby
 gem 'stanford-core-nlp-abstractor'
