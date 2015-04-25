@@ -1,4 +1,4 @@
-require 'rest_client'
+require 'httparty'
 module Abstractor
   module Methods
     module Models
@@ -171,7 +171,7 @@ module Abstractor
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
               abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
               body = Abstractor::CustomNlpProvider.format_body_for_suggestion_endpoint(abstractor_abstraction, abstractor_abstraction_source, abstractor_text, source)
-              RestClient.post(suggestion_endpoint, body.to_json, content_type: :json)
+              HTTParty.post(suggestion_endpoint, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
             end
           end
 

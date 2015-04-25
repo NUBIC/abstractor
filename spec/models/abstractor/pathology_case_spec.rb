@@ -34,7 +34,7 @@ describe PathologyCase do
       expect(Abstractor::CustomNlpProvider.determine_suggestion_endpoint('custom_nlp_provider_name')).to eq('http://custom-nlp-provider.test/suggest')
     end
 
-    it 'posts a message to a custom nlp provider to generate suggestions', focus: true do
+    it 'posts a message to a custom nlp provider to generate suggestions', focus: false do
       Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
       stub_request(:post, "http://custom-nlp-provider.test/suggest").to_return(:status => 200, :body => "", :headers => {})
       text = 'Looks like metastatic carcinoma to me.'

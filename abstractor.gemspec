@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'stanford-core-nlp-abstractor', '~> 0.5.3', '>= 0.5.3'
   s.add_dependency 'rubyzip', '~> 1.1.0', '>= 1.1.0'
   s.add_dependency 'coffee-rails', '~> 4.0', '>= 4.0.0'
-  s.add_dependency 'rest-client', '~> 1.7', '>= 1.7.0'
+  s.add_dependency 'httparty', '~> 0.13.0', '>= 0.13.3'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.9', '>= 1.3.9'
   s.add_development_dependency 'rspec-rails', '~> 3.0.0', '>= 3.0.0'
