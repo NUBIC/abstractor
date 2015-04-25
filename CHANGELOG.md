@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.3.3
+Released on April 25, 2015
+
+* Replace rest-client gem with httparty gem.
+See https://github.com/NUBIC/abstractor/issues/99
+
 ## 4.3.2
 Released on March 28, 2015
 
