@@ -7,22 +7,24 @@ module Abstractor
       end
 
       def as_json(options = {})
-        {
-          "predicate" => abstractor_abstraction_schema.predicate,
-          "display_name" => abstractor_abstraction_schema.display_name,
-          "abstractor_object_type" => abstractor_abstraction_schema.abstractor_object_type.value,
-          "preferred_name" => abstractor_abstraction_schema.preferred_name,
-          "predicate_variants" => abstractor_abstraction_schema.abstractor_abstraction_schema_predicate_variants.map { |abstractor_abstraction_schema_predicate_variant|  { 'value' => abstractor_abstraction_schema_predicate_variant.value  } },
-          "object_values" => abstractor_abstraction_schema.abstractor_object_values.map do |abstractor_object_value|
-            {
-              'value' => abstractor_object_value.value,
-              'properties' => abstractor_object_value.properties.nil? ? nil : JSON.parse(abstractor_object_value.properties),
-              'vocabulary_code' => abstractor_object_value.vocabulary_code,
-              'vocabulary' => abstractor_object_value.vocabulary,
-              'vocabulary_version' => abstractor_object_value.vocabulary_version,
-              'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value } }
-            }
-          end
+        { "abstractor_abstraction_schema" =>
+          {
+            "predicate" => abstractor_abstraction_schema.predicate,
+            "display_name" => abstractor_abstraction_schema.display_name,
+            "abstractor_object_type" => abstractor_abstraction_schema.abstractor_object_type.value,
+            "preferred_name" => abstractor_abstraction_schema.preferred_name,
+            "predicate_variants" => abstractor_abstraction_schema.abstractor_abstraction_schema_predicate_variants.map { |abstractor_abstraction_schema_predicate_variant|  { 'value' => abstractor_abstraction_schema_predicate_variant.value  } },
+            "object_values" => abstractor_abstraction_schema.abstractor_object_values.map do |abstractor_object_value|
+              {
+                'value' => abstractor_object_value.value,
+                'properties' => abstractor_object_value.properties.nil? ? nil : JSON.parse(abstractor_object_value.properties),
+                'vocabulary_code' => abstractor_object_value.vocabulary_code,
+                'vocabulary' => abstractor_object_value.vocabulary,
+                'vocabulary_version' => abstractor_object_value.vocabulary_version,
+                'object_value_variants' => abstractor_object_value.abstractor_object_value_variants.map { |abstractor_object_value_variant| { 'value' => abstractor_object_value_variant.value } }
+              }
+            end
+          }
         }
       end
 

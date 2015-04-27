@@ -23,12 +23,12 @@ describe Abstractor::AbstractorAbstractionSchemasController, :type => :request d
 
       body = JSON.parse(response.body)
       puts body
-      expect(body['predicate']).to eq 'has_some_property'
-      expect(body['display_name']).to eq 'some_property'
-      expect(body['abstractor_object_type']).to eq 'list'
-      expect(body['preferred_name']).to eq 'property'
-      expect(body['predicate_variants']).to eq  [{ 'value' => 'smoperty' }]
-      expect(body['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8148/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "object_value_variants"=>[{"value"=>"boo"}]}]
+      expect(body['abstractor_abstraction_schema']['predicate']).to eq 'has_some_property'
+      expect(body['abstractor_abstraction_schema']['display_name']).to eq 'some_property'
+      expect(body['abstractor_abstraction_schema']['abstractor_object_type']).to eq 'list'
+      expect(body['abstractor_abstraction_schema']['preferred_name']).to eq 'property'
+      expect(body['abstractor_abstraction_schema']['predicate_variants']).to eq  [{ 'value' => 'smoperty' }]
+      expect(body['abstractor_abstraction_schema']['object_values']).to eq  [{"value"=>"foo", "properties" => {"type"=>"Rpt", "select_for"=>"Brain, CNS, and Pituitary"}, "vocabulary_code"=>"8148/0", "vocabulary"=>"ICD-O-3", "vocabulary_version"=>"2011 Updates to ICD-O-3", "object_value_variants"=>[{"value"=>"boo"}]}]
     end
   end
 end
