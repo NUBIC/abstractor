@@ -41,7 +41,11 @@ class String
       rng = range(pattern, i)
       if rng
         r << rng
-        i += reuse ? 1 : rng.end + 1
+        if reuse
+          i +=1
+        else
+          i = rng.end + 1
+        end
       else
         break
       end
