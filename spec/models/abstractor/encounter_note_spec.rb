@@ -6,17 +6,19 @@ describe EncounterNote do
     Setup.encounter_note
     @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first
     @abstractor_subject_abstraction_schema_kps = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps.id).first
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    @list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
     unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
-    @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
+    @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: @list_object_type, preferred_name: 'Always unknown')
     @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown)
     @abstractor_abstraction_schema_kps_date = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status_date').first
     @abstractor_subject_abstraction_schema_kps_date = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps_date.id).first
-    source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
-    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text', abstractor_abstraction_source_type: source_type_nlp_suggestion, :abstractor_rule_type => unknown_rule)
+    @source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
+    Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, :abstractor_rule_type => unknown_rule)
     @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
     @abstractor_suggestion_status_accepted= Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
     @abstractor_suggestion_status_rejected = Abstractor::AbstractorSuggestionStatus.where(:name => 'Rejected').first
+    @value_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
+    @name_value_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
   end
 
   describe "abstracting" do
@@ -615,6 +617,108 @@ describe EncounterNote do
       encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
       pivot = EncounterNote.pivot_abstractions.where(id: encounter_note.id).map { |en| { id: en.id, note_text: en.note_text, has_karnofsky_performance_status: en.has_karnofsky_performance_status } }
       expect(pivot).to eq([{ id: encounter_note.id, note_text: encounter_note.note_text, has_karnofsky_performance_status: nil }])
+    end
+
+    describe 'grouped abstractions' do
+      before(:each) do
+        @family_subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Family history of movement disorder', subtype: 'sentinental').first_or_create
+        items_count = 0
+
+        @relative_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_relative', display_name: 'Relative', abstractor_object_type: @list_object_type, preferred_name: 'Relative').first_or_create
+        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Mother').first_or_create
+        ['mother','mom'].each do |variant|
+          Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
+        end
+        Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @relative_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
+
+        abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: 'Biological Father').first_or_create
+        ['father','dad'].each do |variant|
+          Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
+        end
+
+        Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @relative_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
+        ['Full', 'Half'].each do |value|
+          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: "#{value} Sibling").first_or_create
+          ['sister', 'sisters', 'brother', 'brothers', 'sibling', 'siblings'].each do |variant|
+            if value == 'Full'
+              Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: variant).first_or_create
+            else
+              Abstractor::AbstractorObjectValueVariant.where(abstractor_object_value: abstractor_object_value, value: value + ' ' + variant).first_or_create
+            end
+          end
+          Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @relative_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
+        end
+
+        abstractor_subject = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @relative_abstractor_abstraction_schema).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+
+        items_count = items_count + 1
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+
+        @disorder_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_disorder', display_name: 'Disorder', abstractor_object_type: @list_object_type, preferred_name: 'Disorder').first_or_create
+
+        ['parkinsonism', 'tremor'].each do |value|
+          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: value).first_or_create
+          Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
+        end
+
+        abstractor_subject = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+
+        items_count = items_count + 1
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+      end
+
+      it 'detects sentinental groups' do
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+        @encounter_note.abstract
+
+        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 3
+        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+      end
+
+      it 'detects soft sentinental groups' do
+        @family_subject_group.subtype = 'soft sentinental'
+        @family_subject_group.save!
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+        @encounter_note.abstract
+
+        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 5
+        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+      end
+
+      it 'leaves one group if no sentinental subgroups detected' do
+        note_text = "Hello, world"
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
+        @encounter_note.abstract
+
+        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 1
+        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+      end
     end
   end
 end

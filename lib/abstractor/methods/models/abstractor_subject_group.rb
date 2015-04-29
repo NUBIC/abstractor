@@ -15,6 +15,14 @@ module Abstractor
           # Validations
           base.send :validates, :cardinality, numericality: { only_integer: true, greater_than: 0 }, unless: Proc.new { |a| a.cardinality.blank? }
         end
+
+        def sentinental?
+          subtype == 'sentinental'
+        end
+
+        def soft_sentinental?
+          subtype == 'soft sentinental'
+        end
       end
     end
   end

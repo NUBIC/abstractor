@@ -88,9 +88,12 @@ module Abstractor
       # @return [void]
       def abstract(options = {})
         options = { namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
+        sentinental_groups = []
         self.class.abstractor_subjects(options).each do |abstractor_subject|
           abstractor_subject.abstract(self)
+          sentinental_groups << abstractor_subject.abstractor_subject_group if abstractor_subject.abstractor_subject_group && (abstractor_subject.abstractor_subject_group.sentinental? || abstractor_subject.abstractor_subject_group.soft_sentinental?)
         end
+        sentinental_groups.uniq.map{|sentinental_group| regroup_sentinental_suggestions(sentinental_group)}
       end
 
       def detect_abstractor_abstraction(abstractor_subject)
@@ -188,6 +191,94 @@ module Abstractor
               abstractor_indirect_source.destroy
             end
             abstractor_abstraction.destroy
+          end
+        end
+      end
+
+      ##
+      # Regroups suggestions for subjects grouped marked with 'sentinental' subtype. Does not affect abstraction groups with curated values.
+      # Creates an abstraction group for each combination of suggestions that came from the same sentence.
+      # For soft sentinental groups adds unknown abstractions for groups that do not have enough abstractions. Otherwise creates groups only if there are enough abstractions.
+      #
+      # @param [ActiveRecord::Relation] sentinental_group sentinental group to process
+      # @return [void]
+      def regroup_sentinental_suggestions(sentinental_group)
+        sentinental_group.abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          unless abstractor_abstraction_group.abstractor_abstractions.where('value is not null').any? # skip abstraction groups with curated abstractions
+            # get all suggestion sources
+            abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+              .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id})
+
+            # get all matched sentences
+            sentence_match_values = abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value)
+
+            # create abstraction group for each sentence
+            sentence_match_values.each do |sentence_match_value|
+              # get all suggestion sources that reference the sentence
+              abstractor_suggestion_sources_by_sentence = abstractor_suggestion_sources.where(sentence_match_value: sentence_match_value)
+              abstractor_subjects = abstractor_suggestion_sources_by_sentence.map{|abstractor_suggestion_source| abstractor_suggestion_source.abstractor_suggestion.abstractor_abstraction.abstractor_subject }.uniq
+
+              if sentinental_group.soft_sentinental? || abstractor_subjects.length == sentinental_group.abstractor_subjects.length
+                new_abstractor_abstraction_group  = Abstractor::AbstractorAbstractionGroup.new(abstractor_subject_group: abstractor_abstraction_group.abstractor_subject_group, about: self, system_generated: true)
+
+                abstractor_suggestion_sources_by_sentence.all.each do |abstractor_suggestion_source|
+                  abstractor_suggestion       = abstractor_suggestion_source.abstractor_suggestion
+                  new_abstractor_abstraction  = abstractor_suggestion.abstractor_abstraction
+
+                  # if corresponding abstraction has more than one suggestion and should not be moved
+                  # create a new abstraction if the new group does not yet have abstraction for the same subject
+                  if new_abstractor_abstraction.abstractor_suggestions.length > 1
+                    abstractor_subject = new_abstractor_abstraction.abstractor_subject
+                    existing_new_abstractor_abstraction = new_abstractor_abstraction_group.abstractor_abstractions.select{|aa| aa.abstractor_subject_id == abstractor_subject.id}.first
+                    if existing_new_abstractor_abstraction
+                      new_abstractor_abstraction = existing_new_abstractor_abstraction
+                    else
+                      new_abstractor_abstraction  = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_suggestion.abstractor_abstraction.abstractor_subject, about: self)
+                      new_abstractor_abstraction_group.abstractor_abstractions << new_abstractor_abstraction
+                    end
+                  end
+
+                  # create a new suggestion if corresponding suggestion has multiple sources and should not be moved
+                  # and map suggestion source to the new suggestion
+                  if abstractor_suggestion.abstractor_suggestion_sources.length > 1
+                    new_abstractor_suggestion =  Abstractor::AbstractorSuggestion.create!(
+                      abstractor_abstraction: new_abstractor_abstraction,
+                      abstractor_suggestion_status: Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first,
+                      suggested_value: abstractor_suggestion.suggested_value,
+                      unknown: abstractor_suggestion.unknown,
+                      not_applicable: abstractor_suggestion.not_applicable
+                    )
+                  else
+                    new_abstractor_suggestion = abstractor_suggestion_source.abstractor_suggestion
+                  end
+
+                  abstractor_suggestion_source.abstractor_suggestion = new_abstractor_suggestion
+                  abstractor_suggestion_source.save!
+
+                  new_abstractor_suggestion.abstractor_abstraction = new_abstractor_abstraction
+                  new_abstractor_suggestion.save!
+                end
+
+                # do not save group if it does not have abstractions
+                if new_abstractor_abstraction_group.abstractor_abstractions.any?
+                  # add unknown abstractions if new group does not have enought abstractions and save the group
+                  if new_abstractor_abstraction_group.abstractor_abstractions.length < abstractor_abstraction_group.abstractor_abstractions.length
+                    abstractor_abstraction_group.abstractor_abstractions.each do |abstractor_abstraction|
+                      abstractor_subject = abstractor_abstraction.abstractor_subject
+                      unless new_abstractor_abstraction_group.abstractor_abstractions.select{|aa| aa.abstractor_subject_id == abstractor_subject.id}.any?
+                        new_abstractor_abstraction = Abstractor::AbstractorAbstraction.create!(abstractor_subject: abstractor_abstraction.abstractor_subject, about: self)
+                        abstractor_subject.abstractor_abstraction_sources.each do |abstractor_abstraction_source|
+                          abstractor_subject.create_unknown_abstractor_suggestion(self, new_abstractor_abstraction, abstractor_abstraction_source)
+                        end
+                        new_abstractor_abstraction_group.abstractor_abstractions << new_abstractor_abstraction
+                      end
+                    end
+                  end
+                  new_abstractor_abstraction_group.save!
+                end
+              end
+            end
+            abstractor_abstraction_group.delete if abstractor_abstraction_group.abstractor_subject_group.reload.abstractor_abstraction_groups.length > 1
           end
         end
       end
