@@ -70,6 +70,17 @@ module Abstractor
             end
           end
 
+          def detect_abstractor_suggestion_partial(suggested_value, unknown, not_applicable, begin_position, end_position)
+            abstractor_suggestion = nil
+            abstractor_suggestion = abstractor_suggestions(true).detect do |abstractor_suggestion|
+              m = suggested_value &&
+              Regexp.new(Regexp.escape(suggested_value)) =~ abstractor_suggestion.suggested_value &&
+              abstractor_suggestion.unknown == unknown &&
+              abstractor_suggestion.not_applicable == not_applicable &&
+              abstractor_suggestion.abstractor_suggestion_sources.map(&:abstractor_suggestion_source_ranges).flatten.select{|abstractor_suggestion_source_range| abstractor_suggestion_source_range.begin_position <= begin_position && abstractor_suggestion_source_range.end_position >= end_position}.any?
+            end
+          end
+
           ##
           # Determines if the abstraction has been reviewed.
           #

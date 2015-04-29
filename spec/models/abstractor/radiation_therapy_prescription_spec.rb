@@ -103,7 +103,7 @@ describe RadiationTherapyPrescription do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe and bilateral cerebral meninges')
       radiation_therapy_prescription.abstract
 
-      expect(Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['cerebral meninges', 'parietal lobe', 'meninges']))
+      expect(Set.new(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['cerebral meninges', 'parietal lobe']))
     end
 
     it "creates one 'has_anatomical_location' abstraction suggestion given multiple identical matches" do

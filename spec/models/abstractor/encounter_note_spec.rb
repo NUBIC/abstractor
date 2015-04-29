@@ -163,6 +163,7 @@ describe EncounterNote do
 
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('kps')
     end
+
     #suggestions
     it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
@@ -225,6 +226,152 @@ describe EncounterNote do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.  Let me repeat.  The patient's kps is 90.")
       @encounter_note.abstract
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size).to eq(1)
+    end
+
+    describe 'if match is a part of another matched value' do
+      before(:each) do
+        @h_y_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(
+          predicate: 'has_hoehn_and_yahr_score',
+          display_name: 'Hoehn & Yahr stage',
+          abstractor_object_type_id: @list_object_type,
+          preferred_name: 'H&Y').first_or_create
+
+        ['1', '2', '2.5', '3', '3.5', '4', '5'].each do |value|
+          abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: value.to_s).first_or_create
+          Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @h_y_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value).first_or_create
+        end
+
+        @abstractor_subject = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @h_y_abstractor_abstraction_schema).first_or_create
+        @abstractor_abstraction_source = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @name_value_rule)
+      end
+
+      describe 'with name/value rule type' do
+        before(:each) do
+          @abstractor_subject = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @h_y_abstractor_abstraction_schema).first_or_create
+          @abstractor_abstraction_source = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @name_value_rule)
+        end
+        describe 'it does not create multiple name/value matches if match is a part of another overlapping matched value' do
+          it "using the canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y: 2.5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+
+          it "using the squished canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y2.5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+
+          it "using the sentential format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy. The patient's H&Y is 2.5.")
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+        end
+
+        describe 'it creates multiple name/value matches if matches do not overlap' do
+          it "using the canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y: 2.5. H&Y: 2. H&Y: 5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+
+          it "using the squished canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y2.5. H&Y2 or H&Y5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+
+          it "using the sentential format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy. The patient's H&Y is 2.5. On another hand H&Y can be 2 or 5.")
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+        end
+      end
+
+      describe 'with value rule type' do
+        before(:each) do
+          @abstractor_subject = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @h_y_abstractor_abstraction_schema).first_or_create
+          @abstractor_abstraction_source = Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+        end
+        describe 'it does not create multiple name/value matches if match is a part of another overlapping matched value' do
+          it "using the canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y: 2.5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+
+          it "using the squished canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y2.5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+
+          it "using the sentential format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy. The patient's H&Y is 2.5.")
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(0)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(0)
+          end
+        end
+
+        describe 'it creates multiple name/value matches if matches do not overlap' do
+          it "using the canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y: 2.5. H&Y: 2. H&Y: 5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+
+          it "using the squished canonical name/value format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy. H&Y2.5. H&Y2 or H&Y5')
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+
+          it "using the sentential format" do
+            @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy. The patient's H&Y is 2.5. On another hand H&Y can be 2 or 5.")
+            @encounter_note.abstract
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.size).to eq(3)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2.5'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '2'}.size).to eq(1)
+            expect(@encounter_note.reload.detect_abstractor_abstraction(@h_y_abstractor_abstraction_schema).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '5'}.size).to eq(1)
+          end
+        end
+      end
     end
 
     #custom suggestions

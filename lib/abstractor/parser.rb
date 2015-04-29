@@ -29,18 +29,24 @@ module Abstractor
     end
 
     def scan(token, options = {})
-      options[:word_boundary] = true if options[:word_boundary].nil?
+      options[:word_boundary] = true  if options[:word_boundary].nil?
+      options[:match_data]    = false if options[:match_data].nil?
+
       regular_expression = prepare_token(token, options)
       at = prepare_abstractor_text
       if (regular_expression.nil? || at.nil?)
         []
+      elsif options[:match_data]
+        # http://stackoverflow.com/questions/6804557/how-do-i-get-the-match-data-for-all-occurrences-of-a-ruby-regular-expression-in
+        at.to_enum(:scan,regular_expression).map{ Regexp.last_match }
       else
         at.scan(regular_expression)
       end
     end
 
-    def match(token)
-      regular_expression = prepare_token(token)
+    def match(token, options = {})
+      options[:word_boundary] = true if options[:word_boundary].nil?
+      regular_expression = prepare_token(token, options)
       prepare_abstractor_text.match(regular_expression) unless regular_expression.nil?
     end
 
