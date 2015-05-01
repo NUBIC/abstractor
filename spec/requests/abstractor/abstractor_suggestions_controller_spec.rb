@@ -97,6 +97,34 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
       expect(@abstractor_abstraciton.reload.abstractor_suggestions.first.abstractor_suggestion_sources.map(&:sentence_match_value)).to match_array([nil])
     end
 
+    it "does not creates multiple 'unknown' suggestions upon re-abstraction", focus: false do
+      abstractor_suggestion =  { abstractor_suggestion:
+        {
+          abstractor_abstraction_source_id: @abstractor_abstraction_source.id,
+          source_id: @pathology_case.id,
+          source_type:@pathology_case.class.to_s,
+          source_method: @from_method,
+          value: nil,
+          unknown: true,
+          not_applicable: nil,
+          suggestion_sources:[
+                      {
+                      match_value: nil,
+                      sentence_match_value: nil
+                   }
+                ]
+        }
+      }
+
+      post "/abstractor_abstractions/#{@abstractor_abstraciton.id}/abstractor_suggestions", abstractor_suggestion.to_json, accept_and_return_json
+      expect(response.status).to eq 201
+      expect(@abstractor_abstraciton.reload.abstractor_suggestions.first.unknown).to be_truthy
+      expect(@abstractor_abstraciton.reload.abstractor_suggestions.first.suggested_value).to be_nil
+      expect(@abstractor_abstraciton.reload.abstractor_suggestions.first.abstractor_suggestion_sources.map(&:match_value)).to match_array([nil])
+      expect(@abstractor_abstraciton.reload.abstractor_suggestions.first.abstractor_suggestion_sources.map(&:sentence_match_value)).to match_array([nil])
+      post "/abstractor_abstractions/#{@abstractor_abstraciton.id}/abstractor_suggestions", abstractor_suggestion.to_json, accept_and_return_json
+      expect(@abstractor_abstraciton.reload.abstractor_suggestions.size).to eq(1)
+    end
 
     it 'returns an error status code if and invalid body is posted', focus: false do
       abstractor_suggestion =  { moomin: 'little my' }
