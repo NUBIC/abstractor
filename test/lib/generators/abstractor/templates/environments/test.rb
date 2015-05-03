@@ -36,13 +36,13 @@ Dummy::Application.configure do
 
   StanfordCoreNLP.use :english
   StanfordCoreNLP.model_files = {}
-  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/"
-  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-corenlp-full-2014-06-16/"
+  StanfordCoreNLP.jar_path = "#{Rails.root}/lib/stanford-corenlp-full-2015-04-20/"
+  StanfordCoreNLP.model_path = "#{Rails.root}/lib/stanford-corenlp-full-2015-04-20/"
   StanfordCoreNLP.default_jars = [
     "joda-time.jar",
     "xom.jar",
-    "stanford-corenlp-3.4.jar",
-    "stanford-corenlp-3.4-models.jar",
+    "stanford-corenlp-3.5.2.jar",
+    "stanford-corenlp-3.5.2-models.jar",
     "jollyday.jar",
     "bridge.jar"
   ]
