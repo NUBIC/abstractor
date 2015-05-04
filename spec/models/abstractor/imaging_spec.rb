@@ -136,19 +136,19 @@ describe ImagingExam do
 
     it 'can return abstractor abstraction groups (regardless of namespace)', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(4)
+    end
+
+    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
+      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
+      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
       expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(3)
     end
 
     it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
       @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
-      expect(@imaging_exam.reload.abstractor_abstraction_groups_by_namespace.size).to eq(2)
-    end
-
-    it 'can return abstractor abstraction groups (regardless of namespace) but not excluding soft deleted rows', focus: false do
-      @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
-      @imaging_exam.abstractor_abstraction_groups.first.soft_delete!
-      expect(@imaging_exam.reload.abstractor_abstraction_groups.size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstraction_groups.size).to eq(4)
     end
 
     it 'can filter abstractor abstraction groups by subject group', focus: false do
