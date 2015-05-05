@@ -7,7 +7,6 @@ module Abstractor
       options = { new_line_is_sentence_break: true }.merge(options)
       @abstractor_text = abstractor_text
 
-      puts options[:new_line_is_sentence_break]
       if options[:new_line_is_sentence_break]
         StanfordCoreNLP.custom_properties['ssplit.newlineIsSentenceBreak'] = 'always'
       else
