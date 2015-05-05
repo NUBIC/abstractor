@@ -14,14 +14,13 @@ module Abstractor
           # base.send :attr_accessible, :deleted_at, :name
           # Validations
           base.send :validates, :cardinality, numericality: { only_integer: true, greater_than: 0 }, unless: Proc.new { |a| a.cardinality.blank? }
+          base.send(:include, InstanceMethods)
         end
 
-        def sentinental?
-          subtype == 'sentinental'
-        end
-
-        def soft_sentinental?
-          subtype == 'soft sentinental'
+        module InstanceMethods
+          def has_subtype?(s)
+            subtype == s
+          end
         end
       end
     end

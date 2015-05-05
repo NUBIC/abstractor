@@ -32,6 +32,10 @@ module Abstractor
             !system_generated
           end
 
+          def has_subtype?(s)
+            subtype == s
+          end
+
           private
             def update_abstractor_abstraction_group_members
               return unless deleted?

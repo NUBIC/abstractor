@@ -657,7 +657,7 @@ describe EncounterNote do
 
         @disorder_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_disorder', display_name: 'Disorder', abstractor_object_type: @list_object_type, preferred_name: 'Disorder').first_or_create
 
-        ['parkinsonism', 'tremor', 'Essential tremor'].each do |value|
+        ['parkinsonism', 'tremor', 'Essential tremor', 'pd'].each do |value|
           abstractor_object_value = Abstractor::AbstractorObjectValue.where(value: value).first_or_create
           Abstractor::AbstractorAbstractionSchemaObjectValue.where(abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema,abstractor_object_value: abstractor_object_value).first_or_create
         end
@@ -671,11 +671,99 @@ describe EncounterNote do
 
       it 'detects sentinental groups' do
         note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
-        @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-        @encounter_note.abstract
+        encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+        encounter_note_1.abstract
 
-        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 3
-        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+        encounter_note_2.abstract
+
+        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 6
+
+        # first abstracted note should be intact
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second abstracted note should have a full set of abstractions
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+      end
+
+      it 'removes unused abstractions' do
+        note_text = "Mother - died age 70, cardiac problems, no neurologic problem\nFather - died age 75, \"PD\" diagnosis, had abnormal movements in his 70s"
+        encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+        encounter_note_1.abstract
+
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 1
+
+        expect(Abstractor::AbstractorAbstraction.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).length).to eq 2
+      end
+
+      it 're-abstracts sentinental groups' do
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+        encounter_note_1.abstract
+        encounter_note_1.abstract
+
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+        encounter_note_2.abstract
+        encounter_note_2.abstract
+        # first abstracted note should be intact
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second abstracted note should have a full set of abstractions
+        abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+        expect(abstractor_abstraction_groups.count).to eq 3
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
           expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
@@ -706,13 +794,24 @@ describe EncounterNote do
         Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject_2_2, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
         Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_2_2, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
 
-        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
-        encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-        encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+        namespace_1_subjects = @family_subject_group.abstractor_subjects.where(namespace_type: 'Discerner::Search', namespace_id: 1)
+        namespace_2_subjects = @family_subject_group.abstractor_subjects.where(namespace_type: 'Discerner::Search', namespace_id: 2)
 
-        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 3
-        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # number of namespaces subjects
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+
+        # abstract first note in first namespace
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 3
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
             .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
@@ -720,10 +819,164 @@ describe EncounterNote do
           expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
         end
 
-        encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
-        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 6
-        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # subjects
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 0
+
+        # abstract first note in second namespace
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # additional set of abstractions in namespace 2
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+
+        # abstract second note in first namespace
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+        # first note should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second note should have a full set of abstractions in the first namespace
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 3
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 0
+
+        # abstract second note in second namespace
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+        # first note should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # first namespace should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second note should have an additional full set of abstractions
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
             .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
@@ -732,17 +985,214 @@ describe EncounterNote do
         end
       end
 
-      it 'detects soft sentinental groups' do
-        @family_subject_group.subtype = 'soft sentinental'
-        @family_subject_group.save!
+      it 're-abstracts namespaced sentinental groups' do
+        items_count = 0
+        abstractor_subject_1_1 = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @relative_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject_1_1, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_1_1, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+
+        items_count = items_count + 1
+        abstractor_subject_1_2 = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 1).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject_1_2, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_1_2, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+
+        items_count = 0
+        abstractor_subject_2_1 = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @relative_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject_2_1, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_2_1, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+
+        items_count = items_count + 1
+        abstractor_subject_2_2 = Abstractor::AbstractorSubject.where( subject_type: 'EncounterNote', abstractor_abstraction_schema: @disorder_abstractor_abstraction_schema, namespace_type: 'Discerner::Search', namespace_id: 2).first_or_create
+        Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject_2_2, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, abstractor_rule_type: @value_rule)
+        Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_2_2, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
+
+        namespace_1_subjects = @family_subject_group.abstractor_subjects.where(namespace_type: 'Discerner::Search', namespace_id: 1)
+        namespace_2_subjects = @family_subject_group.abstractor_subjects.where(namespace_type: 'Discerner::Search', namespace_id: 2)
+
 
         note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
-        @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-        @encounter_note.abstract
+        encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
 
-        expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 5
-        Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+        # abstract first note in first namespace
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 3
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 0
+
+        # abstract first note in second namespace
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+        encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # additional set of abstractions in namespace 2
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        note_text = "Family Hx: Mother - died from CHF, dementia in later years; Dad - pancreatic cancer , DM 2 sisters with DM, 1 of those with schizophrenia. Dad and sister with parkinsonism. DM, MI in siblings.\nHer father had a tremor and was diagnosed with parkinsonism. He was not treated for it. She also has a sister who lives in nursing home that has asymmetric tremor and suspected parkinsonism, but is not being treated either. Of note, she also has a hx of schizophrenia that is being treated with AP."
+        encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+
+        # abstract second note in first namespace
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+        # first note should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second note should have a full set of abstractions in the first namespace
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 3
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 0
+
+        # abstract second note in second namespace
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+        encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+        # first note should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        # first namespace should not be affected
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # first namespace should not be affected
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        # second note should have an additional full set of abstractions
+        # total number of groups
+        all_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id).any?}
+        expect(all_abstractor_abstraction_groups.count).to eq 6
+
+        namespace_1_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_1_subjects.map(&:id)).any?}
+        expect(namespace_1_abstractor_abstraction_groups.count).to eq 3
+        namespace_1_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
+
+          abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
+            .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+
+          expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
+        end
+
+        namespace_2_abstractor_abstraction_groups = all_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(abstractor_subject_id: namespace_2_subjects.map(&:id)).any?}
+        expect(namespace_2_abstractor_abstraction_groups.count).to eq 3
+        namespace_2_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq namespace_1_subjects.length
 
           abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
             .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
@@ -754,29 +1204,38 @@ describe EncounterNote do
       describe 'it leaves default group intact' do
         it 'if no sentinental subgroups detected' do
           note_text = "Hello, world"
-          @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-          @encounter_note.abstract
+          encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_1.abstract
 
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 1
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
-          end
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
+
+          encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_2.abstract
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
         end
 
         it 'if no complete sentinental subgroups detected' do
           note_text = "Hello, father"
-          @encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-          @encounter_note.abstract
+          encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_1.abstract
 
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 1
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq @family_subject_group.abstractor_subjects.length
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
 
-            abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-              .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+          encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_2.abstract
 
-            expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
-          end
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
         end
 
         it 'respects namespacing in sentinental groups if no sentinental subgroups detected' do
@@ -801,19 +1260,32 @@ describe EncounterNote do
           Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_2_2, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
 
           note_text = "Hello, world"
-          encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-          encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+          encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
 
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 1
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # number of namespaces subject
-          end
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
 
-          encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 2
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # subjects
-          end
+          encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
+
+          encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
+
+          encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
         end
 
         it 'respects namespacing in sentinental groups if no complete sentinental subgroups detected' do
@@ -838,29 +1310,32 @@ describe EncounterNote do
           Abstractor::AbstractorSubjectGroupMember.where(abstractor_subject: abstractor_subject_2_2, abstractor_subject_group: @family_subject_group, display_order: items_count).first_or_create
 
           note_text = "Hello, father"
-          encounter_note = FactoryGirl.create(:encounter_note, note_text: note_text)
-          encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
+          encounter_note_1 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
 
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 1
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # number of namespaces subjects
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
 
-            abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-              .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+          encounter_note_1.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
 
-            expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
-          end
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
 
-          encounter_note.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
-          expect(Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).count).to eq 2
-          Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).each do |abstractor_abstraction_group|
-            expect(abstractor_abstraction_group.abstractor_abstractions.length).to eq 2 # subjects
+          encounter_note_2 = FactoryGirl.create(:encounter_note, note_text: note_text)
+          encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
 
-            abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
-              .where(abstractor_abstraction_groups: { id: abstractor_abstraction_group.id}, abstractor_suggestions: { unknown: nil})
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
 
-            expect(abstractor_suggestion_sources.select(:sentence_match_value).distinct.map(&:sentence_match_value).length).to eq 1
-          end
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 1
+
+          encounter_note_2.abstract(namespace_type: 'Discerner::Search', namespace_id: 2)
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_1.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
+
+          abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.where(abstractor_subject_group_id: @family_subject_group.id).select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: encounter_note_2.id, abstractor_subject_id: @family_subject_group.abstractor_subjects.map(&:id)).any?}
+          expect(abstractor_abstraction_groups.count).to eq 2
         end
       end
     end
