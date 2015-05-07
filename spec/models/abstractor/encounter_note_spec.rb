@@ -621,7 +621,7 @@ describe EncounterNote do
 
     describe 'grouped abstractions' do
       before(:each) do
-        @family_subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Family history of movement disorder', subtype: 'sentinental').first_or_create
+        @family_subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Family history of movement disorder', subtype: Abstractor::Enum::ABSTRACTOR_GROUP_SENTINENTAL_SUBTYPE).first_or_create
         items_count = 0
 
         @relative_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where( predicate: 'has_relative_with_movement_disorder_relative', display_name: 'Relative', abstractor_object_type: @list_object_type, preferred_name: 'Relative').first_or_create

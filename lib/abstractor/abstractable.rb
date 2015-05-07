@@ -2,7 +2,6 @@ module Abstractor
   module Abstractable
     # @!parse include Abstractor::Abstractable::InstanceMethods
     # @!parse extend Abstractor::Abstractable::ClassMethods
-    SENTINENTAL_SUBTYPE = 'sentinental'
     def self.included(base)
       base.class_eval do
         has_many :abstractor_abstractions, class_name: Abstractor::AbstractorAbstraction, as: :about
@@ -92,7 +91,7 @@ module Abstractor
         sentinental_groups = []
         self.class.abstractor_subjects(options).each do |abstractor_subject|
           abstractor_subject.abstract(self)
-          sentinental_groups << abstractor_subject.abstractor_subject_group if abstractor_subject.abstractor_subject_group && abstractor_subject.abstractor_subject_group.has_subtype?(SENTINENTAL_SUBTYPE)
+          sentinental_groups << abstractor_subject.abstractor_subject_group if abstractor_subject.abstractor_subject_group && abstractor_subject.abstractor_subject_group.has_subtype?(Abstractor::Enum::ABSTRACTOR_GROUP_SENTINENTAL_SUBTYPE)
         end
         sentinental_groups.uniq.map{|sentinental_group| regroup_sentinental_suggestions(sentinental_group, options)}
       end
@@ -214,12 +213,12 @@ module Abstractor
           sentinental_group_abstractor_subjects           = sentinental_group_abstractor_subjects.where(namespace_type: options[:namespace_type], namespace_id: options[:namespace_id])
         end
 
-        sentinental_group_abstractor_abstraction_groups = sentinental_group.abstractor_abstraction_groups.not_deleted.select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: self.id, abstractor_subject_id: sentinental_group_abstractor_subjects.map(&:id)).any?}
+        sentinental_group_abstractor_abstraction_groups = Abstractor::AbstractorAbstractionGroup.not_deleted.joins(:abstractor_subject_group, :abstractor_abstractions).where(abstractor_subject_group_id: sentinental_group.id, abstractor_abstractions: {about_id: self.id, abstractor_subject_id: sentinental_group_abstractor_subjects.map(&:id)}).distinct
 
         sentinental_group_abstractor_suggestion_sources = Abstractor::AbstractorSuggestionSource.joins(abstractor_suggestion: { abstractor_abstraction: :abstractor_abstraction_group})
           .where(abstractor_abstraction_groups: { id: sentinental_group_abstractor_abstraction_groups.map(&:id)}, abstractor_abstractions: { abstractor_subject_id: sentinental_group_abstractor_subjects.map(&:id), about_id: self.id})
 
-        sentinental_abstractor_abstraction_groups = sentinental_group_abstractor_abstraction_groups.select{|abstractor_abstraction_group| abstractor_abstraction_group.subtype == SENTINENTAL_SUBTYPE}
+        sentinental_abstractor_abstraction_groups = sentinental_group_abstractor_abstraction_groups.where(subtype: Abstractor::Enum::ABSTRACTOR_GROUP_SENTINENTAL_SUBTYPE)
 
         sentinental_group_abstractor_abstraction_groups.each do |abstractor_abstraction_group|
           unless abstractor_abstraction_group.abstractor_abstractions.not_deleted.where(about_id: self.id).where('value is not null').any? # skip abstraction groups with curated abstractions
@@ -246,7 +245,7 @@ module Abstractor
                   existing_abstractor_abstraction_group = matching_abstractor_suggestion_sources.
                     map{|abstractor_suggestion_source| abstractor_suggestion_source.abstractor_suggestion.abstractor_abstraction.abstractor_abstraction_group}.
                     select{|aag| sentinental_abstractor_abstraction_groups.map(&:id).include? aag.id}.
-                    reject{|aag| aag.id == abstractor_abstraction_group.id}.first
+                    reject{|aag| aag.id == abstractor_abstraction_group.id}.uniq.first
 
                   if existing_abstractor_abstraction_group
                     new_abstractor_abstraction_group = existing_abstractor_abstraction_group
@@ -278,18 +277,24 @@ module Abstractor
                       end
                     end
 
-                    # create a new suggestion if corresponding suggestion has multiple sources and should not be moved
+                    # if new abstraction already has matching suggestion, use it to map sources
+                    new_abstractor_suggestion = new_abstractor_abstraction.detect_abstractor_suggestion(abstractor_suggestion.suggested_value, abstractor_suggestion.unknown, abstractor_suggestion.not_applicable)
+
+                    # if matching suggestion does not exist, create a new suggestion if corresponding suggestion has multiple sources
+                    # and should not be moved of move existing one to the new abstraction
                     # and map suggestion source to the new suggestion
-                    if abstractor_suggestion.abstractor_suggestion_sources.length > 1
-                      new_abstractor_suggestion =  Abstractor::AbstractorSuggestion.create!(
-                        abstractor_abstraction: new_abstractor_abstraction,
-                        abstractor_suggestion_status: Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first,
-                        suggested_value: abstractor_suggestion.suggested_value,
-                        unknown: abstractor_suggestion.unknown,
-                        not_applicable: abstractor_suggestion.not_applicable
-                      )
-                    else
-                      new_abstractor_suggestion = abstractor_suggestion
+                    if new_abstractor_suggestion.blank?
+                      if abstractor_suggestion.abstractor_suggestion_sources.length > 1
+                        new_abstractor_suggestion ||=  Abstractor::AbstractorSuggestion.create!(
+                          abstractor_abstraction: new_abstractor_abstraction,
+                          abstractor_suggestion_status: Abstractor::AbstractorSuggestionStatus.where(name: 'Needs review').first,
+                          suggested_value: abstractor_suggestion.suggested_value,
+                          unknown: abstractor_suggestion.unknown,
+                          not_applicable: abstractor_suggestion.not_applicable
+                        )
+                      else
+                        new_abstractor_suggestion = abstractor_suggestion
+                      end
                     end
 
                     new_abstractor_suggestion.abstractor_abstraction  = new_abstractor_abstraction
@@ -310,11 +315,20 @@ module Abstractor
                 end
               end
 
-              abstractor_abstraction_group_siblings = sentinental_group.reload.abstractor_abstraction_groups.not_deleted.all
-                .select{|abstractor_abstraction_group| abstractor_abstraction_group.abstractor_abstractions.where(about_id: self.id, abstractor_subject_id: sentinental_group_abstractor_subjects.map(&:id)).any?}
+              abstractor_abstraction_group_siblings = AbstractorAbstractionGroup.not_deleted.joins(:abstractor_subject_group, :abstractor_abstractions).where(abstractor_subject_group_id: sentinental_group.id, abstractor_abstractions: {about_id: self.id, abstractor_subject_id: sentinental_group_abstractor_subjects.map(&:id)}).distinct
 
               if abstractor_abstraction_group_siblings.length > 1
-                abstractor_abstraction_group.reload.abstractor_abstractions.map{|a| a.delete}
+                abstractor_abstraction_group.reload.abstractor_abstractions.each do |abstractor_abstraction|
+                  abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
+                    abstractor_suggestion.abstractor_suggestion_sources.delete_all
+                    abstractor_suggestion.abstractor_suggestion_object_value.delete if abstractor_suggestion.abstractor_suggestion_object_value
+                    abstractor_suggestion.delete
+                  end
+                  abstractor_abstraction.abstractor_indirect_sources.each do |abstractor_indirect_source|
+                    abstractor_indirect_source.delete
+                  end
+                  abstractor_abstraction.delete
+                end
                 abstractor_abstraction_group.reload.abstractor_abstraction_group_members.map{|a| a.delete}
                 abstractor_abstraction_group.delete
               end
