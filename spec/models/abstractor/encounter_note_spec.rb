@@ -532,6 +532,33 @@ describe EncounterNote do
         expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED)).to be_empty
       end
 
+      it "can report what has been actually answered", focus: false do
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.value = 'foo'
+          abstractor_abstraction.save
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED)).to eq([@encounter_note])
+      end
+
+      it "can report what has not been actually answered (looking for unknowns)", focus: false do
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.unknown = true
+          abstractor_abstraction.save
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED)).to be_empty
+      end
+
+      it "can report what has not been actually answered (looking for not applicable)", focus: false do
+        @encounter_note.reload.abstractor_abstractions.each do |abstractor_abstraction|
+          abstractor_abstraction.not_applicable = true
+          abstractor_abstraction.save
+        end
+
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED)).to be_empty
+      end
+
       it "can report what needs to be reviewed for an instance", focus: false do
         expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(3)
       end

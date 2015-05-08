@@ -41,7 +41,7 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
       article.abstract
       article.reload
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN)).to eq([article])
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED)).to eq([article])
     end
 
     it 'reports empty what has a not unknown suggestion type when there is an unknown suggestion', focus: false do
@@ -49,7 +49,7 @@ describe Article do
       article.abstract
       article.reload
 
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN)).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED)).to be_empty
     end
   end
 
@@ -83,8 +83,8 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'I love the white sox.  Minnie Minoso should be in the hall of fame.')
       article.abstract
       article.reload
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to eq([article])
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to eq([article])
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
 
     it 'reports empty what has a not unknown suggestion type when there is an unknown suggestion', focus: false do
@@ -92,8 +92,8 @@ describe Article do
       article.abstract
       article.reload
 
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@favorite_baseball_team_abstractor_abstraction_schema])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
   end
 
@@ -137,7 +137,7 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'Richard Rorty was facile. But very entertaining.')
       article.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
       article.reload
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1)).to eq([article])
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1)).to eq([article])
     end
 
     it 'reports empty what has a not unknown suggestion type when there is an unknown suggestion (namespaced)', focus: false do
@@ -145,7 +145,7 @@ describe Article do
       article.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
       article.reload
 
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1)).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1)).to be_empty
     end
   end
 
@@ -196,8 +196,8 @@ describe Article do
       article = FactoryGirl.create(:article, note_text: 'Richard Rorty was facile. But very entertaining.')
       article.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
       article.reload
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@favorite_philosopher_abstractor_abstraction_schema])).to eq([article])
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@favorite_philosopher_abstractor_abstraction_schema])).to eq([article])
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
 
     it 'reports empty what has a not unknown suggestion type when there is an unknown suggestion (namespaced)', focus: false do
@@ -205,8 +205,8 @@ describe Article do
       article.abstract(namespace_type: 'Discerner::Search', namespace_id: 1)
       article.reload
 
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@favorite_philosopher_abstractor_abstraction_schema])).to be_empty
-      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@favorite_philosopher_abstractor_abstraction_schema])).to be_empty
+      expect(Article.by_abstractor_suggestion_type(Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED, namespace_type: 'Discerner::Search', namespace_id: 1, abstractor_abstraction_schemas: [@abstractor_abstraction_schema_always_unknown])).to be_empty
     end
   end
 end

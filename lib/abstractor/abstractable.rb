@@ -343,7 +343,7 @@ module Abstractor
       # Returns all abstractable entities filtered by the parameter abstractor_suggestion_type:
       #
       # * 'unknown': Filter abstractable entites having at least one suggestion withat a suggested value of 'unknown'
-      # * 'not unknown': Filter abstractable entites having at least one suggestion with an acutal value
+      # * 'suggested': Filter abstractable entites having at least one suggestion with an acutal value
       #
       # @param [String] abstractor_suggestion_type Filter abstactable entities that have a least one 'unknwon' or at least one 'not unknown' suggestion
       # @param [Hash] options The options to filter the entities returned.
@@ -358,7 +358,7 @@ module Abstractor
           case abstractor_suggestion_type
           when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND sug.unknown = ?)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], true])
-          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(sug.unknown, ?) = ? AND sug.suggested_value IS NOT NULL AND COALESCE(sug.suggested_value, '') != '' )", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas], false, false])
           else
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? AND sub.abstractor_abstraction_schema_id IN (?) WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id)", options[:namespace_type], options[:namespace_id], options[:abstractor_abstraction_schemas]])
@@ -367,7 +367,7 @@ module Abstractor
           case abstractor_suggestion_type
           when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_UNKNOWN
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND sug.unknown = ?)", options[:abstractor_abstraction_schemas], true])
-          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_NOT_UNKNOWN
+          when Abstractor::Enum::ABSTRACTION_SUGGESTION_TYPE_SUGGESTED
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.abstractor_abstraction_schema_id IN (?) JOIN abstractor_suggestions sug ON aa.id = sug.abstractor_abstraction_id WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(sug.unknown, ?) = ? AND sug.suggested_value IS NOT NULL AND COALESCE(sug.suggested_value, '') != '' )", options[:abstractor_abstraction_schemas], false, false])
           else
             where(nil)
@@ -380,7 +380,7 @@ module Abstractor
       #
       # * 'needs_review': Filter abstractable entites having at least one abstraction without a determined value (value, unknown or not_applicable).
       # * 'reviewed': Filter abstractable entites having no abstractions without a determined value (value, unknown or not_applicable).
-      #
+      # * 'actually answered': Filter abstractable entites having no abstractions without an actual value (exluding blank, unknown or not_applicable).
       # @param [String] abstractor_abstraction_status Filter abstactable entities that an abstraction that 'needs_review' or are all abstractions are 'reviewed'.
       # @param [Hash] options the options to filter the entities returned.
       # @option options [String] :namespace_type The type parameter of the namespace to filter the entities.
@@ -395,6 +395,8 @@ module Abstractor
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND (aa.value IS NULL OR aa.value = '') AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", options[:namespace_type], options[:namespace_id], false, false])
           when Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '' AND COALESCE(aa.unknown, ?) != ? AND COALESCE(aa.not_applicable, ?) != ?)", options[:namespace_type], options[:namespace_id], options[:namespace_type], options[:namespace_id], false, true, false, true])
+          when Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '')", options[:namespace_type], options[:namespace_id], options[:namespace_type], options[:namespace_id]])
           else
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa JOIN abstractor_subjects sub ON aa.abstractor_subject_id = sub.id AND sub.namespace_type = ? AND sub.namespace_id = ? WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id)", options[:namespace_type], options[:namespace_id]])
           end
@@ -404,6 +406,8 @@ module Abstractor
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND (aa.value IS NULL OR aa.value = '') AND (aa.unknown IS NULL OR aa.unknown = ?) AND (aa.not_applicable IS NULL OR aa.not_applicable = ?))", false, false])
           when Abstractor::Enum::ABSTRACTION_STATUS_REVIEWED
             where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '' AND COALESCE(aa.unknown, ?) != ? AND COALESCE(aa.not_applicable, ?) != ?)", false, true, false, true])
+          when Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED
+            where(["EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id) AND NOT EXISTS (SELECT 1 FROM abstractor_abstractions aa WHERE aa.deleted_at IS NULL AND aa.about_type = '#{self.to_s}' AND #{self.table_name}.id = aa.about_id AND COALESCE(aa.value, '') = '')"])
           else
             where(nil)
           end
