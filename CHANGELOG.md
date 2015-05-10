@@ -1,6 +1,51 @@
 # Abstractor Changelog
 =======
 
+## 4.4.0
+Released on May 10, 2015
+
+* Make the enum values for querying by suggestion type less obtuse.
+See https://github.com/NUBIC/abstractor/issues/111
+
+* Support querying abstractable entities by abstraction status that limits abstractions to ones 'actually answered'.
+See https://github.com/NUBIC/abstractor/issues/110
+
+* Sentinental groups: remove suggestions and sources for unlinked abstractions
+See https://github.com/NUBIC/abstractor/issues/109
+
+* Sentinental groups: remove unlinked abstractions after regrouping.
+See https://github.com/NUBIC/abstractor/issues/108
+
+* Make sentinental groups support re-abstraction
+See https://github.com/NUBIC/abstractor/issues/107
+
+* Fix failing sentinental groups spec.
+See https://github.com/NUBIC/abstractor/issues/106
+
+* Make sentinental groups respect namespaced abstractor_subjects.
+See https://github.com/NUBIC/abstractor/issues/105
+
+* Update abstractor:setup:stanford_core_nlp to install latest version of Stanford CoreNLP.
+See https://github.com/NUBIC/abstractor/issues/103
+
+* Unknown suggestions duplicated across multiple abstractions via API.
+See https://github.com/NUBIC/abstractor/issues/102
+
+* Add spec coverage to suggesting 'unknown' through the API.
+See https://github.com/NUBIC/abstractor/issues/101
+
+* Add container to resource detailing an abstraction schema.
+See https://github.com/NUBIC/abstractor/issues/100
+
+* Add support for sentinental groups
+https://github.com/NUBIC/abstractor/issues/98
+
+* Add support for a specifying a display order for abstractor object values to be displayed for editing.
+https://github.com/NUBIC/abstractor/issues/97
+
+* Misses text matches.
+https://github.com/NUBIC/abstractor/issues/95
+
 ## 4.3.3
 Released on April 25, 2015
 
