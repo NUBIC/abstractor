@@ -58,7 +58,7 @@ module Abstractor
       unless options["no-install-stanford-core-nlp"]
         puts "Running rake abstractor:setup:stanford_core_nlp"
         puts 'Please be patient...this could take a while.'
-        # `rake abstractor:setup:stanford_core_nlp`
+        `rake abstractor:setup:stanford_core_nlp`
 
         insert_into_file("#{Rails.root}/config/environments/development.rb", :after => /(::Application.configure do\n|application.configure do\n)/) do
 '  StanfordCoreNLP.use :english
