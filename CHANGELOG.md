@@ -1,6 +1,12 @@
 # Abstractor Changelog
 =======
 
+## 4.4.1
+Released on May 11, 2015
+
+* Correct accidental comment out of rake call in install generator.
+See https://github.com/NUBIC/abstractor/issues/103
+
 ## 4.4.0
 Released on May 10, 2015
 
