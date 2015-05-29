@@ -15,8 +15,9 @@ module Abstractor
     end
 
     module InstanceMethods
-      def abstract
-        self.class.abstractor_subjects.each do |abstractor_subject|
+      def abstract(options = {})
+        options = { abstractor_abstraction_schema_ids: [] }.merge(options)
+        self.class.abstractor_subjects(options).each do |abstractor_subject|
           abstractor_subject.abstract(self)
         end
       end
@@ -117,8 +118,15 @@ module Abstractor
       # @option options [Boolean] :grouped Filters the list of Abstactor::AbstractorSubject objects to grouped and non-grouped.  Defaults to nil which returns all objects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
       def abstractor_subjects(options = {})
-        options = { grouped: nil }.merge(options)
+        puts 'I love the booch'
+        options = { grouped: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
+
+        if options[:abstractor_abstraction_schema_ids].any?
+          puts 'I love the booch so much'
+          subjects = subjects.where(abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids])
+        end
+
         subjects = case options[:grouped]
         when true
           subjects.select{ |s| s.abstractor_subject_group_member}
