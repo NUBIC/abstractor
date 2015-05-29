@@ -308,7 +308,7 @@ describe RadiationTherapyPrescription do
 
     describe "a mix of grouped and non-grouped abstractions" do
       before(:each) do
-        string_object_type = Abstractor::AbstractorObjectType.where(value: 'string').first
+        string_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_STRING).first
         unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
         moomin_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_moomin', display_name: 'Moomin', abstractor_object_type: string_object_type, preferred_name: 'Moomin')
         abstractor_subject = Abstractor::AbstractorSubject.create(:subject_type => 'RadiationTherapyPrescription', :abstractor_abstraction_schema => moomin_abstraction_schema)

@@ -3,7 +3,7 @@ require './test/dummy/lib/setup/setup/'
 describe Article do
   before(:each) do
     Abstractor::Setup.system
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     @favorite_baseball_team_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_baseball_team', display_name: 'Favorite baseball team', abstractor_object_type: list_object_type, preferred_name: 'Favorite baseball team')
@@ -55,7 +55,7 @@ describe Article do
 
   describe "querying by abstractor suggestion type (filtered)" do
     before(:each) do
-      list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
       unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
       @abstractor_abstraction_schema_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: list_object_type, preferred_name: 'Always unknown')
       @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'Article', :abstractor_abstraction_schema => @abstractor_abstraction_schema_always_unknown)
@@ -100,7 +100,7 @@ describe Article do
   describe "querying by abstractor suggestion (namespaced)" do
     before(:each) do
       Abstractor::Setup.system
-      list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
       v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
       source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
       @favorite_philosopher_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_favorite_philosopher', display_name: 'Favorite philosopher', abstractor_object_type: list_object_type, preferred_name: 'Favorite philosopher')
@@ -152,7 +152,7 @@ describe Article do
   describe "querying by abstractor suggestion (namespaced) (filtered)" do
     before(:each) do
       Abstractor::Setup.system
-      list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
       v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
       unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
       source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first

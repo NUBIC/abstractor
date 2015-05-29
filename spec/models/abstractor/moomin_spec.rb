@@ -5,7 +5,7 @@ describe Moomin do
     Abstractor::Setup.system
     n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
     value_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
 
     subject_group  = Abstractor::AbstractorSubjectGroup.where(name: 'Family history of movement disorder: aunts and uncles').first_or_create

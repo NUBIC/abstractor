@@ -2,7 +2,7 @@ require 'spec_helper'
 describe  Abstractor::AbstractorAbstractionSource do
   before(:each) do
     Abstractor::Setup.system
-    @list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    @list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     @value_rule_type = Abstractor::AbstractorRuleType.where(name: 'value').first
     @source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     @abstractor_abstraction_schema = FactoryGirl.create(:abstractor_abstraction_schema, predicate: 'has_some_property', display_name: 'some_property', abstractor_object_type: @list_object_type, preferred_name: 'some property')
@@ -35,7 +35,7 @@ describe  Abstractor::AbstractorAbstractionSource do
   describe 'sections' do
     before(:each) do
       Abstractor::Setup.system
-      @list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      @list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
       @value_rule_type = Abstractor::AbstractorRuleType.where(name: 'value').first
       @source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
       @abstractor_abstraction_schema_moomin = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_favorite_moomin', display_name: 'Has favorite moomin', abstractor_object_type_id: @list_object_type.id, preferred_name: 'Has favorite moomin').first_or_create

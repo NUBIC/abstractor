@@ -2,14 +2,9 @@ module Abstractor
   module Setup
     def self.system
       puts 'Setting up Abstractor::AbstractorObjectType'
-      Abstractor::AbstractorObjectType.where(value: 'list').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'number').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'boolean').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'string').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'radio button list').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'date').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'dynamic list').first_or_create
-      Abstractor::AbstractorObjectType.where(value: 'text').first_or_create
+        Abstractor::Enum::ABSTRACTOR_OBJECT_TYPES.each do |abstractor_object_type|
+        Abstractor::AbstractorObjectType.where(value: abstractor_object_type).first_or_create
+      end
 
       puts 'Setting up Abstractor::AbstractorRuleType'
       Abstractor::AbstractorRuleType.where(name: 'name/value', description:'search for value associated with name').first_or_create

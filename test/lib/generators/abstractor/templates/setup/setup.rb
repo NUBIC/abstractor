@@ -63,7 +63,7 @@ module Setup
   end
 
   def self.abstractor_abstraction_schema_anatomical_location
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_anatomical_location').first
     if anatomical_location_abstractor_abstraction_schema.blank?
       anatomical_location_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_anatomical_location', display_name: 'Anatomical location', abstractor_object_type: list_object_type, preferred_name: 'Anatomical location')
@@ -79,7 +79,7 @@ module Setup
   end
 
   def self.abstractor_abstraction_schema_laterality
-    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
+    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_RADIO_BUTTON_LIST).first
     laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_laterality').first
     if laterality_abstractor_abstraction_schema.blank?
       laterality_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_laterality', display_name: 'Laterality', abstractor_object_type: radio_button_list_object_type, preferred_name: 'Laterality')
@@ -97,8 +97,8 @@ module Setup
   end
 
   def self.radiation_therapy_prescription
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
-    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: 'radio button list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
+    radio_button_list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_RADIO_BUTTON_LIST).first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     anatomical_location_abstractor_abstraction_schema = Setup.abstractor_abstraction_schema_anatomical_location
@@ -111,7 +111,7 @@ module Setup
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'site_name', abstractor_rule_type: v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
     Abstractor::AbstractorSubjectGroupMember.create(abstractor_subject: abstractor_subject, abstractor_subject_group: location_group, display_order: 2)
 
-    date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
+    date_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DATE).first
     unknown_rule_type = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     prescription_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_radiation_therapy_prescription_date', display_name: 'Radiation therapy prescription date', abstractor_object_type: date_object_type, preferred_name: 'Radiation therapy prescription date')
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'RadiationTherapyPrescription', abstractor_abstraction_schema: prescription_date_abstractor_abstraction_schema)
@@ -120,7 +120,7 @@ module Setup
   end
 
   def self.encounter_note
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     kps_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status', display_name: 'Karnofsky performance status', abstractor_object_type: list_object_type, preferred_name: 'Karnofsky performance status')
@@ -196,7 +196,7 @@ module Setup
     Abstractor::AbstractorAbstractionSchemaObjectValue.create(abstractor_abstraction_schema: kps_abstractor_abstraction_schema, abstractor_object_value: abstractor_object_value)
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: abstractor_subject, from_method: 'note_text', abstractor_rule_type: n_v_rule, abstractor_abstraction_source_type: source_type_nlp_suggestion)
 
-    date_object_type = Abstractor::AbstractorObjectType.where(value: 'date').first
+    date_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DATE).first
     custom_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'custom suggestion').first
     kps_date_abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_karnofsky_performance_status_date', display_name: 'Karnofsky performance status date', abstractor_object_type: date_object_type, preferred_name: 'Karnofsky performance status date')
     abstractor_subject = Abstractor::AbstractorSubject.create(subject_type: 'EncounterNote', abstractor_abstraction_schema: kps_date_abstractor_abstraction_schema)
@@ -204,7 +204,7 @@ module Setup
   end
 
   def self.pathology_case
-    dynamic_list_object_type = Abstractor::AbstractorObjectType.where(value: 'dynamic list').first
+    dynamic_list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DYNAMIC_LIST).first
     nlp_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     unknown_rule_type = Abstractor::AbstractorRuleType.where(name: 'unknown').first
 
@@ -215,7 +215,7 @@ module Setup
 
   def self.surgery
     indirect_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'indirect').first
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     value_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     surgery_anatomical_location_group  = Abstractor::AbstractorSubjectGroup.create(name: 'Surgery Anatomical Location')
@@ -239,7 +239,7 @@ module Setup
   end
 
   def self.imaging_exam
-    list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+    list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     n_v_rule = Abstractor::AbstractorRuleType.where(name: 'name/value').first
     v_rule = Abstractor::AbstractorRuleType.where(name: 'value').first
     source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first

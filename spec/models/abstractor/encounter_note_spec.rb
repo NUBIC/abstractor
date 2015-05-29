@@ -6,7 +6,7 @@ describe EncounterNote do
     Setup.encounter_note
     @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first
     @abstractor_subject_abstraction_schema_kps = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps.id).first
-    @list_object_type     = Abstractor::AbstractorObjectType.where(value: 'list').first
+    @list_object_type     = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
     @numeric_object_type  = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER).first
     unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: @list_object_type, preferred_name: 'Always unknown')

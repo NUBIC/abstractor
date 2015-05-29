@@ -7,28 +7,28 @@
       = abstraction_schema.display_name
     .abstraction_edit_abstraction_value
       - case abstraction_schema.abstractor_object_type.value
-      - when 'date'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DATE
         = f.text_field :value, class: 'abstractor_datepicker'
-      - when 'text'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_TEXT
         = f.text_area :value
-      - when 'string'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_STRING
         = f.text_field :value
-      - when 'number'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER
         = f.number_field :value
-      - when 'radio button list'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_RADIO_BUTTON_LIST
         - values = abstraction_schema.abstractor_object_values.order('abstractor_abstraction_schema_object_values.display_order, abstractor_object_values.value')
         -  values.each do |value|
           = f.radio_button :value, value.value
           = f.label :value, value.value, value: value.value
         = f.radio_button :value, '', {:style => 'display:none;' }
         &nbsp;
-      - when 'list'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST
         - values = abstraction_schema.abstractor_object_values.order('abstractor_abstraction_schema_object_values.display_order, abstractor_object_values.value')
         = f.select :value, values.map{|s| [s.value, s.value]}, {:include_blank => true}, :class => "combobox"
-      - when 'dynamic list'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DYNAMIC_LIST
         - values = abstractor_abstraction.about.send(abstractor_abstraction.abstractor_subject.dynamic_list_method).sort_by { |l| l[:value] }
         = f.select :value, values.map{|s| [s[:value], s[:id]]}, {:include_blank => true}, :class => "combobox"
-      - when 'boolean'
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_BOOLEAN
         - ['true', 'false'].each do |value|
           = f.radio_button :value, value
           = f.label :value, value
