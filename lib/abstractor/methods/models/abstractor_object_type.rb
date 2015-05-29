@@ -8,7 +8,13 @@ module Abstractor
           # Associations
           base.send :has_many, :abstractor_abstraction_schemas
 
-          # base.send :attr_accessible, :deleted_at, :value
+          base.send(:include, InstanceMethods)
+        end
+
+        module InstanceMethods
+          def number?
+            self.value == Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER
+          end
         end
       end
     end
