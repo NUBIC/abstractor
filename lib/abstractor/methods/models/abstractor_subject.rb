@@ -402,7 +402,7 @@ module Abstractor
           def create_unknown_abstractor_suggestion(about, abstractor_abstraction, abstractor_abstraction_source)
             #Create an 'unknown' suggestion based on matching nothing only if we have not made a suggstion
             abstractor_abstraction_source.normalize_from_method_to_sources(about).each do |source|
-              if abstractor_abstraction.abstractor_suggestions(true).select { |abstractor_suggestion| abstractor_suggestion.unknown != true }.empty?
+              if abstractor_abstraction.abstractor_suggestions(true).select { |abstractor_suggestion| abstractor_suggestion.unknown != true || abstractor_suggestion.unknown == true}.empty?
                 suggest(abstractor_abstraction, abstractor_abstraction_source, nil, nil, source[:source_id], source[:source_type].to_s, source[:source_method],source[:section_name],  nil, true, nil, nil, nil)
               end
             end
