@@ -15,6 +15,10 @@ module Abstractor
           def number?
             self.value == Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER
           end
+
+          def number_list?
+            self.value == Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST
+          end
         end
       end
     end

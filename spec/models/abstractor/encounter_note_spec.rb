@@ -6,8 +6,9 @@ describe EncounterNote do
     Setup.encounter_note
     @abstractor_abstraction_schema_kps = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status').first
     @abstractor_subject_abstraction_schema_kps = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps.id).first
-    @list_object_type     = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
-    @numeric_object_type  = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER).first
+    @list_object_type           = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
+    @numeric_object_type        = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER).first
+    @number_list_object_type   = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST).first
     unknown_rule = Abstractor::AbstractorRuleType.where(name: 'unknown').first
     @abstractor_abstraction_always_unknown = Abstractor::AbstractorAbstractionSchema.create(predicate: 'has_always_unknown', display_name: 'Always unknown', abstractor_object_type: @list_object_type, preferred_name: 'Always unknown')
     @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown)
@@ -489,6 +490,322 @@ describe EncounterNote do
         @encounter_note.abstract
 
         expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.")
+      end
+    end
+
+    describe "it creates abstraction suggestions for numeric list values: " do
+      before(:each) do
+        @abstractor_abstraction_schema_kps.abstractor_object_type = @number_list_object_type
+        @abstractor_abstraction_schema_kps.save!
+      end
+
+      #suggestion suggested value
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the squished canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a preferred name/predicate (using the sentential format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's Karnofsky performance status is 20.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq("20% - Very sick; hospital admission necessary; active supportive treatment necessary.")
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.')
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion suggested value from a predicate variant (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('90% - Able to carry on normal activity; minor signs or symptoms of disease.')
+      end
+
+      #suggestions
+      it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      end
+
+      it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      end
+
+      it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+      end
+
+      it "creates multiple 'has_karnofsky_performance_status' abstraction suggestions given multiple different matches (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.  Let me repeat.  KPS: 80')
+        @encounter_note.abstract
+
+        expect(Set.new(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['90% - Able to carry on normal activity; minor signs or symptoms of disease.', '80% - Normal activity with effort; some signs or symptoms of disease.']))
+      end
+
+      it "creates multiple 'has_karnofsky_performance_status' abstraction suggestions given multiple different matches (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.  Let me repeat.  KPS80')
+        @encounter_note.abstract
+
+        expect(Set.new(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['90% - Able to carry on normal activity; minor signs or symptoms of disease.', '80% - Normal activity with effort; some signs or symptoms of disease.']))
+      end
+
+      it "creates multiple 'has_karnofsky_performance_status' abstraction suggestions given multiple different matches (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.  Let me repeat.  The patient's kps is 80.")
+        @encounter_note.abstract
+
+        expect(Set.new(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.map(&:suggested_value))).to eq(Set.new(['90% - Able to carry on normal activity; minor signs or symptoms of disease.', '80% - Normal activity with effort; some signs or symptoms of disease.']))
+      end
+
+      it "creates one 'has_karnofsky_performance_status' abstraction suggestion given multiple identical matches (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.  Let me repeat.  KPS: 90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size).to eq(1)
+      end
+
+      it "creates one 'has_karnofsky_performance_status' abstraction suggestion given multiple identical matches (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.  Let me repeat.  KPS90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size).to eq(1)
+      end
+
+      it "creates one 'has_karnofsky_performance_status' abstraction suggestion given multiple identical matches (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.  Let me repeat.  The patient's kps is 90.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.select { |suggestion| suggestion.suggested_value == '90% - Able to carry on normal activity; minor signs or symptoms of disease.'}.size).to eq(1)
+      end
+
+      #suggestion match value
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a preferred name/predicate (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('karnofsky performance status: 90')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a preferred name/predicate (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status90.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('karnofsky performance status90')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a preferred name/predicate (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's karnofsky performance status is 90.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's karnofsky performance status is 90.")
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a predicate variant (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('kps: 90')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a predicate variant (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.')
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq('kps90')
+      end
+
+      it "creates a 'has_karnofsky_performance_status' abstraction suggestion match value from a predicate variant (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.")
+        @encounter_note.abstract
+
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.")
+      end
+    end
+
+    describe "it creates unknown abstraction suggestions with source for numeric list values if matched value is not in the list and text is not squished: " do
+      before(:each) do
+        @abstractor_abstraction_schema_kps.abstractor_object_type   =  @number_list_object_type
+        @abstractor_abstraction_schema_kps.save!
+      end
+
+      #suggestion suggested value
+      it "from a preferred name/predicate (using the canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("karnofsky performance status: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a preferred name/predicate (using the sentential format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's Karnofsky performance status is 20.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's karnofsky performance status is 20.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a predicate variant (using the canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("kps: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a predicate variant (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "given multiple different matches (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.5. Let me repeat.  KPS: 80.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("kps: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.last.sentence_match_value).to eq("kps: 80.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "given multiple different matches (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.5.  Let me repeat.  The patient's kps is 80.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.last.sentence_match_value).to eq("the patient's kps is 80.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "given multiple identical matches (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.5.  Let me repeat.  KPS: 90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("kps: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "given multiple identical matches (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.5.  Let me repeat.  The patient's kps is 90.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      #suggestion match value
+      it "from a preferred name/predicate (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status: 90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("karnofsky performance status: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a preferred name/predicate (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's karnofsky performance status is 90.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's karnofsky performance status is 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a predicate variant (using the canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("kps: 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+
+      it "from a predicate variant (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy.  The patient's kps is 90.5.")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to eq("the patient's kps is 90.5.")
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+      end
+    end
+
+    describe "it creates unknown abstraction suggestions with empty source for numeric list values if matched value is not in the list and text is squished: " do
+      before(:each) do
+        @abstractor_abstraction_schema_kps.abstractor_object_type   =  @number_list_object_type
+        @abstractor_abstraction_schema_kps.save!
+      end
+
+      #suggestion suggested value
+      it "from a preferred name/predicate (using the squished canonical name/value format)", focus: false do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status90.5.')
+        @encounter_note.abstract
+        # should not create unknown suggestion for partially matching squished values
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
+      end
+
+      it "from a predicate variant (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
+      end
+
+      it "given multiple different matches (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.5. Let me repeat.  KPS80.5')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
+      end
+
+      it "given multiple identical matches (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.5.  Let me repeat.  KPS90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
+      end
+
+      it "from a preferred name/predicate (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  Karnofsky performance status90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
+      end
+
+      it "from a predicate variant (using the squished canonical name/value format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS90.5.')
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.abstractor_suggestion_sources.first.sentence_match_value).to be_nil
       end
     end
 

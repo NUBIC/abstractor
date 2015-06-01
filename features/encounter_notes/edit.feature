@@ -204,11 +204,11 @@ Feature: Editing encounter note
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100"
     And ".ui-dialog-content" should equal highlighted text "KPS: 100"
-  @wip
+
   @javascript
   Scenario: Viewing source for suggestion with source and numeric match value
     Given abstraction schemas are set
-    And "has_karnofsky_performance_status" abstraction schema has numeric type
+    And "has_karnofsky_performance_status" abstraction schema has "number" type
     And encounter notes with the following information exist
       | Note Text                            |
       |The patient is looking good.  KPS: 100|
@@ -218,11 +218,11 @@ Feature: Editing encounter note
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100"
     And ".ui-dialog-content" should equal highlighted text "KPS: 100"
-@wip
+
   @javascript
   Scenario: Viewing source for suggestion with source and numeric float match value
     Given abstraction schemas are set
-    And "has_karnofsky_performance_status" abstraction schema has numeric type
+    And "has_karnofsky_performance_status" abstraction schema has "number" type
     And encounter notes with the following information exist
       | Note Text                              |
       |The patient is looking good.  KPS: 100.5|
@@ -232,6 +232,34 @@ Feature: Editing encounter note
     And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
     And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100.5"
     And ".ui-dialog-content" should equal highlighted text "KPS: 100.5"
+
+  @javascript
+  Scenario: Viewing source for suggestion with source and numeric float match value ans number_list type
+    Given abstraction schemas are set
+    And "has_karnofsky_performance_status" abstraction schema has "number list" type
+    And encounter notes with the following information exist
+      | Note Text                              |
+      |The patient is looking good.  KPS: 100.5|
+    And I go to the last encounter note edit page
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    Then I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100.5"
+    And ".ui-dialog-content" should equal highlighted text "KPS: 100.5"
+
+  @javascript
+  Scenario: Viewing source for suggestion with source and numeric match value ans number_list type
+    Given abstraction schemas are set
+    And "has_karnofsky_performance_status" abstraction schema has "#{Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST}" type
+    And encounter notes with the following information exist
+      | Note Text                              |
+      |The patient is looking good.  KPS: 100 |
+    And I go to the last encounter note edit page
+    And I click within ".has_karnofsky_performance_status span.abstractor_abstraction_source_tooltip_img"
+    Then I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "The patient is looking good.  KPS: 100"
+    And ".ui-dialog-content" should equal highlighted text "KPS: 100"
 
   @javascript
   Scenario: Viewing source for suggestion with source containing characters needing to be escaped and match value

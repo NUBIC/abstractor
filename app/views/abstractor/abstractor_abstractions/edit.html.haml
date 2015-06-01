@@ -22,7 +22,7 @@
           = f.label :value, value.value, value: value.value
         = f.radio_button :value, '', {:style => 'display:none;' }
         &nbsp;
-      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST
+      - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST || Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST
         - values = abstraction_schema.abstractor_object_values.order('abstractor_abstraction_schema_object_values.display_order, abstractor_object_values.value')
         = f.select :value, values.map{|s| [s.value, s.value]}, {:include_blank => true}, :class => "combobox"
       - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DYNAMIC_LIST

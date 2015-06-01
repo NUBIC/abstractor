@@ -386,15 +386,12 @@ Given /^abstraction schemas are set$/ do
   Setup.imaging_exam
 end
 
-Given /"(.*?)" abstraction schema has numeric type/ do |predicate|
+Given /"(.*?)" abstraction schema has "(.*?)" type/ do |predicate, type|
   abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: predicate).first
-  numeric_object_type  = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER).first
-
-  if abstractor_abstraction_schema
-    abstractor_abstraction_schema.abstractor_object_type   = numeric_object_type
-    abstractor_abstraction_schema.abstractor_object_values = []
-    abstractor_abstraction_schema.save!
-  end
+  object_type  = Abstractor::AbstractorObjectType.where(value: type).first
+  abstractor_abstraction_schema.abstractor_object_type   = object_type
+  abstractor_abstraction_schema.abstractor_object_values = []
+  abstractor_abstraction_schema.save!
 end
 
 

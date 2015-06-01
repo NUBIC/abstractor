@@ -250,14 +250,27 @@ module Abstractor
               abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
               parser = Abstractor::Parser.new(abstractor_text)
               abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
-                if abstractor_abstraction_schema.abstractor_object_type.number?
+                if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
                   object_regex = '(?<object_value>\d+[\.,]*\d*[\.,]*\d*)'
 
                   match_values = ["#{Regexp.escape(predicate_variant)}:\s*#{object_regex}", "#{Regexp.escape(predicate_variant)}#{object_regex}"]
                   match_values.each do |match_value|
                     matches = parser.match_scan(match_value, word_boundary: true).uniq
-                    matches.each do |match|
-                      suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                    if abstractor_abstraction_schema.abstractor_object_type.number_list?
+                      # filter matched numbers by list of available values
+                      abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                        abstractor_object_value.object_variants.each do |object_variant|
+                          matches.each do |match|
+                            if object_variant == match[:object_value]
+                              suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+                            end
+                          end
+                        end
+                      end
+                    else
+                      matches.each do |match|
+                        suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                      end
                     end
                   end
                 else
@@ -287,7 +300,7 @@ module Abstractor
                   ranges.each do |range|
                     sentence = parser.find_sentence(range)
                     if sentence
-                      if abstractor_abstraction_schema.abstractor_object_type.number?
+                      if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
                         object_regex = '(?<object_value>\d+\.*\d*)'
                         match = parser.match_sentence(sentence[:sentence], object_regex)
                         if match
@@ -299,7 +312,18 @@ module Abstractor
                                      Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], match[:object_value])
                                    )
                           if !reject
-                            suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                            if abstractor_abstraction_schema.abstractor_object_type.number_list?
+                              # filter matched numbers by list of available values
+                              abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                                abstractor_object_value.object_variants.each do |object_variant|
+                                  if object_variant == match[:object_value]
+                                    suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+                                  end
+                                end
+                              end
+                            else
+                              suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                            end
                           end
                         end
                       else
