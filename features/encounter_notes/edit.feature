@@ -390,6 +390,47 @@ Feature: Editing encounter note
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
 
   @javascript
+  Scenario: Accessing abstraction edit form
+    Given abstraction schemas are set
+    And "has_karnofsky_performance_status" abstraction schema has "number list" type
+    And encounter notes with the following information exist
+      | Note Text              |
+      |Hello, your KPS is 100%.|
+    And I go to the last encounter note edit page
+    And I choose "Rejected" within the first ".has_karnofsky_performance_status .edit_abstractor_suggestion"
+    And I wait for the ajax request to finish
+    And I click on ".edit_link" within the first ".abstractor_abstraction"
+    And I wait for the ajax request to finish
+    Then the element "select.combobox" should be hidden
+    And I should not see an ".edit_link" element
+    And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "select.combobox"
+    And "select.combobox" in the first ".abstractor_abstraction" should have options "100% - Normal; no complaints; no evidence of disease., 90% - Able to carry on normal activity; minor signs or symptoms of disease., 80% - Normal activity with effort; some signs or symptoms of disease."
+    And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "input#abstractor_abstraction_not_applicable"
+    And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
+    And ".abstractor_abstraction_edit" in the first ".abstractor_abstraction" should contain selector "input#abstractor_abstraction_unknown"
+    And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
+    Then ".abstractor_abstraction_edit input[type='submit']" should contain "Save"
+    And I should see "Cancel"
+    When I check "input#abstractor_abstraction_unknown" within the first ".abstractor_abstraction"
+    Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
+    And "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
+    When I check "input#abstractor_abstraction_not_applicable" within the first ".abstractor_abstraction"
+    Then "select.combobox" in the first ".abstractor_abstraction" should not contain selector "option[selected='selected']"
+    And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
+    When I fill in "input.combobox" autocompleter within the first ".abstractor_abstraction" with "100% - Normal; no complaints; no evidence of disease."
+    Then "input#abstractor_abstraction_not_applicable" in the first ".abstractor_abstraction" should not be checked
+    And "input#abstractor_abstraction_unknown" in the first ".abstractor_abstraction" should not be checked
+    And I click on "span.abstractor_abstraction_source_tooltip_img" within the first ".edit_abstractor_abstraction"
+    And I should see an ".ui-dialog_abstractor" element
+    And ".ui-dialog-titlebar" should contain text "EncounterNote note_text"
+    And ".ui-dialog-content" should contain text "Hello, your KPS is 100%."
+    When I follow "Cancel"
+    And I wait for the ajax request to finish
+    Then ".abstractor_abstraction" should not contain selector ".abstractor_abstraction_edit"
+    And I should see an ".edit_link" element
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
+
+  @javascript
   Scenario: User creating unknown abstraction
     Given abstraction schemas are set
     And encounter notes with the following information exist
