@@ -250,7 +250,7 @@ Feature: Editing encounter note
   @javascript
   Scenario: Viewing source for suggestion with source and numeric match value ans number_list type
     Given abstraction schemas are set
-    And "has_karnofsky_performance_status" abstraction schema has "#{Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST}" type
+    And "has_karnofsky_performance_status" abstraction schema has "number list" type
     And encounter notes with the following information exist
       | Note Text                              |
       |The patient is looking good.  KPS: 100 |
