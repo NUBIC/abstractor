@@ -44,5 +44,7 @@ module Abstractor
       ABSTRACTOR_OBJECT_TYPE_TEXT,
       ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST
     ]
+
+    NUMERIC_REGEX = '(?<object_value>\d+[\.,]*\d*[\.,]*\d*)'
   end
 end
