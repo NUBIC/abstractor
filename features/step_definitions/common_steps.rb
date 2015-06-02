@@ -386,6 +386,17 @@ Given /^abstraction schemas are set$/ do
   Setup.imaging_exam
 end
 
+Given /"(.*?)" abstraction schema has "(.*?)" type/ do |predicate, type|
+  abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(predicate: predicate).first
+  object_type  = Abstractor::AbstractorObjectType.where(value: type).first
+  abstractor_abstraction_schema.abstractor_object_type   = object_type
+  unless [Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST, Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER_LIST].include? type
+    abstractor_abstraction_schema.abstractor_object_values = []
+  end
+  abstractor_abstraction_schema.save!
+end
+
+
 Then(/^I should see "(.*?)" anywhere within "(.*?)"$/) do |text, selector|
   elements = all(selector).select {|element| element.text.scan(text).any? }.compact
   expect(elements.any?).to be_truthy

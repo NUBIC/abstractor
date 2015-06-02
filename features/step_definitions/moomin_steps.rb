@@ -55,7 +55,7 @@ Given /^moomins with the following information exist$/ do |table|
 end
 
 def setup_moomin_abstraction_schemas
-  list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+  list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
   abstractor_abstraction_schema_moomin = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_favorite_moomin', display_name: 'Has favorite moomin', abstractor_object_type_id: list_object_type.id, preferred_name: 'Has favorite moomin').first_or_create
 
   ['Moomintroll', 'Little My', 'The Groke'].each do |moomin|

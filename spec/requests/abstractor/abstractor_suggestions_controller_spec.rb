@@ -9,7 +9,7 @@ describe Abstractor::AbstractorSuggestionsController, :type => :request do
     before(:each) do
       Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
       Abstractor::Setup.system
-      list_object_type = Abstractor::AbstractorObjectType.where(value: 'list').first
+      list_object_type = Abstractor::AbstractorObjectType.where(value: Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_LIST).first
       custom_nlp_suggestion_source_type = Abstractor::AbstractorAbstractionSourceType.where(name: 'custom nlp suggestion').first
       abstractor_abstraction_schema = Abstractor::AbstractorAbstractionSchema.where(
         predicate: 'has_cancer_histology',
