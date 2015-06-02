@@ -251,7 +251,7 @@ module Abstractor
               parser = Abstractor::Parser.new(abstractor_text)
               abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
                 if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
-                  object_regex = '(?<object_value>\d+[\.,]*\d*[\.,]*\d*)'
+                  object_regex = Abstractor::Enum::NUMERIC_REGEX
 
                   match_values = ["#{Regexp.escape(predicate_variant)}:\s*#{object_regex}", "#{Regexp.escape(predicate_variant)}#{object_regex}"]
                   match_values.each do |match_value|
@@ -301,7 +301,7 @@ module Abstractor
                     sentence = parser.find_sentence(range)
                     if sentence
                       if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
-                        object_regex = '(?<object_value>\d+\.*\d*)'
+                        object_regex = object_regex = Abstractor::Enum::NUMERIC_REGEX
                         match = parser.match_sentence(sentence[:sentence], object_regex)
                         if match
                           scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
