@@ -1,6 +1,21 @@
 # Abstractor Changelog
 =======
 
+## 4.4.2
+Released on June 2, 2015
+
+* Generate suggestions for numerical values set for name_values schemas
+See https://github.com/NUBIC/abstractor/issues/64
+
+* Use Abstractor::Enum values for abstraction object types
+See https://github.com/NUBIC/abstractor/issues/114
+
+* Do not create unknown suggestion with empty source if unknown suggestion exists.
+See https://github.com/NUBIC/abstractor/issues/115
+
+* Generate suggestions for numerical values limited by a list of possible values for name_values schemas
+See https://github.com/NUBIC/abstractor/issues/113
+
 ## 4.4.1
 Released on May 11, 2015
 
