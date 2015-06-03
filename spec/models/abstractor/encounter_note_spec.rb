@@ -166,6 +166,15 @@ describe EncounterNote do
       expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('kps')
     end
 
+    it "does not create a 'has_karnofsky_performance_status' abstraction suggestion for partial sentinental match" do
+      @encounter_note = FactoryGirl.create(:encounter_note, note_text: "The patient looks healthy blahblahkps is not what you think but equals 60.")
+      @encounter_note.abstract
+
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.length).to eq 1
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to be_nil
+      expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.unknown).to eq true
+    end
+
     #suggestions
     it "does not create another 'has_karnofsky_performance_status' abstraction suggestion upon re-abstraction (using the canonical name/value format)" do
       @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.')

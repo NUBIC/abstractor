@@ -317,46 +317,48 @@ module Abstractor
           def abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence)
             is_abstracted = false
             abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
-              if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
-                object_regex = object_regex = Abstractor::Enum::NUMERIC_REGEX
-                match = parser.match_sentence(sentence[:sentence], object_regex)
-                if match
-                  scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                  reject = (
-                             Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
-                             Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
-                             Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], match[:object_value]) ||
-                             Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], match[:object_value])
-                           )
-                  if !reject
-                    if abstractor_abstraction_schema.abstractor_object_type.number_list?
-                      # filter matched numbers by list of available values
-                      abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
-                        abstractor_object_value.object_variants.each do |object_variant|
-                          if object_variant == match[:object_value]
-                            suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+              if match = parser.match_sentence(sentence[:sentence], predicate_variant)
+                if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
+                  object_regex = object_regex = Abstractor::Enum::NUMERIC_REGEX
+                  match = parser.match_sentence(sentence[:sentence], object_regex)
+                  if match
+                    scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                    reject = (
+                               Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
+                               Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
+                               Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], match[:object_value]) ||
+                               Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], match[:object_value])
+                             )
+                    if !reject
+                      if abstractor_abstraction_schema.abstractor_object_type.number_list?
+                        # filter matched numbers by list of available values
+                        abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                          abstractor_object_value.object_variants.each do |object_variant|
+                            if object_variant == match[:object_value]
+                              suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+                            end
                           end
                         end
+                      else
+                        is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
                       end
-                    else
-                      is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
                     end
                   end
-                end
-              else
-                abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
-                  abstractor_object_value.object_variants.each do |object_variant|
-                    match = parser.match_sentence(sentence[:sentence], Regexp.escape(object_variant))
-                    if match
-                      scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
-                      reject = (
-                                 Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
-                                 Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
-                                 Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
-                                 Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
-                               )
-                      if !reject
-                        is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], abstractor_object_value, nil, nil, nil, nil)
+                else
+                  abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
+                    abstractor_object_value.object_variants.each do |object_variant|
+                      match = parser.match_sentence(sentence[:sentence], Regexp.escape(object_variant))
+                      if match
+                        scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
+                        reject = (
+                                   Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
+                                   Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
+                                   Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], object_variant) ||
+                                   Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
+                                 )
+                        if !reject
+                          is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], abstractor_object_value, nil, nil, nil, nil)
+                        end
                       end
                     end
                   end
