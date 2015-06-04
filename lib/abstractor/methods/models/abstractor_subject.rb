@@ -263,8 +263,8 @@ module Abstractor
                 end
               end
               sentences.uniq.each do |sentence|
-                is_abstracted = abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence)
-                abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence) unless is_abstracted
+                skip_sentinental = abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence)
+                abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence) unless skip_sentinental
               end
             end
             create_unknown_abstractor_suggestion_name_only(about, abstractor_abstraction, abstractor_abstraction_source)
@@ -272,7 +272,7 @@ module Abstractor
           end
 
           def abstract_canonical_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence)
-            is_abstracted = false
+            skip_sentinental = false
             abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
               if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
                 object_regex = Abstractor::Enum::NUMERIC_REGEX
@@ -286,14 +286,14 @@ module Abstractor
                       abstractor_object_value.object_variants.each do |object_variant|
                         matches.each do |match|
                           if object_variant == match[:object_value]
-                            is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+                            skip_sentinental = suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
                           end
                         end
                       end
                     end
                   else
                     matches.each do |match|
-                      is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                      skip_sentinental = suggest(abstractor_abstraction, abstractor_abstraction_source, match.to_s, match.to_s, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
                     end
                   end
                 end
@@ -304,18 +304,17 @@ module Abstractor
                     match_values.each do |match_value|
                       matches = parser.sentence_scan(sentence[:sentence], match_value, word_boundary: true).uniq
                       matches.each do |match|
-                        is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
+                        suggest(abstractor_abstraction, abstractor_abstraction_source, match, match, source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
                       end
                     end
                   end
                 end
               end
             end
-            is_abstracted
+            skip_sentinental
           end
 
           def abstract_sentential_name_value(about, abstractor_abstraction, abstractor_abstraction_source, source, parser, sentence)
-            is_abstracted = false
             abstractor_abstraction_schema.predicate_variants.each do |predicate_variant|
               if match = parser.match_sentence(sentence[:sentence], predicate_variant)
                 if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
@@ -340,7 +339,7 @@ module Abstractor
                           end
                         end
                       else
-                        is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                        suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
                       end
                     end
                   end
@@ -357,7 +356,7 @@ module Abstractor
                                    Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], object_variant)
                                  )
                         if !reject
-                          is_abstracted = suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], abstractor_object_value, nil, nil, nil, nil)
+                          suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], abstractor_object_value, nil, nil, nil, nil)
                         end
                       end
                     end
