@@ -39,15 +39,24 @@ module Abstractor
       end
     end
 
-    def match_scan(token, options = {})
+    def sentence_scan(sentence, token, options = {})
       options[:word_boundary] = true  if options[:word_boundary].nil?
       regular_expression = prepare_token(token, options)
-      at = prepare_abstractor_text
-      if (regular_expression.nil? || at.nil?)
+      if (regular_expression.nil? || sentence.nil?)
+        []
+      else
+        sentence.scan(regular_expression)
+      end
+    end
+
+    def sentence_match_scan(sentence, token, options = {})
+      options[:word_boundary] = true  if options[:word_boundary].nil?
+      regular_expression = prepare_token(token, options)
+      if (regular_expression.nil? || sentence.nil?)
         []
       else
         # http://stackoverflow.com/questions/6804557/how-do-i-get-the-match-data-for-all-occurrences-of-a-ruby-regular-expression-in
-        at.to_enum(:scan,regular_expression).map{ Regexp.last_match }
+        sentence.to_enum(:scan,regular_expression).map{ Regexp.last_match }
       end
     end
 
@@ -56,8 +65,9 @@ module Abstractor
       prepare_abstractor_text.match(regular_expression) unless regular_expression.nil?
     end
 
-    def range_all(token)
-      regular_expression = prepare_token(token)
+    def range_all(token, options = {})
+      options[:word_boundary] = true  if options[:word_boundary].nil?
+      regular_expression = prepare_token(token, options)
       prepare_abstractor_text.range_all(regular_expression) unless regular_expression.nil?
     end
 
