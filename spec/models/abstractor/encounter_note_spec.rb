@@ -442,6 +442,27 @@ describe EncounterNote do
         expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
       end
 
+      it "pick up closest value that follows predicate (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "Jan 2009: 3- C+ PW 60, KPS 185, Voltage 1.8 ")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('185')
+      end
+
+      it "pick up closest value that preceeds predicate (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "Jan 2009: 3- C+ PW 60, 185 KPS, Voltage 1.8 ")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('185')
+      end
+
+      it "does not pick up closest value that preceeds predicate but id separated by a comma or semicomaa (using the sentential format)" do
+        @encounter_note = FactoryGirl.create(:encounter_note, note_text: "Jan 2009: 3- C+ PW 60, KPS is 185, Voltage 1.8 ")
+        @encounter_note.abstract
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.size).to eq(1)
+        expect(@encounter_note.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_kps).abstractor_suggestions.first.suggested_value).to eq('185')
+      end
+
       it "creates multiple 'has_karnofsky_performance_status' abstraction suggestions given multiple different matches (using the canonical name/value format)" do
         @encounter_note = FactoryGirl.create(:encounter_note, note_text: 'The patient looks healthy.  KPS: 90.  Let me repeat.  KPS: 80')
         @encounter_note.abstract

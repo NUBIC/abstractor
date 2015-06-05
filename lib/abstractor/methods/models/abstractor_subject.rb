@@ -319,27 +319,42 @@ module Abstractor
               if match = parser.match_sentence(sentence[:sentence], predicate_variant)
                 if abstractor_abstraction_schema.abstractor_object_type && (abstractor_abstraction_schema.abstractor_object_type.number? || abstractor_abstraction_schema.abstractor_object_type.number_list?)
                   object_regex = object_regex = Abstractor::Enum::NUMERIC_REGEX
-                  match = parser.match_sentence(sentence[:sentence], object_regex)
-                  if match
+                  filtered_matches = parser.sentence_match_scan(sentence[:sentence], object_regex).reject{|m| m.begin(0) > match.begin(0) && m.end(0) < match.end(0)}
+                  if filtered_matches.any?
+                    closest_post_match  = filtered_matches.select{|m| m.begin(0) > match.end(0)}.first
+                    closest_pre_match   = filtered_matches.select{|m| m.end(0)   < match.begin(0)}.last
+
+                    closest_match = nil
+                    if closest_post_match && closest_pre_match
+                      if closest_post_match.begin(0) - match.end(0) > match.begin(0) - closest_pre_match.end(0) and sentence[:sentence][closest_pre_match.end(0)..match.begin(0)] !~ /[,;]/
+                        closest_match = closest_pre_match
+                      else
+                        closest_match = closest_post_match
+                      end
+                    else
+                      closest_match =   closest_post_match
+                      closest_match ||= closest_pre_match
+                    end
+
                     scoped_sentence = Abstractor::NegationDetection.parse_negation_scope(sentence[:sentence])
                     reject = (
                                Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], predicate_variant) ||
                                Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], predicate_variant) ||
-                               Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], match[:object_value]) ||
-                               Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], match[:object_value])
+                               Abstractor::NegationDetection.negated_match_value?(scoped_sentence[:scoped_sentence], closest_match[:object_value]) ||
+                               Abstractor::NegationDetection.manual_negated_match_value?(sentence[:sentence], closest_match[:object_value])
                              )
                     if !reject
                       if abstractor_abstraction_schema.abstractor_object_type.number_list?
                         # filter matched numbers by list of available values
                         abstractor_abstraction_schema.abstractor_object_values.each do |abstractor_object_value|
                           abstractor_object_value.object_variants.each do |object_variant|
-                            if object_variant == match[:object_value]
+                            if object_variant == closest_match[:object_value]
                               suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name],  abstractor_object_value, nil, nil, nil, nil)
                             end
                           end
                         end
                       else
-                        suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], match[:object_value], nil, nil, nil, nil)
+                        suggest(abstractor_abstraction, abstractor_abstraction_source, sentence[:sentence], sentence[:sentence], source[:source_id], source[:source_type].to_s, source[:source_method], source[:section_name], closest_match[:object_value], nil, nil, nil, nil)
                       end
                     end
                   end
