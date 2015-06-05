@@ -1,6 +1,15 @@
 # Abstractor Changelog
 =======
 
+## 4.4.3
+Released on June 5, 2015
+
+* For numeric and numeric_list rules:
+** Skip sentimental suggestions if canonical was detected
+** Pick numeric value closest to matched predicate but not separated by comma or semicolon for sentinental matches
+
+See https://github.com/NUBIC/abstractor/issues/64
+
 ## 4.4.2
 Released on June 2, 2015
 

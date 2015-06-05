@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    abstractor (4.4.2)
+    abstractor (4.4.3)
       coffee-rails (~> 4.0, >= 4.0.0)
       haml (~> 4.0.5, >= 4.0.5)
       httparty (~> 0.13.0, >= 0.13.3)
