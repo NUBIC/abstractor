@@ -10,7 +10,7 @@
       - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_DATE
         = f.text_field :value, class: 'abstractor_datepicker'
       - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_TEXT
-        = f.text_area :value
+        = f.text_area :value, cols: 40, rows: 20
       - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_STRING
         = f.text_field :value
       - when Abstractor::Enum::ABSTRACTOR_OBJECT_TYPE_NUMBER
