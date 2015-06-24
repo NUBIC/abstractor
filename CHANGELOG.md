@@ -1,6 +1,15 @@
 # Abstractor Changelog
 =======
 
+## 4.4.4
+Released on June 24, 2015
+
+* Source type 'custom suggestion' with source method blow up when being displayed.
+See https://github.com/NUBIC/abstractor/issues/121
+
+* Rails 4 removed the defaults cols and rows for text areas.  Hardcode them back.
+See https://github.com/NUBIC/abstractor/issues/125
+
 ## 4.4.3
 Released on June 5, 2015
 
