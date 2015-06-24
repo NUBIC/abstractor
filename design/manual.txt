@@ -1,8 +1,10 @@
+bundle exec rails console
 require './lib/setup/setup/'
 Abstractor::Setup.system
 Setup.encounter_note
 en = EncounterNote.create!(note_text: 'Bob is the patient.  He is doing better. KPS: 90.  Recommended an appointment in 6 months.')
 en.abstract
+bundle exec rails server
 http://0.0.0.0:3000/encounter_notes/1/edit
 
 Setup.radiation_therapy_prescription

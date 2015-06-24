@@ -13,6 +13,7 @@ Feature: Editing encounter note
     And the "Needs review" radio button within ".has_karnofsky_performance_status" should be checked
     And I should not see an ".edit_link" element
     And ".custom_explanation .explanation_text" in the first ".has_karnofsky_performance_status_date" should contain text "A bit of custom logic."
+    And ".custom_explanation .explanation_text" in the first ".has_custom_suggestion_without_text" should contain text "A bit more of custom logic."
 
   @javascript
   Scenario: Viewing selected suggestions

@@ -12,7 +12,7 @@
       - if rejected_suggestions.length == abstractor_suggestions.length
         %span.editable_abstraction
           = abstractor_abstraction.display_value
-        = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'icon_link edit_link'
+        = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'edit_link'
       - else
         = abstractor_abstraction.display_value
       - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
@@ -27,17 +27,18 @@
                 = abstractor_suggestion.display_value
                 - if abstractor_suggestion.abstractor_suggestion_sources.any?
                   - abstractor_suggestion.abstractor_suggestion_sources.each do |abstractor_suggestion_source|
-                    - source = { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name }
-                    - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
-                    - if abstractor_text
-                      - has_text_match = abstractor_text && abstractor_suggestion_source.sentence_match_value
-                      %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{abstractor_suggestion_source.source_type} #{abstractor_suggestion_source.source_method} #{abstractor_suggestion_source.section_name}"}
-                        %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
-                      %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
-                        - if has_text_match
-                          = simple_format(Abstractor::UserInterface.highlight(ERB::Util.html_escape(abstractor_text), ERB::Util.html_escape(abstractor_suggestion_source.sentence_match_value.strip)))
-                        - else
-                          = simple_format(ERB::Util.html_escape(abstractor_text))
+                    - if abstractor_suggestion_source.source_method
+                      - source = { source_type: abstractor_suggestion_source.source_type.constantize, source_id: abstractor_suggestion_source.source_id , source_method: abstractor_suggestion_source.source_method, section_name: abstractor_suggestion_source.section_name }
+                      - abstractor_text = Abstractor::AbstractorAbstractionSource.abstractor_text(source)
+                      - if abstractor_text
+                        - has_text_match = abstractor_text && abstractor_suggestion_source.sentence_match_value
+                        %span{ class: 'abstractor_abstraction_source_tooltip_img', rel: "#abstraction_text_#{abstractor_suggestion_source.id}", title: "#{abstractor_suggestion_source.source_type} #{abstractor_suggestion_source.source_method} #{abstractor_suggestion_source.section_name}"}
+                          %i{ id: "abstraction_text_link_#{abstractor_suggestion_source.id}", class: "#{'abstraction_text_link_match' if has_text_match}" }
+                        %div{ id: "abstraction_text_#{abstractor_suggestion_source.id}", class: 'abstractor_abstraction_source_tooltip'}
+                          - if has_text_match
+                            = simple_format(Abstractor::UserInterface.highlight(ERB::Util.html_escape(abstractor_text), ERB::Util.html_escape(abstractor_suggestion_source.sentence_match_value.strip)))
+                          - else
+                            = simple_format(ERB::Util.html_escape(abstractor_text))
                     - if abstractor_suggestion_source.custom_explanation
                       .custom_explanation
                         %label

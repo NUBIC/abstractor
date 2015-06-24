@@ -14,6 +14,8 @@ describe EncounterNote do
     @abstractor_subject_abstraction_schema_always_unknown = Abstractor::AbstractorSubject.create(:subject_type => 'EncounterNote', :abstractor_abstraction_schema => @abstractor_abstraction_always_unknown)
     @abstractor_abstraction_schema_kps_date = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_karnofsky_performance_status_date').first
     @abstractor_subject_abstraction_schema_kps_date = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_kps_date.id).first
+    @abstractor_abstraction_schema_custom_suggestion_without_text = Abstractor::AbstractorAbstractionSchema.where(predicate: 'has_custom_suggestion_without_text').first
+    @abstractor_subject_abstraction_schema_has_custom_suggestion_without_text = Abstractor::AbstractorSubject.where(subject_type: EncounterNote.to_s, abstractor_abstraction_schema_id: @abstractor_abstraction_schema_custom_suggestion_without_text.id).first
     @source_type_nlp_suggestion = Abstractor::AbstractorAbstractionSourceType.where(name: 'nlp suggestion').first
     Abstractor::AbstractorAbstractionSource.create(abstractor_subject: @abstractor_subject_abstraction_schema_always_unknown, from_method: 'note_text', abstractor_abstraction_source_type: @source_type_nlp_suggestion, :abstractor_rule_type => unknown_rule)
     @abstractor_suggestion_status_needs_review = Abstractor::AbstractorSuggestionStatus.where(:name => 'Needs review').first
@@ -34,7 +36,7 @@ describe EncounterNote do
     end
 
     it "can report its abstractor abstraction schemas", focus: false do
-      expect(Set.new(EncounterNote.abstractor_abstraction_schemas)).to eq(Set.new([@abstractor_abstraction_schema_kps, @abstractor_abstraction_always_unknown, @abstractor_abstraction_schema_kps_date]))
+      expect(Set.new(EncounterNote.abstractor_abstraction_schemas)).to eq(Set.new([@abstractor_abstraction_schema_kps, @abstractor_abstraction_always_unknown, @abstractor_abstraction_schema_kps_date, @abstractor_abstraction_schema_custom_suggestion_without_text]))
     end
 
     #abstractions
@@ -1168,7 +1170,7 @@ describe EncounterNote do
       end
 
       it "can report what needs to be reviewed for an instance", focus: false do
-        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(3)
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(4)
       end
 
       it "can report what has been reviewed for an instance", focus: false do
@@ -1180,7 +1182,7 @@ describe EncounterNote do
       end
 
       it "can report what needs to be reviewed for an instance (ignoring soft deleted rows)", focus: false do
-        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(3)
+        expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(4)
         @encounter_note.abstractor_abstractions.each do |abstractor_abstraction|
           abstractor_abstraction.soft_delete!
         end
