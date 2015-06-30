@@ -163,6 +163,23 @@ describe RadiationTherapyPrescription do
       expect(radiation_therapy_prescription.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_has_anatomical_location).abstractor_suggestions.select { |abstractor_suggestion| abstractor_suggestion.unknown }.size).to eq(1)
     end
 
+    #removing abstractions
+    it "removes grouped abstractor abstractions", focus: false do
+      radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')
+      radiation_therapy_prescription.abstract
+      abstractor_abstraction_groups = []
+      radiation_therapy_prescription.abstractor_abstractions.each do |abstractor_abstraction|
+        abstractor_abstraction_groups << abstractor_abstraction.abstractor_abstraction_group
+      end
+      abstractor_abstraction_groups.uniq!
+      expect(radiation_therapy_prescription.abstractor_abstractions.size).to eq(2)
+      radiation_therapy_prescription.remove_abstractions
+      expect(radiation_therapy_prescription.reload.abstractor_abstractions.size).to eq(0)
+      abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+        expect(Abstractor::AbstractorAbstractionGroup.where(id: abstractor_abstraction_group.id).first).to be_nil
+      end
+    end
+
     #groups
     it "creates a abstractor abstraction group" do
       radiation_therapy_prescription = FactoryGirl.create(:radiation_therapy_prescription, site_name: 'left parietal lobe')

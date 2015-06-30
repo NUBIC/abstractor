@@ -185,6 +185,13 @@ module Abstractor
           options = { abstractor_abstractions: abstractor_abstractions }.merge(options)
           abstractor_abstractions = abstractor_abstractions_by_abstraction_schemas(options)
         end
+        abstractor_abstraction_groups = []
+        abstractor_abstractions.each do |abstractor_abstraction|
+          if abstractor_abstraction.abstractor_abstraction_group
+            abstractor_abstraction_groups << abstractor_abstraction.abstractor_abstraction_group
+          end
+        end
+        abstractor_abstraction_groups.uniq!
         abstractor_abstractions.each do |abstractor_abstraction|
           if !options[:only_unreviewed] || (options[:only_unreviewed] && abstractor_abstraction.unreviewed?)
             abstractor_abstraction.abstractor_suggestions.each do |abstractor_suggestion|
@@ -195,7 +202,13 @@ module Abstractor
             abstractor_abstraction.abstractor_indirect_sources.each do |abstractor_indirect_source|
               abstractor_indirect_source.destroy
             end
+
             abstractor_abstraction.destroy
+          end
+        end
+        abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+          if abstractor_abstraction_group.reload.abstractor_abstraction_group_members.empty?
+            abstractor_abstraction_group.destroy
           end
         end
       end

@@ -195,15 +195,24 @@ describe ImagingExam do
     end
 
     #removing abstractions
-    it "removes abstractions in a namespace", focus: false do
+    it "removes abstractions and groups in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id)
 
       expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
       expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(5)
 
+      abstractor_abstraction_groups = []
+      @imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).each do |abstractor_abstraction|
+        if abstractor_abstraction.abstractor_abstraction_group
+          abstractor_abstraction_groups << abstractor_abstraction.abstractor_abstraction_group
+        end
+      end
       @imaging_exam.remove_abstractions(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id)
       expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_dat.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_dat.namespace_id).size).to eq(5)
       expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_recist_response.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_recist_response.namespace_id).size).to eq(0)
+      abstractor_abstraction_groups.each do |abstractor_abstraction_group|
+        expect(Abstractor::AbstractorAbstractionGroup.find(abstractor_abstraction_group.id)).to be_nil
+      end
     end
 
     it "will not remove reviewed abstractions in a namespace (if so instructed)", focus: false do
@@ -466,12 +475,11 @@ describe ImagingExam do
       expect(@imaging_exam.reload.detect_abstractor_abstraction(@abstractor_subject_abstraction_schema_diagnosis_duration_2)).to be_nil
     end
 
-    #removing abstractions
     it "removes abstractions in a namespace", focus: false do
       @imaging_exam.abstract(namespace_type: @abstractor_subject_abstraction_schema_moomin_minor.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_moomin_minor.namespace_id)
 
       expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_moomin_minor.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_moomin_minor.namespace_id).size).to eq(5)
-      expect(@imaging_exam.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_moomin_major.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_moomin_major.namespace_id).size).to eq(3)
+      expect(@imaging_exam.reload.abstractor_abstractions_by_namespace(namespace_type: @abstractor_subject_abstraction_schema_moomin_major.namespace_type, namespace_id:  @abstractor_subject_abstraction_schema_moomin_major.namespace_id).size).to eq(3)
 
       @imaging_exam.remove_abstractions(
         namespace_type: @abstractor_subject_abstraction_schema_moomin_major.namespace_type,

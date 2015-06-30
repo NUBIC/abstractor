@@ -13,7 +13,7 @@ module Abstractor
           base.send :has_many, :abstractor_abstraction_sources, :through => :abstractor_abstractor_suggestions
           base.send :has_many, :abstractor_indirect_sources
 
-          base.send :has_one, :abstractor_abstraction_group_member
+          base.send :has_one, :abstractor_abstraction_group_member, dependent: :destroy
           base.send :has_one, :abstractor_abstraction_group, :through => :abstractor_abstraction_group_member
           base.send :has_one, :abstractor_abstraction_schema, :through => :abstractor_subject
 
