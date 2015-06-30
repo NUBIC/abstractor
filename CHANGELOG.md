@@ -1,5 +1,10 @@
 # Abstractor Changelog
 =======
+## 4.4.5
+Released on June 30, 2015
+
+* Abstactor::Abstractable.remove_abstractions does not clean up abstractor_abstraction_group_members and abstractor_abstraction_groups
+See https://github.com/NUBIC/abstractor/issues/104
 
 ## 4.4.4
 Released on June 24, 2015
