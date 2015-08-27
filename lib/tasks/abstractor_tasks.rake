@@ -64,6 +64,11 @@ EOS
   Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
 
 "
+      hammer.insert_into_file("#{Rails.root}/config/environments/test.rb", :after => /(::Application.configure do\n|application.configure do\n)/) do
+"
+  Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
+
+"
       end
     end
   end

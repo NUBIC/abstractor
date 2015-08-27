@@ -45,5 +45,39 @@ module Abstractor
         text: abstractor_text
       }
     end
+
+    ##
+    # Formats the JSON body in preparation for submision to a custom NLP schema provider endpoint.
+    #
+    # @example Example of body prepared by Abstractor to submit to an custom NLP provider
+    #   {
+    #     "abstractor_abstraction_schema_id":1,
+    #     "abstractor_abstraction_schema_uri":"https://moomin.com/abstractor_abstraction_schemas/1",
+    #     "abstractor_abstraction_id":1,
+    #     "abstractor_abstraction_source_id":1,
+    #     "source_type":  "PathologyCase",
+    #     "suggestions_uri": "https://moomin.com/abstractor_abstraction_schemas/",
+    #     "text": "The patient has a diagnosis of glioblastoma.  GBM does not have a good prognosis.  But I can't rule out meningioma."
+    #   }
+    #
+    #
+    # @param [Abstractor::AbstractorAbstraction] abstractor_abstraction The abstractor abstraction to be formated for submission to a custom nlp provider endpoint.
+    # @param [Abstractor::AbstractorAbstractionSource] abstractor_abstraction_source The abstractor abstraction source to be formated for submission to a custom nlp provider endpoint.
+    # @param [String] abstractor_text The text be formated for submission to a custom nlp provider endpoint.
+    # @param [Hash] source The hash of values representing the source for submission to a custom nlp provider endpoint.
+    # @return [Hash] The formatted body.
+    def self.format_body_for_abstraction_schema_endpoint(universe, universe_name_variants, about, abstractor_text)
+      a = {
+        universe_id:              universe.id,
+        universe_name:            universe.name,
+        universe_name_variants:   universe_name_variants,
+        about_type:               about.class.name,
+        about_id:                 about.id,
+        suggestions_uri:          Abstractor::Engine.routes.url_helpers.configure_and_store_abstractions_abstractor_abstraction_schema_sources_url,
+        text:                     abstractor_text
+      }
+      puts a
+      a
+    end
   end
 end

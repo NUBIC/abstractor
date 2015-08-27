@@ -71,8 +71,8 @@ module Abstractor
       ##
       # The method for generating abstractions from the abstractable entity.
       #
-      # The generation of abstactions is based on the setup of Abstactor::AbstractorAbstactionSchema,
-      # Abstractor::AbstractorSubject, Abstractor::AbstractorSubjectGroup and Abstractor::AbstractorAbstractionSource associated to the abstractable entity.
+      # The generation of abstactions is based on the setup of Abstactor::AbstractorAbstactionSchema, Abstractor::AbstractorSubject,
+      # Abstractor::AbstractorSubjectGroup, Abstractor::AbstractorAbstractionSource, Abstactor::AbstractorAbstactionSchemaSource associated to the abstractable entity.
       #
       # Namespacing allows for different sets data points to be associated to the same abstractable entity.
       #
@@ -88,12 +88,18 @@ module Abstractor
       # @return [void]
       def abstract(options = {})
         options = { namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
+
+        abstractor_abstraction_source_types = Abstractor::AbstractorAbstractionSourceType.where.not(name: 'custom nlp schema')
         sentinental_groups = []
-        self.class.abstractor_subjects(options).each do |abstractor_subject|
+        self.class.abstractor_subjects({ source_types: abstractor_abstraction_source_types}.merge(options)).each do |abstractor_subject|
           abstractor_subject.abstract(self)
           sentinental_groups << abstractor_subject.abstractor_subject_group if abstractor_subject.abstractor_subject_group && abstractor_subject.abstractor_subject_group.has_subtype?(Abstractor::Enum::ABSTRACTOR_GROUP_SENTINENTAL_SUBTYPE)
         end
         sentinental_groups.uniq.map{|sentinental_group| regroup_sentinental_suggestions(sentinental_group, options)}
+
+        self.class.abstractor_abstraction_schema_sources(options).each do |abstractor_abstraction_schema_source|
+          abstractor_abstraction_schema_source.abstract(self)
+        end
       end
 
       def detect_abstractor_abstraction(abstractor_subject)
@@ -438,7 +444,7 @@ module Abstractor
       # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the subjects.
       # @return ActiveRecord::Relation list of Abstactor::AbstractorSubject objects
       def abstractor_subjects(options = {})
-        options = { grouped: nil, namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [] }.merge(options)
+        options = { grouped: nil, namespace_type: nil, namespace_id: nil, abstractor_abstraction_schema_ids: [], source_types: []}.merge(options)
         subjects = Abstractor::AbstractorSubject.where(subject_type: self.to_s)
         if options[:namespace_type] || options[:namespace_id]
           subjects = subjects.where(namespace_type: options[:namespace_type], namespace_id: options[:namespace_id])
@@ -446,6 +452,10 @@ module Abstractor
 
         if options[:abstractor_abstraction_schema_ids].any?
           subjects = subjects.where(abstractor_abstraction_schema_id: options[:abstractor_abstraction_schema_ids])
+        end
+
+        if options[:source_types].any?
+          subjects = subjects.joins(abstractor_abstraction_sources: :abstractor_abstraction_source_type).where( abstractor_abstraction_source_types: { id: options[:source_types].ids })
         end
 
         subjects = case options[:grouped]
@@ -456,6 +466,24 @@ module Abstractor
         when nil
           subjects
         end
+      end
+
+      ##
+      # Returns the abstractor abstraction schema sources associated with the abstractable entity.
+      #
+      # By default, the method will return all abstractor subjects.
+      #
+      # @param [Hash] options the options to filter the subjects returned.
+      # @option options [String] :namespace_type The type parameter of the namespace to filter the abstraction schema sources.
+      # @option options [Integer] :namespace_id The instance parameter of the namespace to filter the abstraction schema sources.
+      # @return ActiveRecord::Relation list of Abstactor::AbstractorAbstractionSchemaSource objects
+      def abstractor_abstraction_schema_sources(options = {})
+        options = { namespace_type: nil, namespace_id: nil }.merge(options)
+        abstractor_abstraction_schema_sources = Abstractor::AbstractorAbstractionSchemaSource.where(about_type: self.to_s)
+        if options[:namespace_type] || options[:namespace_id]
+          abstractor_abstraction_schema_sources = abstractor_abstraction_schema_sources.where(namespace_type: options[:namespace_type], namespace_id: options[:namespace_id])
+        end
+        abstractor_abstraction_schema_sources
       end
 
       ##

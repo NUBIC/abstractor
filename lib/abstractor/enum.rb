@@ -46,5 +46,16 @@ module Abstractor
     ]
 
     NUMERIC_REGEX = '(?<object_value>\d+[\.,]*\d*[\.,]*\d*)'
+
+    ABSTRACTOR_RULE_TYPE_NAME_VALUE = 'name/value'
+    ABSTRACTOR_RULE_TYPE_VALUE      = 'value'
+    ABSTRACTOR_RULE_TYPE_UNKNOWN    = 'unknown'
+
+    ABSTRACTOR_ABSTRACTION_SOURCE_TYPE_NLP_SUGGESTION         = 'nlp suggestion'
+    ABSTRACTOR_ABSTRACTION_SOURCE_TYPE_CUSTOM_SUGGESTION      = 'custom suggestion'
+    ABSTRACTOR_ABSTRACTION_SOURCE_TYPE_INDIRECT               = 'indirect'
+    ABSTRACTOR_ABSTRACTION_SOURCE_TYPE_CUSTOM_NLP_SUGGESTION  = 'custom nlp suggestion'
+    ABSTRACTOR_ABSTRACTION_SOURCE_TYPE_CUSTOM_NLP_SCHEMA      = 'custom nlp schema'
+
   end
 end
