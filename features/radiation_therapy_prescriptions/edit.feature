@@ -8,8 +8,6 @@ Feature: Editing radiation therapy prescription
       | Site                                    |
       | Vague blather.                          |
     When I go to the last radiation therapy prescription edit page
-    And I choose "Rejected" within the first ".has_laterality .edit_abstractor_suggestion"
-    And I wait for the ajax request to finish
     And I click on ".edit_link" within the first ".has_laterality"
     And I choose "left"
     Then the "left" checkbox within ".has_laterality" should be checked
@@ -44,7 +42,7 @@ Feature: Editing radiation therapy prescription
     When I go to the last radiation therapy prescription edit page
     And I should see "Delete group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should not contain selector ".edit_link"
+    And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain selector ".edit_link"
     When I do not confirm link "Delete group"
     Then I should see 2 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     When I confirm link "Delete group"
@@ -52,7 +50,7 @@ Feature: Editing radiation therapy prescription
     Then I should see 1 ".abstractor_abstraction_group" within ".abstractor_subject_groups"
     Then I should see "Add group"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
-    And I should not see an ".edit_link" element
+    And I should see an ".has_anatomical_location .edit_link" element
 
   @javascript
   Scenario: Viewing abstraction groups with no suggestions
@@ -64,7 +62,7 @@ Feature: Editing radiation therapy prescription
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And the "Needs review" radio button within the first ".has_anatomical_location" should be checked
-    And I should not see an ".edit_link" element
+    And I should see an ".has_anatomical_location .edit_link" element
     And I should see "Add group"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "unknown"
@@ -79,7 +77,7 @@ Feature: Editing radiation therapy prescription
     Then I should see "Anatomical location"
     And ".abstractor_abstraction_value" in the first ".abstractor_abstraction" should contain text "[Not set]"
     And the "Needs review" radio button within the last ".has_anatomical_location" should be checked
-    And I should not see an ".edit_link" element
+    And I should see an ".has_anatomical_location .edit_link" element
     And I should see "Add group"
     And I should not see "Delete group"
     And ".abstractor_suggestion_values" in the first ".has_anatomical_location" should contain text "temporal lobe"

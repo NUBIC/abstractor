@@ -27,18 +27,35 @@ module Abstractor
           # base.send :attr_accessible, :about, :abstractor_subject, :abstractor_subject_id, :value, :about_type, :about_id, :unknown, :not_applicable, :deleted_at, :abstractor_indirect_sources_attributes
 
           # Hooks
-          base.send :after_save, :review_matching_suggestions
+          base.send :after_save, :review_suggestions
 
           base.send(:include, InstanceMethods)
           base.extend(ClassMethods)
         end
 
         module InstanceMethods
-          def review_matching_suggestions
-            accepted_status = Abstractor::AbstractorSuggestionStatus.where(:name => 'Accepted').first
-            matching_abstractor_suggestions.each do |abstractor_suggestion|
-              abstractor_suggestion.abstractor_suggestion_status = accepted_status
-              abstractor_suggestion.save!
+          # Updates status of suggestions linked to the abstraction
+          # accepts suggestions with matching values. This effectively rejects the rest of the suggestions.
+          # If suggestions with matching values do not exist, rejects all suggestions
+          def review_suggestions
+            accepted_status = Abstractor::AbstractorSuggestionStatus.where(name: Abstractor::Enum::ABSTRACTOR_SUGGESTION_STATUS_ACCEPTED).first
+            rejected_status = Abstractor::AbstractorSuggestionStatus.where(name: Abstractor::Enum::ABSTRACTOR_SUGGESTION_STATUS_REJECTED).first
+
+            unless unreviewed?
+              matching_suggestions = matching_abstractor_suggestions
+              if matching_suggestions.any?
+                matching_suggestions.each do |abstractor_suggestion|
+                  abstractor_suggestion.abstractor_suggestion_status = accepted_status
+                  abstractor_suggestion.save!
+                end
+              else
+                abstractor_suggestions.each do |abstractor_suggestion|
+                  unless abstractor_suggestion.abstractor_suggestion_status == rejected_status
+                    abstractor_suggestion.abstractor_suggestion_status = rejected_status
+                    abstractor_suggestion.save!
+                  end
+                end
+              end
             end
           end
 

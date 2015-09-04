@@ -9,12 +9,9 @@
     .abstractor_abstraction_schema_name
       = abstractor_abstraction_schema.display_name
     .abstractor_abstraction_value
-      - if rejected_suggestions.length == abstractor_suggestions.length
-        %span.editable_abstraction
-          = abstractor_abstraction.display_value
-        = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), :class=>'edit_link'
-      - else
+      %span.editable_abstraction
         = abstractor_abstraction.display_value
+      = link_to 'edit', Abstractor::UserInterface.abstractor_relative_path(abstractor.edit_abstractor_abstraction_path(abstractor_abstraction)), class: 'edit_link'
       - versions = abstractor_abstraction.versions.sort{|a,b| b.created_at <=> a.created_at}.reject{|v| v.reify.blank? || v.reify.display_value =~ /not set/i}
       = render partial: 'abstractor/abstractor_abstractions/abstraction_history', locals: { versions: versions }
     .abstractor_suggestions
