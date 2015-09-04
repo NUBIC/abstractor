@@ -1169,6 +1169,39 @@ describe EncounterNote do
         expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_ACTUALLY_ANSWERED)).to be_empty
       end
 
+      it "can report what has been partially reviewed", focus: false do
+        abstractor_abstraction = @encounter_note.reload.abstractor_abstractions.first
+        abstractor_abstraction.value = 'foo'
+        abstractor_abstraction.save
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_PARTIALLY_REVIEWED)).to eq([@encounter_note])
+      end
+
+      it "can report what has been partially reviewed (looking for unknowns)", focus: false do
+        abstractor_abstraction = @encounter_note.reload.abstractor_abstractions.first
+        abstractor_abstraction.unknown = true
+        abstractor_abstraction.save
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_PARTIALLY_REVIEWED)).to eq([@encounter_note])
+      end
+
+      it "can report what has been partially reviewed (looking for not applicable)", focus: false do
+        abstractor_abstraction = @encounter_note.reload.abstractor_abstractions.first
+        abstractor_abstraction.not_applicable = true
+        abstractor_abstraction.save
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_PARTIALLY_REVIEWED)).to eq([@encounter_note])
+      end
+
+      it "can report what has been partially reviewed (ignoring soft deleted rows)", focus: false do
+        abstractor_abstraction = @encounter_note.reload.abstractor_abstractions.first
+        abstractor_suggestion = abstractor_abstraction.abstractor_suggestions.first
+        abstractor_suggestion.abstractor_suggestion_status = @abstractor_suggestion_status_accepted
+        abstractor_suggestion.save
+
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_PARTIALLY_REVIEWED)).to eq([@encounter_note])
+        abstractor_abstraction.soft_delete!
+
+        expect(EncounterNote.by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_PARTIALLY_REVIEWED)).to be_empty
+      end
+
       it "can report what needs to be reviewed for an instance", focus: false do
         expect(@encounter_note.reload.abstractor_abstractions_by_abstractor_abstraction_status(Abstractor::Enum::ABSTRACTION_STATUS_NEEDS_REVIEW).size).to eq(4)
       end
