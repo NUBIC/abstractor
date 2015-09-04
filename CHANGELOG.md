@@ -1,5 +1,15 @@
 # Abstractor Changelog
 =======
+## 4.4.6
+Released on September 4, 2015
+* Remove the need to click "reject" before you click edit
+See https://github.com/NUBIC/abstractor/issues/130
+
+* Allow to find partially curated abstractable entities
+See https://github.com/NUBIC/abstractor/issues/129
+
+* Abstactor::Abstractable.remove_abstractions does not clean up abstractor_abstraction_group_members and abstractor_abstraction_groups
+See https://github.com/NUBIC/abstractor/issues/104
 ## 4.4.5
 Released on June 30, 2015
 
