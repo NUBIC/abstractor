@@ -26,11 +26,11 @@
    end
 
    it "can report unreviewd suggestions", focus: false do
-     expect(@abstractor_abstraction.unreviewed_abstractor_suggestions).to eq([@abstractor_suggestion_bar, @abstractor_suggestion_boo])
+     expect(@abstractor_abstraction.reload.unreviewed_abstractor_suggestions).to eq([@abstractor_suggestion_bar, @abstractor_suggestion_boo])
    end
 
    it 'can remove unreviewed suggestions not matching suggestions', focus: false do
-     @abstractor_abstraction.remove_unreviewed_suggestions_not_matching_suggestions([{suggestion: 'bar', explanation: 'Here is the deal.' }])
+     @abstractor_abstraction.reload.remove_unreviewed_suggestions_not_matching_suggestions([{suggestion: 'bar', explanation: 'Here is the deal.' }])
      expect(@abstractor_abstraction.reload.abstractor_suggestions).to eq([@abstractor_suggestion_bar, @abstractor_suggestion_foo])
    end
 
