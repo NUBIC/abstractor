@@ -46,6 +46,11 @@ custom_nlp_provider_name:
       test: http://custom-nlp-provider.test/suggest
       staging: http://custom-nlp-provider-staging.org/suggest
       production: http://custom-nlp-provider.org/suggest
+  schema_endpoint:
+      development: http://custom-nlp-provider.dev/schema
+      test: http://custom-nlp-provider.test/schema
+      staging: http://custom-nlp-provider-staging.org/schema
+      production: http://custom-nlp-provider.org/schema
 EOS
 
       if !File.exist?('config/abstractor/custom_nlp_providers.yml')
@@ -64,6 +69,7 @@ EOS
   Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'
 
 "
+      end
       hammer.insert_into_file("#{Rails.root}/config/environments/test.rb", :after => /(::Application.configure do\n|application.configure do\n)/) do
 "
   Abstractor::Engine.routes.default_url_options[:host] = 'https://moomin.com'

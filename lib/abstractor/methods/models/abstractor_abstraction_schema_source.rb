@@ -22,11 +22,11 @@ module Abstractor
           # @param [ActiveRecord::Base] about The entity to abstract.  An instance of the class specified in the Abstractor::AbstractorAbstractionSchemaSource#about_type attribute.
           # @return [void]
           def abstract(about)
-            suggestion_endpoint = CustomNlpProvider.determine_suggestion_endpoint(custom_nlp_provider)
+            schema_endpoint = CustomNlpProvider.determine_schema_endpoint(custom_nlp_provider)
             unless from_method.blank?
               abstractor_text = about.send(from_method)
               body = Abstractor::CustomNlpProvider.format_body_for_abstraction_schema_endpoint(self, abstractor_abstraction_schema_source_variants.map(&:name), about, abstractor_text)
-              HTTParty.post(suggestion_endpoint, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
+              HTTParty.post(schema_endpoint, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
             end
           end
 
@@ -36,10 +36,12 @@ module Abstractor
             else
               about = params[:about_type].safe_constantize.find(params[:about_id])
               source = params[:source]
-              params[:result].each_with_index do |result, i|
-                abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: "galaxy_#{i}").first_or_create
-                result[:galaxy].each do |key|
-                  parse_key(key_hash: key, abstractor_subject_group: abstractor_subject_group, about: about, source: source)
+              if params[:result]
+                params[:result].each_with_index do |result, i|
+                  abstractor_subject_group = Abstractor::AbstractorSubjectGroup.where(name: "galaxy_#{i}").first_or_create
+                  result[:galaxy].each do |key|
+                    parse_key(key_hash: key, abstractor_subject_group: abstractor_subject_group, about: about, source: source)
+                  end
                 end
               end
             end

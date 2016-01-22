@@ -9,7 +9,15 @@ module Abstractor
     # @param [String] custom_nlp_provider The name of the custom NLP provider whose endpoint should be determined.
     # @return [String] The endpoint.
     def self.determine_suggestion_endpoint(custom_nlp_provider)
-      suggestion_endpoint = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider]['suggestion_endpoint'][Rails.env]
+      Abstractor::CustomNlpProvider.determine_endpoint(custom_nlp_provider, 'suggestion_endpoint')
+    end
+
+    def self.determine_schema_endpoint(custom_nlp_provider)
+      Abstractor::CustomNlpProvider.determine_endpoint(custom_nlp_provider, 'schema_endpoint')
+    end
+
+    def self.determine_endpoint(custom_nlp_provider, endpoint)
+      suggestion_endpoint = YAML.load_file("#{Rails.root}/config/abstractor/custom_nlp_providers.yml")[custom_nlp_provider][endpoint][Rails.env]
     end
 
     ##
@@ -70,10 +78,10 @@ module Abstractor
       a = {
         universe_id:              universe.id,
         universe_name:            universe.name,
-        universe_name_variants:   universe_name_variants,
+        universe_name_variants:   universe_name_variants << universe.name,
         about_type:               about.class.name,
         about_id:                 about.id,
-        suggestions_uri:          Abstractor::Engine.routes.url_helpers.configure_and_store_abstractions_abstractor_abstraction_schema_sources_url,
+        suggestions_uri:          Abstractor::Engine.routes.url_helpers.configure_and_store_abstractions_abstractor_abstraction_schema_sources_url(format: :json),
         text:                     abstractor_text
       }
       puts a

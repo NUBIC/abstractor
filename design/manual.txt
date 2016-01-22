@@ -45,3 +45,19 @@ spr = SurgicalProcedureReport.create!(note_text: 'Surgery went well 2.', patient
 spr = SurgicalProcedureReport.create!(note_text: 'Surgery went not so well me 3.', patient_id: 2, report_date: '11/1/2013', reference_number: '333')
 
 http://0.0.0.0:3000/surgeries/1/edit
+
+
+http://edwintern.herokuapp.com/jsontest
+
+bundle exec rake abstractor:setup:custom_nlp_provider
+Abstractor::Setup.system
+abstractor_abstraction_schema_source = Abstractor::AbstractorAbstractionSchemaSource.where(
+  name: 'external nlp schema',
+  about_type: 'PathologyCase',
+  custom_nlp_provider: 'custom_nlp_provider_name',
+  from_method: 'note_text'
+).first_or_create
+
+pc = PathologyCase.create!(note_text: 'This is a pathology case report.\n  Breast Cancer Staging Summary\nGrade: 2\nTNM Staging: 5.\n', patient_id: 1)
+pc = PathologyCase.create!(note_text: '\nbreast cancer staging summary \ngrade:4\nTNM staging: t:4\n\n', patient_id: 1)
+pc.abstract

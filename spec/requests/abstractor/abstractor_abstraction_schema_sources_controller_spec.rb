@@ -26,7 +26,7 @@ describe Abstractor::AbstractorAbstractionSchemaSourcesController, :type => :req
         universe_id: @abstractor_abstraction_schema_source.id,
         about_type: 'Moomin',
         about_id: 1,
-        source: 'lui_papis_nlp',
+        source: 'liu_papis_nlp',
         result: [{
           galaxy: [{
             key: 'key1',
