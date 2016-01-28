@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'rails', '~> 4.1'
   s.add_dependency 'jquery-rails', '~> 4.0.0', '>= 4.0.0'
-  s.add_dependency 'jquery-ui-rails', '~> 4.2', '>= 4.2.0'
+  s.add_dependency 'jquery-ui-rails', '~> 5.0', '>= 4.2.0'
   s.add_dependency 'haml', '~> 4.0.5', '>= 4.0.5'
   s.add_dependency 'sass-rails', '>= 4.0.0'
   s.add_dependency 'paper_trail', '~> 3.0.0', '>= 3.0.0'
